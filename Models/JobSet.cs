@@ -23,5 +23,7 @@ namespace JobShopCollection.Models
         public bool IsAutoTimeOptions { get; set; }
 
         public string? TimeOptions { get; set; }
+
+        public byte[]? RowVersion { get; set; }
     }
 }

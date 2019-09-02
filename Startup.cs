@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using JobShopCollection.Models;
+using Sgw.KebabCaseRouteTokens;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JobShopCollection
 {
@@ -25,7 +27,13 @@ namespace JobShopCollection
             services.AddDbContext<JobShopCollectionDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("JobShopCollectionConnectionString")));
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options =>
+            {
+                options.Conventions.Add(new KebabCaseRouteTokenReplacementControllerModelConvention());
+                options.Conventions.Add(new KebabCaseRouteTokenReplacementActionModelConvention());
+
+                options.Filters.Add(new ProducesAttribute("application/json"));
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

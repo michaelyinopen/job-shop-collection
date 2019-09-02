@@ -13,5 +13,14 @@ namespace JobShopCollection.Models
         { }
 
         public DbSet<JobSet> JobSet { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<JobSet>()
+                .Property(e => e.RowVersion)
+                .IsRowVersion();
+        }
     }
 }
