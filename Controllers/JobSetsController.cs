@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using JobShopCollection.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static JobShopCollection.Models.EtagExtensions;
 
 namespace JobShopCollection.Controllers
 {
@@ -13,120 +17,127 @@ namespace JobShopCollection.Controllers
     public class JobSetsController : ControllerBase
     {
         private JobShopCollectionDbContext JobShopCollectionDbContext { get; }
-        public JobSetsController(JobShopCollectionDbContext jobShopCollectionDbContext)
+        private IMapper Mapper { get; }
+
+        public JobSetsController(
+            JobShopCollectionDbContext jobShopCollectionDbContext,
+            IMapper mapper)
         {
             JobShopCollectionDbContext = jobShopCollectionDbContext;
+            Mapper = mapper;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<RuleNodeHeaderDto>>> GetAll()
-        //{
-        //    var result = await FileToOrderDbContext.RuleNodeEntity
-        //        .Where(r => !r.ParentRuleNodeId.HasValue)
-        //        .ProjectTo<RuleNodeHeaderDto>(Mapper.ConfigurationProvider)
-        //        .ToListAsync();
-        //    return result.ToList();
-        //}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<JobSetHeaderDto>>> GetAll()
+        {
+            var result = await JobShopCollectionDbContext.JobSet
+                .ProjectTo<JobSetHeaderDto>(Mapper.ConfigurationProvider)
+                .ToListAsync();
+            return result.ToList();
+        }
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<RuleNodeDto>> Get(int id)
-        //{
-        //    var result = await FileToOrderDbContext.RuleNodeEntity
-        //        .Where(r => !r.ParentRuleNodeId.HasValue)
-        //        .Include(r => r.ChildRuleNodes)
-        //        .ProjectTo<RuleNodeDto>(Mapper.ConfigurationProvider)
-        //        .FirstOrDefaultAsync(r => r.Id == id);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<JobSetDto>> Get(int id)
+        {
+            var result = await JobShopCollectionDbContext.JobSet
+                .ProjectTo<JobSetDto>(Mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(j => j.Id == id);
 
-        //    if (result is null)
-        //        return NotFound();
+            if (result is null)
+                return NotFound();
 
-        //    string eTag = result.GetETag();
-        //    if (HttpContext.Request.Headers.Keys.Contains("If-None-Match") && HttpContext.Request.Headers["If-None-Match"].ToString() == eTag)
-        //    {
-        //        return new StatusCodeResult(304);//Not Modified
-        //    }
-        //    HttpContext.Response.Headers.Add("ETag", new[] { eTag });
+            string? eTag = result.GetETag();
+            if (eTag != null)
+            {
+                if (HttpContext.Request.Headers.Keys.Contains("If-None-Match") && HttpContext.Request.Headers["If-None-Match"].ToString() == eTag)
+                {
+                    return new StatusCodeResult(304);//Not Modified
+                }
+                HttpContext.Response.Headers.Add("ETag", new[] { eTag });
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
 
-        //[HttpPost]
-        //public async Task<ActionResult<RuleNodeDto>> Post([FromBody]NewRuleNodeDto newRuleNodeDto)
-        //{
-        //    //throw new System.Exception();
-        //    var ruleNodeEntity = Mapper.Map<RuleNodeEntity>(newRuleNodeDto);
-        //    FileToOrderDbContext.RuleNodeEntity.Add(ruleNodeEntity);
-        //    await FileToOrderDbContext.SaveChangesAsync();
+        [HttpPost]
+        public async Task<ActionResult<JobSetDto>> Post([FromBody]NewJobSetDto newJobSetDto)
+        {
+            //throw new System.Exception();
+            var jobSet = Mapper.Map<JobSet>(newJobSetDto);
+            JobShopCollectionDbContext.JobSet.Add(jobSet);
+            await JobShopCollectionDbContext.SaveChangesAsync();
 
-        //    var result = Mapper.Map<RuleNodeDto>(ruleNodeEntity);
-        //    string eTag = result.GetETag();
-        //    HttpContext.Response.Headers.Add("ETag", new[] { eTag });
-        //    return CreatedAtAction("Get", new { id = ruleNodeEntity.Id }, result);
-        //}
+            var result = Mapper.Map<JobSet>(jobSet);
+            string? eTag = jobSet.GetETag();
+            if (eTag != null)
+            {
+                HttpContext.Response.Headers.Add("ETag", new[] { eTag });
+            }
+            return CreatedAtAction("Get", new { id = jobSet.Id }, result);
+        }
 
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult<RuleNodeDto>> Put(int id, [FromBody]UpdateRuleNodeDto updateRuleNodeDto)
-        //{
-        //    if (!id.Equals(updateRuleNodeDto.Id))
-        //        return BadRequest(new { Message = "The Id in route does not equal to the Id in Body." });
-        //    //todo check child ruleNodes' id must be zero (default value)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<JobSetDto>> Put(int id, [FromBody]UpdateJobSetDto updateJobSetDto)
+        {
+            if (!id.Equals(updateJobSetDto.Id))
+                return BadRequest(new { Message = "The Id in route does not equal to the Id in Body." });
 
-        //    var newRuleNodeRepresentation = Mapper.Map<RuleNodeEntity>(updateRuleNodeDto);
+            var newJobSet = Mapper.Map<JobSet>(updateJobSetDto);
 
-        //    var current = await FileToOrderDbContext.RuleNodeEntity
-        //        .Where(r => !r.ParentRuleNodeId.HasValue)
-        //        .Include(r => r.ChildRuleNodes)
-        //        .FirstOrDefaultAsync(r => r.Id == id);
+            var current = await JobShopCollectionDbContext.JobSet
+                .FirstOrDefaultAsync(j => j.Id == id);
 
-        //    if (current is null)
-        //        return NotFound();
+            if (current is null)
+                return NotFound();
 
-        //    // the "If-Match" Header is mandatory
-        //    if (!HttpContext.Request.Headers.Keys.Contains("If-Match") || HttpContext.Request.Headers["If-Match"].ToString() != current.GetETag())
-        //    {
-        //        return new StatusCodeResult(412); //precondition failed
-        //    }
+            // the "If-Match" Header is mandatory
+            if (!HttpContext.Request.Headers.Keys.Contains("If-Match"))
+            {
+                return new StatusCodeResult(412); //precondition failed
+            }
 
-        //    SetDeleteStateOnChildRuleNodes(current);
+            string? currentETag = current.GetETag();
+            if (currentETag != null && HttpContext.Request.Headers["If-Match"].ToString() != currentETag)
+            {
+                return new StatusCodeResult(412); //precondition failed
+            }
 
-        //    FileToOrderDbContext.Entry(current).CurrentValues.SetValues(newRuleNodeRepresentation);
-        //    if (newRuleNodeRepresentation.ChildRuleNodes != null)
-        //    {
-        //        foreach (var childRuleNode in newRuleNodeRepresentation.ChildRuleNodes)
-        //        {
-        //            current.ChildRuleNodes.Add(childRuleNode);
-        //        }
-        //    }
-        //    await FileToOrderDbContext.SaveChangesAsync();
+            JobShopCollectionDbContext.Entry(current).CurrentValues.SetValues(newJobSet);
+            await JobShopCollectionDbContext.SaveChangesAsync();
 
-        //    RuleNodeDto ruleNodeDto = Mapper.Map<RuleNodeDto>(current);
-        //    string eTag = ruleNodeDto.GetETag();
-        //    HttpContext.Response.Headers.Add("ETag", new[] { eTag });
-        //    return Ok(ruleNodeDto);
-        //}
+            JobSetDto jobSetDto = Mapper.Map<JobSetDto>(current);
+            string? eTag = jobSetDto.GetETag();
+            if (eTag != null)
+            {
+                HttpContext.Response.Headers.Add("ETag", new[] { eTag });
+            }
+            return Ok(jobSetDto);
+        }
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var original = await FileToOrderDbContext.RuleNodeEntity
-        //        .Where(r => !r.ParentRuleNodeId.HasValue)
-        //        .Include(r => r.ChildRuleNodes)
-        //        .FirstOrDefaultAsync(r => r.Id == id);
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var original = await JobShopCollectionDbContext.JobSet
+                .FirstOrDefaultAsync(j => j.Id == id);
 
-        //    if (original is null)
-        //        return NotFound();
+            if (original is null)
+                return NotFound();
 
-        //    // the "If-Match" Header is mandatory
-        //    if (!HttpContext.Request.Headers.Keys.Contains("If-Match") || HttpContext.Request.Headers["If-Match"].ToString() != original.GetETag())
-        //    {
-        //        return new StatusCodeResult(412); //precondition failed
-        //    }
+            // the "If-Match" Header is mandatory
+            if (!HttpContext.Request.Headers.Keys.Contains("If-Match"))
+            {
+                return new StatusCodeResult(412); //precondition failed
+            }
 
-        //    SetDeleteStateOnChildRuleNodes(original);
+            string? originalETag = original.GetETag();
+            if (originalETag != null && HttpContext.Request.Headers["If-Match"].ToString() != originalETag)
+            {
+                return new StatusCodeResult(412); //precondition failed
+            }
 
-        //    FileToOrderDbContext.Entry(original).State = EntityState.Deleted;
-        //    await FileToOrderDbContext.SaveChangesAsync();
-        //    return Ok();
-        //}
+            JobShopCollectionDbContext.Entry(original).State = EntityState.Deleted;
+            await JobShopCollectionDbContext.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

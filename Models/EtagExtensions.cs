@@ -13,5 +13,6 @@ namespace JobShopCollection.Models
     public static class EtagExtensions
     {
         public static string? GetETag(this JobSet jobSet) => EtagHelper.GetETag(jobSet.RowVersion);
+        public static string? GetETag(this JobSetDto jobSetDto) => EtagHelper.GetETag(jobSetDto.RowVersion);
     }
 }

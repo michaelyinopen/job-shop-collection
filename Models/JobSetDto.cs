@@ -13,12 +13,6 @@ namespace JobShopCollection.Models
         public string? Title { get; set; }
 
         public string? Description { get; set; }
-
-        [JsonIgnore]
-        public byte[]? RowVersion { get; set; }
-
-        [JsonProperty]
-        public string? ETag => EtagHelper.GetETag(RowVersion);
     }
 
     public class JobSetDto
@@ -36,6 +30,9 @@ namespace JobShopCollection.Models
         public bool IsAutoTimeOptions { get; set; }
 
         public string? TimeOptions { get; set; }
+
+        [JsonIgnore]
+        public byte[]? RowVersion { get; set; }
     }
 
     public class NewJobSetDto

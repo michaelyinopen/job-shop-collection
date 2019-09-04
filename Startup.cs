@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using JobShopCollection.Models;
 using Sgw.KebabCaseRouteTokens;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace JobShopCollection
 {
@@ -34,6 +35,8 @@ namespace JobShopCollection
 
                 options.Filters.Add(new ProducesAttribute("application/json"));
             });
+
+            services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -75,7 +78,8 @@ namespace JobShopCollection
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    //spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
         }
