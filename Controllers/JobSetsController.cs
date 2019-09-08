@@ -12,7 +12,7 @@ using static JobShopCollection.Models.EtagExtensions;
 
 namespace JobShopCollection.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class JobSetsController : ControllerBase
     {
@@ -28,12 +28,27 @@ namespace JobShopCollection.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobSetHeaderDto>>> GetAll()
+        public async Task<ActionResult<JobSetHeadersDto>> GetAll([FromQuery]JobSetsQuery jobSetsQuery)
         {
-            var result = await JobShopCollectionDbContext.JobSet
+            IQueryable<JobSet> dataQuery = JobShopCollectionDbContext.JobSet;
+
+            if (jobSetsQuery.PageToken != null)
+            {
+                dataQuery = dataQuery.Where(j => j.Id < jobSetsQuery.PageToken);
+            }
+
+            var data = await dataQuery
+                .OrderByDescending(j => j.Id)
+                .Take(jobSetsQuery.Limit)
                 .ProjectTo<JobSetHeaderDto>(Mapper.ConfigurationProvider)
                 .ToListAsync();
-            return result.ToList();
+
+            int? nextPageToken = data.Count == jobSetsQuery.Limit ? data[data.Count - 1].Id : default(int?);
+            return new JobSetHeadersDto
+            {
+                Data = data,
+                NextPageToken = nextPageToken
+            };
         }
 
         [HttpGet("{id}")]

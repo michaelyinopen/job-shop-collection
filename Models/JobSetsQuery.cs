@@ -7,5 +7,8 @@ namespace JobShopCollection.Models
 {
     public class JobSetsQuery
     {
+        public int Limit { get; set; } = 100;
+
+        public int? PageToken { get; set; }
     }
 }

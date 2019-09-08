@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using JobShopCollection.Models;
-using Sgw.KebabCaseRouteTokens;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace JobShopCollection
 {
@@ -27,14 +28,12 @@ namespace JobShopCollection
         {
             services.AddDbContext<JobShopCollectionDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("JobShopCollectionConnectionString")));
-
-            services.AddControllersWithViews(options =>
-            {
-                options.Conventions.Add(new KebabCaseRouteTokenReplacementControllerModelConvention());
-                options.Conventions.Add(new KebabCaseRouteTokenReplacementActionModelConvention());
-
-                options.Filters.Add(new ProducesAttribute("application/json"));
-            });
+            services
+                .AddControllersWithViews(options =>
+                {
+                    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+                })
+                .AddNewtonsoftJson();
 
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -63,13 +62,16 @@ namespace JobShopCollection
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
+            app.Map("/api", apiApp =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                apiApp.UseRouting();
+                apiApp.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapControllerRoute(
+                        name: "default",
+                        pattern: "{controller}/{action=Index}/{id?}");
+                });
             });
 
             app.UseSpa(spa =>

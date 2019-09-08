@@ -4,10 +4,10 @@ export const getJobSetsBegin = () => ({
   type: fromActionTypes.getJobSetsBegin
 });
 
-export const getJobSetsSucceed = ()=>({
+export const getJobSetsSucceed = () => ({
   type: fromActionTypes.getJobSetsSucceed
-})
+});
 
-export const getJobSetsFailed = ()=>({
+export const getJobSetsFailed = () => ({
   type: fromActionTypes.getJobSetsFailed
-})
+});

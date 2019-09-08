@@ -14,6 +14,14 @@ namespace JobShopCollection.Models
 
         public string? Description { get; set; }
     }
+    public class JobSetHeadersDto
+    {
+        public List<JobSetHeaderDto> Data { get; set; } = new List<JobSetHeaderDto>();
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? NextPageToken { get; set; }
+    }
+
 
     public class JobSetDto
     {
