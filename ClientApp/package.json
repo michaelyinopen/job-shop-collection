@@ -12,6 +12,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.1.1",
     "rimraf": "^2.6.2",
+    "url-template": "^2.0.8",
     "use-react-router": "^1.0.7"
   },
   "devDependencies": {
