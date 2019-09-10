@@ -13,7 +13,14 @@ namespace JobShopCollection.Models
         public string? Title { get; set; }
 
         public string? Description { get; set; }
+
+        [JsonIgnore]
+        public byte[] RowVersion { get; set; }
+
+        [JsonProperty]
+        public string ETag => EtagHelper.GetETag(RowVersion);
     }
+
     public class JobSetHeadersDto
     {
         public List<JobSetHeaderDto> Data { get; set; } = new List<JobSetHeaderDto>();
