@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router';
 import Layout from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
+import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
 
 export default class App extends Component {
@@ -11,11 +12,13 @@ export default class App extends Component {
   render() {
     return (
       <Layout>
-        <Switch>
-          <Route exact path='/' component={Home} />
-          <Route path='/fetch-data' component={FetchData} />
-          <Route path='/job-sets' component={JobSets} />
-        </Switch>
+        <JobShopCollection>
+          <Switch>
+            <Route exact path='/' component={Home} />
+            <Route path='/fetch-data' component={FetchData} />
+            <Route path='/job-sets' component={JobSets} />
+          </Switch>
+        </JobShopCollection>
       </Layout>
     );
   }

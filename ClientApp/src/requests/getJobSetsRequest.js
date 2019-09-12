@@ -1,5 +1,5 @@
-import { getJobSetsApiAsync } from '../../api'
-import createRequestScope from '../../functions/createRequestScope';
+import { getJobSetsApiAsync } from '../api'
+import createRequestScope from '../functions/createRequestScope';
 
 // this request calls apis in a recursive function, until the last request does not return a nextPageToken
 // returns the array of (elements of response.data)

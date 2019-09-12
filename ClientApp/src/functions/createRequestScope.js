@@ -9,8 +9,9 @@ const requestStatus = Object.freeze({
   started: "started",
   finished: "finished",
   ignored: "ignored",
-})
+});
 
+// eslint-disable-next-line no-unused-vars
 const previousRequestInitial = {
   id: undefined,
   status: undefined,
@@ -36,7 +37,7 @@ const createRequestScope = () => {
   };
 
   const finishedRequest = id => {
-    return previousRequests.map(r => {
+    previousRequests = previousRequests.map(r => {
       if (r.id === id) {
         return { id, status: requestStatus.finished }
       }
@@ -45,7 +46,7 @@ const createRequestScope = () => {
   };
 
   const ignoredRequest = id => {
-    return previousRequests.map(r => {
+    previousRequests = previousRequests.map(r => {
       if (r.id === id) {
         return { id, status: requestStatus.ignored }
       }
@@ -88,7 +89,7 @@ const createRequestScope = () => {
       beginCallback();
       //setstate isLoading
       try {
-        const result = await apiFunctionAsync;
+        const result = await apiFunctionAsync();
         return handleResponse(id, successCallback, result);
       } catch (e) {
         return handleResponse(id, failedCallback, e);
