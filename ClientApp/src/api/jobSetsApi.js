@@ -15,9 +15,15 @@ export async function getJobSetsApiAsync(pageToken) {
     // maybe error message?
     throw Error(response.statusText);
   }
-  const responseJson = await response.json();
+  let responseJson;
+  try {
+    responseJson = await response.json();
+  }
+  catch (e) {
+    throw new Error(`Wrong api response format. ${e.message}`);
+  }
   if (!responseJson.data) {
-    throw Error("no data in api response");
+    throw Error("No data in api response.");
   }
   return responseJson;
 };

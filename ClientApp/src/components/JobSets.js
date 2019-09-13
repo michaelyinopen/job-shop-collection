@@ -1,25 +1,38 @@
-import React, { useMemo, useCallback, useContext, useEffect } from 'react';
+import React, { useMemo, useContext, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import JobShopCollectionDispatchContext from './JobShopCollectionDispatchContext';
-import JobShopCollectionStateContext from './JobShopCollectionStateContext';
 import {
   getJobSetsBegin,
   getJobSetsSucceed,
   getJobSetsFailed
 } from '../store/actionCreators';
 import getJobSetsRequest from '../requests/getJobSetsRequest'
+import {
+  useJobSetIds,
+  useGetJobSetIsLoading,
+  useGetJobSetFailedMessage
+} from '../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     overflowX: 'auto',
+  },
+  tableTitle: {
+    marginRight: theme.spacing(3)
+  },
+  progress: {
+    marginRight: theme.spacing(3)
   },
   table: {
     minWidth: 650,
@@ -44,7 +57,35 @@ const rows = [
   createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-const JobSets = ({
+const JobSetHeader = React.memo(({
+  id,
+  title,
+  description
+}) => {
+  return (
+    <TableRow>
+      <TableCell component="th" scope="row">
+        {id}
+      </TableCell>
+      <TableCell align="left">{title}</TableCell>
+    </TableRow>
+  );
+});
+
+const JobSetHeaderContainer = ({
+  id
+}) => {
+  return (
+    <JobSetHeader
+      id={id}
+    />
+  );
+};
+
+const JobSets = React.memo(({
+  jobSetIds,
+  isLoading,
+  failedMessage
 }) => {
   const classes = useStyles();
   return (
@@ -52,27 +93,25 @@ const JobSets = ({
       <h1>Job Sets</h1>
       <Container className={classes.lightBackground}>
         <Paper className={classes.root}>
+          <Toolbar>
+            <div className={classes.tableTitle}>
+              <Typography variant="h6">
+                Job Sets
+              </Typography>
+            </div>
+            {isLoading ? <CircularProgress className={classes.progress} /> : null}
+            {failedMessage}
+          </Toolbar>
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell align="right">Calories</TableCell>
-                <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                <TableCell>Id</TableCell>
+                <TableCell align="left">Title</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map(row => (
-                <TableRow key={row.name}>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell align="right">{row.calories}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell align="right">{row.carbs}</TableCell>
-                  <TableCell align="right">{row.protein}</TableCell>
-                </TableRow>
+              {jobSetIds.map(id => (
+                <JobSetHeaderContainer key={id} id={id} />
               ))}
             </TableBody>
           </Table>
@@ -80,20 +119,16 @@ const JobSets = ({
       </Container >
     </article>
   );
-};
+});
 
 const JobSetsContainer = () => {
   const dispatch = useContext(JobShopCollectionDispatchContext);
   const jobSetsRequest = useMemo(
     () => {
       return getJobSetsRequest(
-        () => { dispatch(getJobSetsBegin()); console.log("begin") },
-        (...args) => {
-          dispatch(getJobSetsSucceed(...args));
-          console.log("succeed");
-          console.log(args);
-        },
-        (...args) => { dispatch(getJobSetsFailed(...args)); console.log("failed") },
+        () => dispatch(getJobSetsBegin()),
+        (...args) => dispatch(getJobSetsSucceed(...args)),
+        (...args) => dispatch(getJobSetsFailed(...args))
       );
     },
     [dispatch]
@@ -106,7 +141,17 @@ const JobSetsContainer = () => {
     [jobSetsRequest]
   );
 
-  return <JobSets />;
+  const jobSetIds = useJobSetIds();
+  const isLoading = useGetJobSetIsLoading();
+  const failedMessage = useGetJobSetFailedMessage();
+
+  return (
+    <JobSets
+      jobSetIds={jobSetIds}
+      isLoading={isLoading}
+      failedMessage={failedMessage}
+    />
+  );
 };
 
 export default JobSetsContainer;
