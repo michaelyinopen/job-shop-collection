@@ -61,7 +61,7 @@ const createRequestScope = () => {
   // callback takes first argument arg, and second argement isLoading
   // isLoading is false when the last request is finished, or no requests(trivial).
   const handleResponse = (id, callback, arg) => {
-    if (previousRequests.some(r => r.id > id && r.requestStatus === requestStatus.finished)) {
+    if (previousRequests.some(r => r.id > id && r.status === requestStatus.finished)) {
       ignoredRequest(id);
     }
     else {

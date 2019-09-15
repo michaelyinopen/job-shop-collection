@@ -21,7 +21,7 @@ test("Get Request returns a function", () => {
   expect(typeof (request)).toBe('function');
 });
 
-test("Typical success request", async (done) => {
+test("Sample success request", async (done) => {
   const apiData = { data: "api response data" };
   const mockBeginCallback = jest.fn();
   const mockSuccesCallback = jest.fn();
@@ -54,7 +54,7 @@ test("Typical success request", async (done) => {
   done();
 });
 
-describe("Typical success request detail", () => {
+describe("Success request detail", () => {
   const apiData = { data: "api response data" };
   let mockBeginCallback;
   let mockSuccesCallback;
@@ -143,7 +143,7 @@ describe("Typical success request detail", () => {
   });
 });
 
-test("Typical faulty request", async (done) => {
+test("Sample faulty request", async (done) => {
   const errorMessage = "test error";
   const mockBeginCallback = jest.fn();
   const mockSuccesCallback = jest.fn();
@@ -178,7 +178,7 @@ test("Typical faulty request", async (done) => {
   done();
 });
 
-describe("Typical faulty request detail", () => {
+describe("Faulty request detail", () => {
   const errorMessage = "test error";
   let mockBeginCallback;
   let mockSuccesCallback;
@@ -269,7 +269,7 @@ describe("Typical faulty request detail", () => {
   });
 });
 
-test("Reuse request", async (done) => {
+test("Sample Reuse request", async (done) => {
   const apiData = { data: "api response data" };
   const mockBeginCallback = jest.fn();
   const mockSuccesCallback = jest.fn();
@@ -305,7 +305,7 @@ test("Reuse request", async (done) => {
   done();
 });
 
-test("Get multiple requests from request scope", async (done) => {
+test("Sample get multiple requests from request scope", async (done) => {
   const apiData1 = { data: "api response data 1" };
   const mockBeginCallback1 = jest.fn();
   const mockSuccesCallback1 = jest.fn();
@@ -366,7 +366,6 @@ test("Get multiple requests from request scope", async (done) => {
   done();
 });
 
-
 test("Test with callHistory side effect", async (done) => {
   const apiData = { data: "api response data" };
   const callHistory = [];
@@ -404,6 +403,11 @@ test("Test with callHistory side effect", async (done) => {
 });
 
 //#region two requests
+// how to read:
+// 1:   request 1 start
+// -1:  request 1 returns
+// -1x: request 1 returns by throwing error
+
 // two requests 1, -1, 2, -2 (2a)
 // two requests 1, 2, -1, -2 (2b)
 // two requests 1, 2, -2, -1 (2c)
@@ -634,8 +638,7 @@ test("2c", async (done) => {
   expect(mockSuccesCallback2).toHaveBeenCalledTimes(1);
   expect(mockSuccesCallback2).toHaveBeenCalledWith(apiData2, false);
 
-  expect(mockSuccesCallback1).toHaveBeenCalledTimes(1);
-  expect(mockSuccesCallback1).toHaveBeenCalledWith(apiData1, false);
+  expect(mockSuccesCallback1).not.toHaveBeenCalled();
 
   expect(mockFailedCallback1).not.toHaveBeenCalled();
 
@@ -648,8 +651,7 @@ test("2c", async (done) => {
     "apiFunc2 start",
     "apiFunc2 end",
     "success2",
-    "apiFunc1 end",
-    "success1"
+    "apiFunc1 end"
   ]);
 
   done();
