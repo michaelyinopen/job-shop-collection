@@ -25,8 +25,10 @@ const getJobSetsRequest = (
       getJobSetsSucceedCallback(result);
     }
   };
-  const failedCallback = (error, _isLoading) => {
-    getJobSetsFailedcallback(error.message)
+  const failedCallback = (error, isLoading) => {
+    if (!isLoading) {
+      getJobSetsFailedcallback(error.message)
+    }
   };
 
   const request = () => jobSetsRequestScope.getRequest(

@@ -8,16 +8,26 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column"
+  },
   title: {
     color: "inherit",
     textDecoration: "none",
     marginRight: theme.spacing(3)
   },
-  button:{
+  button: {
     margin: theme.spacing(1),
   },
   rightButton: {
     marginLeft: "auto"
+  },
+  container: {
+    backgroundColor: theme.palette.background.default,
+    paddingTop: theme.spacing(1),
+    flex: "1 1 auto"
   }
 }));
 
@@ -29,8 +39,8 @@ const Layout = props => {
   const classes = useStyles();
 
   return (
-    <div>
-      <AppBar position="static">
+    <div className={classes.root}>
+      <AppBar position="relative">
         <Toolbar>
           <Link to="/" className={classes.title}>
             <Typography variant="h5">
@@ -41,7 +51,7 @@ const Layout = props => {
           <Button className={classes.rightButton} color="inherit">About</Button>{/*todo change to link component*/}
         </Toolbar>
       </AppBar>
-      <Container>
+      <Container className={classes.container}>
         {props.children}
       </Container>
     </div>

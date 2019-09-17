@@ -1,11 +1,12 @@
 import React, { useMemo, useContext, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -20,7 +21,8 @@ import getJobSetsRequest from '../requests/getJobSetsRequest'
 import {
   useJobSetIds,
   useGetJobSetIsLoading,
-  useGetJobSetFailedMessage
+  useGetJobSetFailedMessage,
+  useJobSetHeader
 } from '../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
@@ -37,25 +39,18 @@ const useStyles = makeStyles(theme => ({
   table: {
     minWidth: 650,
   },
-  lightBackground: {
-    backgroundColor: "#f5f5f5",
-    boxSizing: "border-box",
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
   }
 }));
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 const JobSetHeader = React.memo(({
   id,
@@ -64,10 +59,24 @@ const JobSetHeader = React.memo(({
 }) => {
   return (
     <TableRow>
-      <TableCell component="th" scope="row">
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={false}
+        />
+      </TableCell>
+      <TableCell component="th" scope="row" padding="none">
         {id}
       </TableCell>
-      <TableCell align="left">{title}</TableCell>
+      <TableCell align="left">
+        {title}
+      </TableCell>
+      <TableCell align="left">
+        <div style={{ width: "700px" }}>
+          <Typography noWrap>
+            {description}
+          </Typography>
+        </div>
+      </TableCell>
     </TableRow>
   );
 });
@@ -75,49 +84,146 @@ const JobSetHeader = React.memo(({
 const JobSetHeaderContainer = ({
   id
 }) => {
+  const { title, description, eTag } = useJobSetHeader(id);
   return (
     <JobSetHeader
       id={id}
+      title={title}
+      description={description}
     />
   );
 };
 
+
+const EnhancedTableHead = ({
+  classes,
+  onSelectAllClick,
+  order,
+  orderBy,
+  numSelected,
+  rowCount,
+  onRequestSort
+}) => {
+  const createSortHandler = property => event => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    {/*<TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all desserts' }}
+          />
+        </TableCell>
+        {headCells.map(headCell => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'default'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={order}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+              */}
+  );
+}
+
 const JobSets = React.memo(({
   jobSetIds,
   isLoading,
-  failedMessage
+  failedMessage,
+  emptyRows
 }) => {
   const classes = useStyles();
   return (
-    <article>
-      <h1>Job Sets</h1>
-      <Container className={classes.lightBackground}>
-        <Paper className={classes.root}>
-          <Toolbar>
-            <div className={classes.tableTitle}>
-              <Typography variant="h6">
-                Job Sets
+    <Paper className={classes.root}>
+      <Toolbar>
+        <div className={classes.tableTitle}>
+          <Typography variant="h6">
+            Job Sets
               </Typography>
-            </div>
-            {isLoading ? <CircularProgress className={classes.progress} /> : null}
-            {failedMessage}
-          </Toolbar>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell align="left">Title</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {jobSetIds.map(id => (
-                <JobSetHeaderContainer key={id} id={id} />
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      </Container >
-    </article>
+        </div>
+        {isLoading ? <CircularProgress className={classes.progress} /> : null}
+        <Typography color="error">
+          {failedMessage}
+        </Typography>
+      </Toolbar>
+      <Table className={classes.table}>
+        <colgroup>
+          <col />
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '30%' }} />
+          <col style={{ width: '60%' }} />
+        </colgroup>
+        {/*
+            <EnhancedTableHead
+              classes={classes}
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={rows.length}
+            />
+            */}
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                indeterminate={false}
+                checked={false}
+              />
+            </TableCell>
+            <TableCell padding="none">Id</TableCell>
+            <TableCell align="left">Title</TableCell>
+            <TableCell align="left">Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {jobSetIds.map(id => (
+            <JobSetHeaderContainer key={id} id={id} />
+          ))}
+          {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={4} />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={4}
+        rowsPerPage={10}
+        page={0}
+        backIconButtonProps={{
+          'aria-label': 'previous page',
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'next page',
+        }}
+        onChangePage={() => { }}
+        onChangeRowsPerPage={() => { }}
+      />
+    </Paper>
   );
 });
 
@@ -150,6 +256,7 @@ const JobSetsContainer = () => {
       jobSetIds={jobSetIds}
       isLoading={isLoading}
       failedMessage={failedMessage}
+      emptyRows={6}
     />
   );
 };

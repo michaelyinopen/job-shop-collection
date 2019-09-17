@@ -21,3 +21,44 @@ export const useGetJobSetFailedMessage = () => {
   const state = useContext(JobShopCollectionStateContext);
   return state.getJobSetFailedMessage;
 };
+
+export const useJobSetHeaders = () => {
+  const state = useContext(JobShopCollectionStateContext);
+  const jobSetHeaders = useMemo(
+    () => {
+      return Object.keys(state.jobSets)
+        .sort((a, b) => parseInt(b) - parseInt(a))
+        .map(id => {
+          const jobSet = state.jobSets[id];
+          return {
+            id: jobSet.id,
+            title: jobSet.title,
+            description: jobSet.description,
+            eTag: jobSet.eTag
+          }
+        });
+    },
+    [state.jobSets]
+  )
+  return jobSetHeaders;
+}
+
+export const useJobSetHeader = id => {
+  const state = useContext(JobShopCollectionStateContext);
+  const jobSet = state.jobSets[id];
+  const jobSetHeader = useMemo(
+    () => {
+      if (!jobSet) {
+        return undefined;
+      }
+      return {
+        id: jobSet.id,
+        title: jobSet.title,
+        description: jobSet.description,
+        eTag: jobSet.eTag
+      };
+    },
+    [jobSet]
+  )
+  return jobSetHeader;
+};
