@@ -1,5 +1,6 @@
-import React, { useMemo, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useMemo, useContext, useEffect, useCallback } from 'react';
+import { lighten, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from '@material-ui/core/Table';
@@ -8,6 +9,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -19,21 +21,73 @@ import {
 } from '../store/actionCreators';
 import getJobSetsRequest from '../requests/getJobSetsRequest'
 import {
-  useJobSetIds,
   useGetJobSetIsLoading,
   useGetJobSetFailedMessage,
-  useJobSetHeader
+  useJobSetHeaders
 } from '../store/useSelectors';
+import usePage, { actionCreators as pageActionCreators } from '../functions/usePage';
 
+//#region JobSetHeader
+const JobSetHeader = React.memo(({
+  jobSetHeader,
+  pageDispatch,
+  rowIsSelectedFunction,
+  index
+}) => {
+  const isItemSelected = rowIsSelectedFunction(jobSetHeader.id);
+  const labelId = `job-set-table-checkbox-${index}`;
+  const onClick = () => pageDispatch(pageActionCreators.selectOne(jobSetHeader.id));
+  return (
+    <TableRow
+      hover
+      onClick={onClick}
+      role="checkbox"
+      aria-checked={isItemSelected}
+      tabIndex={-1}
+      selected={isItemSelected}
+    >
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={isItemSelected}
+          inputProps={{ 'aria-labelledby': labelId }}
+        />
+      </TableCell>
+      <TableCell component="th" id={labelId} scope="row" padding="none">
+        {jobSetHeader.id}
+      </TableCell>
+      <TableCell align="left">
+        {jobSetHeader.title}
+      </TableCell>
+      <TableCell align="left">
+        <div style={{ width: "700px" }}>
+          <Typography noWrap>
+            {jobSetHeader.description}
+          </Typography>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+});
+//#endregion JobSetHeader
+
+//#region Table
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     overflowX: 'auto',
   },
-  tableTitle: {
+  toolbar: { // move
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+  },
+  tableTitle: { // move
     marginRight: theme.spacing(3)
   },
-  progress: {
+  highlight: {  //move
+    color: theme.palette.text.primary,
+    backgroundColor: lighten(theme.palette.secondary.light, 0.5),
+  },
+  progress: { // move
     marginRight: theme.spacing(3)
   },
   table: {
@@ -52,192 +106,175 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const JobSetHeader = React.memo(({
-  id,
-  title,
-  description
-}) => {
-  return (
-    <TableRow>
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={false}
-        />
-      </TableCell>
-      <TableCell component="th" scope="row" padding="none">
-        {id}
-      </TableCell>
-      <TableCell align="left">
-        {title}
-      </TableCell>
-      <TableCell align="left">
-        <div style={{ width: "700px" }}>
-          <Typography noWrap>
-            {description}
-          </Typography>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-});
-
-const JobSetHeaderContainer = ({
-  id
-}) => {
-  const { title, description, eTag } = useJobSetHeader(id);
-  return (
-    <JobSetHeader
-      id={id}
-      title={title}
-      description={description}
-    />
-  );
-};
-
-
-const EnhancedTableHead = ({
-  classes,
-  onSelectAllClick,
-  order,
-  orderBy,
-  numSelected,
+const JobSetTableHead = ({
+  pageDispatch,
+  selectedCount,
   rowCount,
-  onRequestSort
+  order,
+  orderBy
 }) => {
-  const createSortHandler = property => event => {
-    onRequestSort(event, property);
-  };
+  const classes = useStyles();
+  const onSelectAllClick = () => pageDispatch(pageActionCreators.selectAll());
+  const onSort = property => () => pageDispatch(pageActionCreators.requestSort(property));
 
   return (
-    {/*<TableHead>
+    <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={numSelected === rowCount}
+            indeterminate={selectedCount > 0 && selectedCount < rowCount}
+            checked={selectedCount === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
+            inputProps={{ 'aria-label': 'select all' }}
           />
         </TableCell>
-        {headCells.map(headCell => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
+        <TableCell
+          padding="none"
+          sortDirection={orderBy === 'id' ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === 'id'}
+            direction={order}
+            onClick={onSort('id')}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={order}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
+            Id
+            {orderBy === 'id' ? (
+              <span className={classes.visuallyHidden}>
+                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+              </span>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
+        <TableCell
+          align="left"
+          sortDirection={orderBy === 'title' ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === 'title'}
+            direction={order}
+            onClick={onSort('title')}
+          >
+            Title
+            {orderBy === 'title' ? (
+              <span className={classes.visuallyHidden}>
+                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+              </span>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
+        <TableCell
+          align="left"
+          sortDirection={orderBy === 'description' ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === 'description'}
+            direction={order}
+            onClick={onSort('description')}
+          >
+            Description
+            {orderBy === 'description' ? (
+              <span className={classes.visuallyHidden}>
+                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+              </span>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
       </TableRow>
     </TableHead>
-              */}
   );
-}
+};
 
 const JobSets = React.memo(({
-  jobSetIds,
+  jobSetHeadersRows,
   isLoading,
   failedMessage,
-  emptyRows
+  jobSetTableHead,
+  tablePagination,
+  pageDispatch,
+  emptyRows,
+  rowCount,
+  selectedCount,
+  rowsPerPage,
+  pageIndex,
+  rowIsSelectedFunction
 }) => {
   const classes = useStyles();
+  const dense = rowsPerPage > 10;
   return (
     <Paper className={classes.root}>
-      <Toolbar>
+      <Toolbar
+        className={clsx(classes.toolbar, {
+          [classes.highlight]: selectedCount > 0,
+        })}
+      >
         <div className={classes.tableTitle}>
-          <Typography variant="h6">
-            Job Sets
+          {selectedCount > 0
+            ? (
+              <Typography color="inherit" variant="subtitle1">
+                {selectedCount} selected
               </Typography>
+            ) : (
+              <React.Fragment>
+                <Typography variant="h6" id="table-title">
+                  Job Sets
+                </Typography>
+                {isLoading ? <CircularProgress className={classes.progress} /> : null}
+                <Typography color="error">
+                  {failedMessage}
+                </Typography>
+              </React.Fragment>
+            )
+          }
         </div>
-        {isLoading ? <CircularProgress className={classes.progress} /> : null}
-        <Typography color="error">
-          {failedMessage}
-        </Typography>
       </Toolbar>
-      <Table className={classes.table}>
+      <Table
+        className={classes.table}
+        aria-labelledby="table-title"
+        size={dense ? 'small' : 'medium'}
+      >
         <colgroup>
           <col />
           <col style={{ width: '10%' }} />
           <col style={{ width: '30%' }} />
           <col style={{ width: '60%' }} />
         </colgroup>
-        {/*
-            <EnhancedTableHead
-              classes={classes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            */}
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                indeterminate={false}
-                checked={false}
-              />
-            </TableCell>
-            <TableCell padding="none">Id</TableCell>
-            <TableCell align="left">Title</TableCell>
-            <TableCell align="left">Description</TableCell>
-          </TableRow>
-        </TableHead>
+        {jobSetTableHead}
         <TableBody>
-          {jobSetIds.map(id => (
-            <JobSetHeaderContainer key={id} id={id} />
-          ))}
+          {jobSetHeadersRows
+            .slice(pageIndex * rowsPerPage, pageIndex * rowsPerPage + rowsPerPage)
+            .map((jsh, index) => (
+              <JobSetHeader
+                key={jsh.id}
+                jobSetHeader={jsh}
+                pageDispatch={pageDispatch}
+                rowIsSelectedFunction={rowIsSelectedFunction}
+                index={index}
+              />
+            ))}
           {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
+            <TableRow style={{ height: (dense ? 37 : 53) * emptyRows }}>
               <TableCell colSpan={4} />
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={4}
-        rowsPerPage={10}
-        page={0}
-        backIconButtonProps={{
-          'aria-label': 'previous page',
-        }}
-        nextIconButtonProps={{
-          'aria-label': 'next page',
-        }}
-        onChangePage={() => { }}
-        onChangeRowsPerPage={() => { }}
-      />
-    </Paper>
+      {tablePagination}
+    </Paper >
   );
 });
+//#endregion Table
 
 const JobSetsContainer = () => {
-  const dispatch = useContext(JobShopCollectionDispatchContext);
+  const jobShopCollectionDispatch = useContext(JobShopCollectionDispatchContext);
   const jobSetsRequest = useMemo(
     () => {
       return getJobSetsRequest(
-        () => dispatch(getJobSetsBegin()),
-        (...args) => dispatch(getJobSetsSucceed(...args)),
-        (...args) => dispatch(getJobSetsFailed(...args))
+        () => jobShopCollectionDispatch(getJobSetsBegin()),
+        (...args) => jobShopCollectionDispatch(getJobSetsSucceed(...args)),
+        (...args) => jobShopCollectionDispatch(getJobSetsFailed(...args))
       );
     },
-    [dispatch]
+    [jobShopCollectionDispatch]
   );
 
   useEffect(
@@ -247,16 +284,89 @@ const JobSetsContainer = () => {
     [jobSetsRequest]
   );
 
-  const jobSetIds = useJobSetIds();
+  const jobSetHeaders = useJobSetHeaders();
   const isLoading = useGetJobSetIsLoading();
   const failedMessage = useGetJobSetFailedMessage();
 
+  const [pageState, pageDispatch] = usePage(jobSetHeaders);
+
+  const jobSetHeadersRows = pageState.rows;
+  const rowCount = jobSetHeadersRows.length;
+  const rowsPerPage = pageState.rowsPerPage;
+  const pageIndex = pageState.pageIndex;
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rowCount - pageIndex * rowsPerPage);
+
+  const selected = pageState.selected;
+  const selectedCount = selected.length;
+  const rowIsSelectedFunction = useCallback(
+    id => selected.indexOf(id) !== -1,
+    [selected]
+  );
+  const order = pageState.order;
+  const orderBy = pageState.orderBy;
+
+  const onChangePage = useCallback(
+    (e, newPageIndex) => pageDispatch(pageActionCreators.changePage(newPageIndex)),
+    [pageDispatch]
+  );
+
+  const onChangeRowsPerPage = useCallback(
+    e => pageDispatch(pageActionCreators.changeRowsPerPage(+e.target.value)),
+    [pageDispatch]
+  );
+
+  const jobSetTableHead = useMemo(
+    () => {
+      return (
+        <JobSetTableHead
+          pageDispatch={pageDispatch}
+          selectedCount={selectedCount}
+          rowCount={rowCount}
+          order={order}
+          orderBy={orderBy}
+        />
+      );
+    },
+    [pageDispatch, selectedCount, rowCount, order, orderBy]
+  );
+
+  const tablePagination = useMemo(
+    () => {
+      return (
+        <TablePagination
+          rowsPerPageOptions={[2, 3, 5, 10, 15]}
+          component="div"
+          count={rowCount}
+          rowsPerPage={rowsPerPage}
+          page={pageIndex}
+          backIconButtonProps={{
+            'aria-label': 'previous page',
+          }}
+          nextIconButtonProps={{
+            'aria-label': 'next page',
+          }}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+        />
+      );
+    },
+    [rowCount, rowsPerPage, pageIndex, onChangePage, onChangeRowsPerPage]
+  );
+
   return (
     <JobSets
-      jobSetIds={jobSetIds}
+      jobSetHeadersRows={jobSetHeadersRows}
       isLoading={isLoading}
       failedMessage={failedMessage}
-      emptyRows={6}
+      jobSetTableHead={jobSetTableHead}
+      tablePagination={tablePagination}
+      pageDispatch={pageDispatch}
+      rowCount={rowCount}
+      selectedCount={selectedCount}
+      rowsPerPage={rowsPerPage}
+      emptyRows={emptyRows}
+      pageIndex={pageIndex}
+      rowIsSelectedFunction={rowIsSelectedFunction}
     />
   );
 };

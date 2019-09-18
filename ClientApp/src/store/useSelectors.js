@@ -27,7 +27,6 @@ export const useJobSetHeaders = () => {
   const jobSetHeaders = useMemo(
     () => {
       return Object.keys(state.jobSets)
-        .sort((a, b) => parseInt(b) - parseInt(a))
         .map(id => {
           const jobSet = state.jobSets[id];
           return {
