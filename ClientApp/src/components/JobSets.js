@@ -27,7 +27,6 @@ import {
 } from '../store/useSelectors';
 import usePage, { actionCreators as pageActionCreators } from '../functions/usePage';
 
-//#region JobSetHeader
 const JobSetHeader = React.memo(({
   jobSetHeader,
   pageDispatch,
@@ -40,7 +39,7 @@ const JobSetHeader = React.memo(({
   return (
     <TableRow
       hover
-      onClick={onClick}
+      onClick={() => { }}
       role="checkbox"
       aria-checked={isItemSelected}
       tabIndex={-1}
@@ -50,6 +49,7 @@ const JobSetHeader = React.memo(({
         <Checkbox
           checked={isItemSelected}
           inputProps={{ 'aria-labelledby': labelId }}
+          onClick={onClick}
         />
       </TableCell>
       <TableCell component="th" id={labelId} scope="row" padding="none">
@@ -68,7 +68,6 @@ const JobSetHeader = React.memo(({
     </TableRow>
   );
 });
-//#endregion JobSetHeader
 
 //#region Table
 const useStyles = makeStyles(theme => ({
@@ -106,6 +105,38 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const JobSetSortableTableHeadCell = ({
+  padding,
+  align,
+  property,
+  order,
+  orderBy,
+  onSort,
+  children
+}) => {
+  const classes = useStyles();
+  return (
+    <TableCell
+      padding={padding}
+      align={align}
+      sortDirection={orderBy === property ? order : false}
+    >
+      <TableSortLabel
+        active={orderBy === property}
+        direction={order}
+        onClick={onSort(property)}
+      >
+        {children}
+        {orderBy === property ? (
+          <span className={classes.visuallyHidden}>
+            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+          </span>
+        ) : null}
+      </TableSortLabel>
+    </TableCell>
+  );
+};
+
 const JobSetTableHead = ({
   pageDispatch,
   selectedCount,
@@ -113,7 +144,6 @@ const JobSetTableHead = ({
   order,
   orderBy
 }) => {
-  const classes = useStyles();
   const onSelectAllClick = () => pageDispatch(pageActionCreators.selectAll());
   const onSort = property => () => pageDispatch(pageActionCreators.requestSort(property));
 
@@ -123,77 +153,86 @@ const JobSetTableHead = ({
         <TableCell padding="checkbox">
           <Checkbox
             indeterminate={selectedCount > 0 && selectedCount < rowCount}
-            checked={selectedCount === rowCount}
+            checked={selectedCount > 0 && selectedCount === rowCount}
             onChange={onSelectAllClick}
             inputProps={{ 'aria-label': 'select all' }}
           />
         </TableCell>
-        <TableCell
+        <JobSetSortableTableHeadCell
+          align="left"
           padding="none"
-          sortDirection={orderBy === 'id' ? order : false}
+          property="id"
+          order={order}
+          orderBy={orderBy}
+          onSort={onSort}
         >
-          <TableSortLabel
-            active={orderBy === 'id'}
-            direction={order}
-            onClick={onSort('id')}
-          >
-            Id
-            {orderBy === 'id' ? (
-              <span className={classes.visuallyHidden}>
-                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-              </span>
-            ) : null}
-          </TableSortLabel>
-        </TableCell>
-        <TableCell
+          Id
+        </JobSetSortableTableHeadCell>
+        <JobSetSortableTableHeadCell
           align="left"
-          sortDirection={orderBy === 'title' ? order : false}
+          property="title"
+          order={order}
+          orderBy={orderBy}
+          onSort={onSort}
         >
-          <TableSortLabel
-            active={orderBy === 'title'}
-            direction={order}
-            onClick={onSort('title')}
-          >
-            Title
-            {orderBy === 'title' ? (
-              <span className={classes.visuallyHidden}>
-                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-              </span>
-            ) : null}
-          </TableSortLabel>
-        </TableCell>
-        <TableCell
+          Title
+      </JobSetSortableTableHeadCell>
+        <JobSetSortableTableHeadCell
           align="left"
-          sortDirection={orderBy === 'description' ? order : false}
+          property="description"
+          order={order}
+          orderBy={orderBy}
+          onSort={onSort}
         >
-          <TableSortLabel
-            active={orderBy === 'description'}
-            direction={order}
-            onClick={onSort('description')}
-          >
-            Description
-            {orderBy === 'description' ? (
-              <span className={classes.visuallyHidden}>
-                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-              </span>
-            ) : null}
-          </TableSortLabel>
-        </TableCell>
+          Description
+        </JobSetSortableTableHeadCell>
       </TableRow>
     </TableHead>
   );
 };
 
-const JobSets = React.memo(({
-  jobSetHeadersRows,
+const JobSetToolbar = ({
   isLoading,
   failedMessage,
+  selectedCount,
+}) => {
+  const classes = useStyles();
+  return (
+    <Toolbar
+      className={clsx(classes.toolbar, {
+        [classes.highlight]: selectedCount > 0,
+      })}
+    >
+      <div className={classes.tableTitle}>
+        {selectedCount > 0
+          ? (
+            <Typography color="inherit" variant="subtitle1">
+              {selectedCount} selected
+              </Typography>
+          ) : (
+            <React.Fragment>
+              <Typography variant="h6" id="table-title">
+                Job Sets
+                </Typography>
+              {isLoading ? <CircularProgress className={classes.progress} /> : null}
+              <Typography color="error">
+                {failedMessage}
+              </Typography>
+            </React.Fragment>
+          )
+        }
+      </div>
+    </Toolbar>
+  );
+};
+
+const JobSets = React.memo(({
+  jobSetHeadersRows,
+  jobSetToolbar,
   jobSetTableHead,
   tablePagination,
   pageDispatch,
   emptyRows,
-  rowCount,
-  selectedCount,
   rowsPerPage,
   pageIndex,
   rowIsSelectedFunction
@@ -202,31 +241,7 @@ const JobSets = React.memo(({
   const dense = rowsPerPage > 10;
   return (
     <Paper className={classes.root}>
-      <Toolbar
-        className={clsx(classes.toolbar, {
-          [classes.highlight]: selectedCount > 0,
-        })}
-      >
-        <div className={classes.tableTitle}>
-          {selectedCount > 0
-            ? (
-              <Typography color="inherit" variant="subtitle1">
-                {selectedCount} selected
-              </Typography>
-            ) : (
-              <React.Fragment>
-                <Typography variant="h6" id="table-title">
-                  Job Sets
-                </Typography>
-                {isLoading ? <CircularProgress className={classes.progress} /> : null}
-                <Typography color="error">
-                  {failedMessage}
-                </Typography>
-              </React.Fragment>
-            )
-          }
-        </div>
-      </Toolbar>
+      {jobSetToolbar}
       <Table
         className={classes.table}
         aria-labelledby="table-title"
@@ -315,6 +330,20 @@ const JobSetsContainer = () => {
     [pageDispatch]
   );
 
+  const jobSetToolbar = useMemo(
+    () => {
+      return (
+        <JobSetToolbar
+          isLoading={isLoading}
+          failedMessage={failedMessage}
+          rowCount={rowCount}
+          selectedCount={selectedCount}
+        />
+      );
+    },
+    [isLoading, failedMessage, rowCount, selectedCount]
+  );
+
   const jobSetTableHead = useMemo(
     () => {
       return (
@@ -358,6 +387,7 @@ const JobSetsContainer = () => {
       jobSetHeadersRows={jobSetHeadersRows}
       isLoading={isLoading}
       failedMessage={failedMessage}
+      jobSetToolbar={jobSetToolbar}
       jobSetTableHead={jobSetTableHead}
       tablePagination={tablePagination}
       pageDispatch={pageDispatch}
