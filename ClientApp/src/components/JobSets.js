@@ -1,7 +1,6 @@
 import React, { useMemo, useContext, useEffect, useCallback, useState } from 'react';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import useForceUpdate from 'use-force-update';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
@@ -57,14 +56,14 @@ const JobSetHeader = React.memo(({
     () => pageDispatch(pageActionCreators.selectOne(jobSetHeader.id)),
     [pageDispatch, jobSetHeader.id]
   );
-  const forceUpdate = useForceUpdate();
-  const [getIsDeleting, onDelete] = useMemo(
+  const [deleteingState, setDeletingState] = useState(false);
+  const onDelete = useMemo(
     () => {
       let isDeleting = false;
       const getIsDeleting = () => isDeleting;
       const setIsDeleting = value => {
         isDeleting = value;
-        forceUpdate();
+        setDeletingState(value);
       };
       const callback = () => {
         if (getIsDeleting()) {
@@ -87,11 +86,10 @@ const JobSetHeader = React.memo(({
         };
         deleteJobSetAsync();
       };
-      return [getIsDeleting, callback];
+      return callback;
     },
-    [forceUpdate, jobSetHeader.id, jobSetHeader.eTag, jobSetHeader.title, reloadCallback]
+    [jobSetHeader.id, jobSetHeader.eTag, jobSetHeader.title, reloadCallback]
   );
-  const isDeleting = getIsDeleting();
   return (
     <TableRow
       hover
@@ -127,7 +125,7 @@ const JobSetHeader = React.memo(({
             <IconButton onClick={onDelete}>
               <DeleteIcon />
             </IconButton>
-            {isDeleting ? <CircularProgress className={classes.progress} /> : null}
+            {deleteingState ? <CircularProgress className={classes.progress} /> : null}
           </div>
         </div>
       </TableCell>
