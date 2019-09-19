@@ -84,12 +84,12 @@ const createRequestScope = () => {
     successCallback,
     failedCallback
   ) => {
-    const requestAsync = async (apiFunctionAsync) => {
+    const requestAsync = async (promise) => {
       const id = startedRequest();
       beginCallback();
       //setstate isLoading
       try {
-        const result = await apiFunctionAsync();
+        const result = await promise();
         return handleResponse(id, successCallback, result);
       } catch (e) {
         return handleResponse(id, failedCallback, e);

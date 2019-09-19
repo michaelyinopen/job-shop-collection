@@ -27,3 +27,20 @@ export async function getJobSetsApiAsync(pageToken) {
   }
   return responseBody;
 };
+
+export const deleteJobSetsUrlTemplate = `api/job-sets/{id}`;
+export async function deleteJobSetsApiAsync(id, eTag) {
+  const url = template.parse(deleteJobSetsUrlTemplate).expand({ id });
+  const init = !eTag ?
+  { method: "DELETE" } :
+  {
+    method: "DELETE",
+    headers: {
+      "If-Match": eTag
+    }
+  };
+  const response = await fetch(url, init);
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+};
