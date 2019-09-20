@@ -80,6 +80,15 @@ export const useJobSetDeleting = id => {
 
 export const useJobSetSomeDeleting = () => {
   const state = useContext(JobShopCollectionStateContext);
-  const someDeleting = state.deletingJobSets.keys().length > 0;
+  const someDeleting = Object.keys(state.deletingJobSets).length > 0;
   return someDeleting;
+};
+
+export const useSelectedJobSets = idArray => {
+  const state = useContext(JobShopCollectionStateContext);
+  const selectedJobSets = useMemo(
+    () => idArray.map(id => state.jobSets[id]).filter(js => js),
+    [state.jobSets, idArray]
+  );
+  return selectedJobSets;
 };

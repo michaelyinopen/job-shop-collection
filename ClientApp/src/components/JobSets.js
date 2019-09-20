@@ -27,6 +27,7 @@ import {
   deleteJobSetBegin,
   deleteJobSetSucceed,
   deleteJobSetFailed,
+  clearDeletingJobSets,
 } from '../store/actionCreators';
 import getJobSetsRequest from '../requests/getJobSetsRequest'
 import {
@@ -34,7 +35,8 @@ import {
   useGetJobSetFailedMessage,
   useJobSetHeaders,
   useJobSetDeleting,
-  useJobSetSomeDeleting
+  useJobSetSomeDeleting,
+  useSelectedJobSets
 } from '../store/useSelectors';
 import { deleteJobSetsApiAsync } from '../api';
 import usePage, { actionCreators as pageActionCreators } from '../functions/usePage';
@@ -48,6 +50,9 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
     display: "flex",
+  },
+  toolbarDeleteButton: {
+    marginLeft: "auto"
   },
   tableTitle: { // move
     marginRight: theme.spacing(3),
@@ -94,16 +99,95 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //#region title / toolbar
-const JobSetToolbar = ({
-  isLoading,
-  failedMessage,
-  selectedCount,
-  reloadCallback,
-  deleteSelectedCallback,
+const ToolbarDeleteButton = React.memo(({
+  onDelete,
   isDeleting,
 }) => {
   const classes = useStyles();
+  return (
+    <div className={clsx(classes.withProgressWrapper, classes.toolbarDeleteButton)}>
+      <IconButton onClick={onDelete}>
+        <DeleteIcon />
+      </IconButton>
+      {isDeleting ? <CircularProgress className={classes.progressOnButton} /> : null}
+    </div>
+  );
+});
 
+const deleteOneJobSetFromSelected = async (jobSet, dispatch) => {
+  const { id } = jobSet;
+  dispatch(deleteJobSetBegin(id));
+  try {
+    await deleteJobSetsApiAsync(id, jobSet.eTag);
+    dispatch(deleteJobSetSucceed(id, false));
+    return true;
+  }
+  catch (e) {
+    dispatch(deleteJobSetFailed(id, false));
+    return false;
+  }
+};
+
+const ToolbarDeleteButtonContainer = ({
+  selected,
+  reloadCallback
+}) => {
+  const isSomeDeleting = useJobSetSomeDeleting();
+  const selectedJobSets = useSelectedJobSets(selected);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
+  const onDelete = useMemo(
+    () => {
+      let isDeleting = false;
+      const getIsDeleting = () => isDeleting;
+      const callback = () => {
+        if (getIsDeleting()) {
+          return;
+        }
+        if (selectedJobSets.length === 0) {
+          return;
+        }
+        if (!window.confirm(`Do you want to permanently delete ${selectedJobSets.length} Job Sets?`)) {
+          return;
+        }
+        const deleteJobSetsAsync = async () => {
+          isDeleting = true;
+          const deleteJobSetsPromises = selectedJobSets.map(js => deleteOneJobSetFromSelected(js, dispatch));
+          const results = await Promise.all(deleteJobSetsPromises);
+          const selectedJobSetsCount = selectedJobSets.length;
+          const successfulDeletesCount = results.filter(r => r).length;
+          if (selectedJobSetsCount !== successfulDeletesCount) {
+            alert(`Only deleted ${successfulDeletesCount} Job Set from ${selectedJobSetsCount} selected.\nPlease try again.`);
+          }
+          dispatch(clearDeletingJobSets());
+          reloadCallback();
+          isDeleting = false;
+        };
+        deleteJobSetsAsync();
+      };
+      return callback;
+    },
+    [
+      selectedJobSets,
+      reloadCallback,
+      dispatch,
+    ]
+  );
+  return (
+    <ToolbarDeleteButton
+      onDelete={onDelete}
+      isDeleting={isSomeDeleting}
+    />
+  );
+};
+
+const JobSetToolbar = ({
+  isLoading,
+  failedMessage,
+  selected,
+  selectedCount,
+  reloadCallback,
+}) => {
+  const classes = useStyles();
   return (
     <Toolbar
       className={clsx(classes.toolbar, {
@@ -112,9 +196,15 @@ const JobSetToolbar = ({
     >
       {selectedCount > 0
         ? (
-          <Typography color="inherit" variant="subtitle1">
-            {selectedCount} selected
-              </Typography>
+          <React.Fragment>
+            <Typography color="inherit" variant="subtitle1">
+              {selectedCount} selected
+            </Typography>
+            <ToolbarDeleteButtonContainer
+              selected={selected}
+              reloadCallback={reloadCallback}
+            />
+          </React.Fragment>
         ) : (
           <React.Fragment>
             <div className={classes.tableTitle}>
@@ -134,79 +224,7 @@ const JobSetToolbar = ({
           </React.Fragment>
         )
       }
-    </Toolbar>
-  );
-};
-
-const JobSetToolbarContainer = ({
-  isLoading,
-  failedMessage,
-  selected,
-  selectedCount,
-  reloadCallback,
-}) => {
-  const classes = useStyles();
-
-  const isSomeDeleting = useJobSetSomeDeleting();
-  const dispatch = useContext(JobShopCollectionDispatchContext);
-  const onDelete = useMemo(
-    () => {
-      let isDeleting = false;
-      const getIsDeleting = () => isDeleting;
-      const callback = () => {
-        if (getIsDeleting()) {
-          return;
-        }
-        if (selected.length === 0) {
-          return;
-        }
-        if (!window.confirm(`Do you want to permanently delete ${selected.length} Job Sets?`)) {
-          return;
-        }
-        const deleteJobSetsAsync = async () => {
-          isDeleting = true;
-
-          const results = await Promise.all(selected.map(s=>
-
-          )
-          dispatch(deleteJobSetBegin(id));
-          try {
-            await deleteJobSetsApiAsync(id, jobSetHeader.eTag);
-            isDeleting = false;
-            dispatch(deleteJobSetSucceed(id, true));
-            reloadCallback();
-          }
-          catch (e) {
-            alert(`Failed to delete Job Set ${id}\nPlease try again.`);
-            isDeleting = false;
-            dispatch(deleteJobSetFailed(id, true));
-          }
-        };
-        deleteJobSetAsync();
-      };
-      return callback;
-    },
-    [
-      selected,
-      reloadCallback,
-      dispatch,
-    ]
-  );
-  const deleteSelectedCallback = useCallback(
-    () => {
-
-    },
-    [selected]
-  );
-  return (
-    <JobSetToolbar
-      isLoading={isLoading}
-      failedMessage={failedMessage}
-      selectedCount={selectedCount}
-      reloadCallback={reloadCallback}
-      deleteSelectedCallback={deleteSelectedCallback}
-      isDeleting={isSomeDeleting}
-    />
+    </Toolbar >
   );
 };
 //#endregion title / toolbar
@@ -303,83 +321,37 @@ const JobSetTableHead = ({
 //#endregion HeadRow
 
 //#region row
-const JobSetRow = React.memo(({
-  jobSetHeader,
-  isItemSelected,
-  onSelect,
-  labelId,
+const RowDeleteButton = React.memo(({
   dense,
   onDelete,
   isDeleting,
   deleteSucceed,
-  deleteFailed,
+  deleteFailed
 }) => {
   const classes = useStyles();
   return (
-    <TableRow
-      hover
-      onClick={() => { }}
-      role="checkbox"
-      aria-checked={isItemSelected}
-      tabIndex={-1}
-      selected={isItemSelected}
-    >
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={isItemSelected}
-          inputProps={{ 'aria-labelledby': labelId }}
-          onClick={onSelect}
-        />
-      </TableCell>
-      <TableCell component="th" id={labelId} scope="row" padding="none">
-        {jobSetHeader.id}
-      </TableCell>
-      <TableCell align="left">
-        {jobSetHeader.title}
-      </TableCell>
-      <TableCell align="left">
-        <div className={classes.descriptionCell}>
-          <Typography noWrap>
-            {jobSetHeader.description}
-          </Typography>
-        </div>
-      </TableCell>
-      <TableCell align="left" padding="none">
-        <div className={classes.actionsFlexbox}>
-          <div className={classes.withProgressWrapper}>
-            <IconButton
-              className={clsx({
-                [classes.buttonSuccess]: deleteSucceed,
-                [classes.buttonFailed]: deleteFailed
-              })}
-              onClick={onDelete}
-              size={dense ? 'small' : 'medium'}
-            >
-              {deleteFailed ? <ReportProblemIcon /> : deleteSucceed ? <CheckIcon /> : <DeleteIcon />}
-            </IconButton>
-            {isDeleting ? <CircularProgress className={classes.progressOnButton} /> : null}
-          </div>
-        </div>
-      </TableCell>
-    </TableRow>
+    <div className={classes.withProgressWrapper}>
+      <IconButton
+        className={clsx({
+          [classes.buttonSuccess]: deleteSucceed,
+          [classes.buttonFailed]: deleteFailed
+        })}
+        onClick={onDelete}
+        size={dense ? 'small' : 'medium'}
+      >
+        {deleteFailed ? <ReportProblemIcon /> : deleteSucceed ? <CheckIcon /> : <DeleteIcon />}
+      </IconButton>
+      {isDeleting ? <CircularProgress className={classes.progressOnButton} /> : null}
+    </div>
   );
 });
 
-const JobSetRowContainer = ({
+const RowDeleteButtonContainer = ({
+  id,
   jobSetHeader,
   dense,
-  pageDispatch,
-  rowIsSelectedFunction,
-  reloadCallback,
-  index
+  reloadCallback
 }) => {
-  const { id } = jobSetHeader;
-  const isItemSelected = rowIsSelectedFunction(jobSetHeader.id);
-  const labelId = `job-set-table-checkbox-${index}`;
-  const onSelect = useCallback(
-    () => pageDispatch(pageActionCreators.selectOne(jobSetHeader.id)),
-    [pageDispatch, jobSetHeader.id]
-  );
   const [isDeletingState, deleteSucceed, deleteFailed] = useJobSetDeleting(id);
   const dispatch = useContext(JobShopCollectionDispatchContext);
   const onDelete = useMemo(
@@ -421,11 +393,7 @@ const JobSetRowContainer = ({
     ]
   );
   return (
-    <JobSetRow
-      jobSetHeader={jobSetHeader}
-      isItemSelected={isItemSelected}
-      onSelect={onSelect}
-      labelId={labelId}
+    <RowDeleteButton
       dense={dense}
       onDelete={onDelete}
       isDeleting={isDeletingState}
@@ -434,6 +402,65 @@ const JobSetRowContainer = ({
     />
   );
 };
+
+const JobSetRow = React.memo(({
+  jobSetHeader,
+  dense,
+  pageDispatch,
+  rowIsSelectedFunction,
+  reloadCallback,
+  index
+}) => {
+  const { id } = jobSetHeader;
+  const classes = useStyles();
+  const isItemSelected = rowIsSelectedFunction(jobSetHeader.id);
+  const labelId = `job-set-table-checkbox-${index}`;
+  const onSelect = useCallback(
+    () => pageDispatch(pageActionCreators.selectOne(jobSetHeader.id)),
+    [pageDispatch, jobSetHeader.id]
+  );
+  return (
+    <TableRow
+      hover
+      onClick={() => { }}
+      role="checkbox"
+      aria-checked={isItemSelected}
+      tabIndex={-1}
+      selected={isItemSelected}
+    >
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={isItemSelected}
+          inputProps={{ 'aria-labelledby': labelId }}
+          onClick={onSelect}
+        />
+      </TableCell>
+      <TableCell component="th" id={labelId} scope="row" padding="none">
+        {jobSetHeader.id}
+      </TableCell>
+      <TableCell align="left">
+        {jobSetHeader.title}
+      </TableCell>
+      <TableCell align="left">
+        <div className={classes.descriptionCell}>
+          <Typography noWrap>
+            {jobSetHeader.description}
+          </Typography>
+        </div>
+      </TableCell>
+      <TableCell align="left" padding="none">
+        <div className={classes.actionsFlexbox}>
+          <RowDeleteButtonContainer
+            id={id}
+            jobSetHeader={jobSetHeader}
+            dense={dense}
+            reloadCallback={reloadCallback}
+          />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+});
 //#endregion row
 
 //#region Table
@@ -471,7 +498,7 @@ const JobSets = React.memo(({
           {jobSetHeadersRows
             .slice(pageIndex * rowsPerPage, pageIndex * rowsPerPage + rowsPerPage)
             .map((jsh, index) => (
-              <JobSetRowContainer
+              <JobSetRow
                 key={jsh.id}
                 jobSetHeader={jsh}
                 dense={dense}
@@ -548,17 +575,16 @@ const JobSetsContainer = () => {
   const jobSetToolbar = useMemo(
     () => {
       return (
-        <JobSetToolbarContainer
+        <JobSetToolbar
           isLoading={isLoading}
           failedMessage={failedMessage}
-          rowCount={rowCount}
           selected={selected}
           selectedCount={selectedCount}
           reloadCallback={jobSetsRequest}
         />
       );
     },
-    [isLoading, failedMessage, rowCount, selected, jobSetsRequest]
+    [isLoading, failedMessage, selected, selectedCount, jobSetsRequest]
   );
 
   const jobSetTableHead = useMemo(
