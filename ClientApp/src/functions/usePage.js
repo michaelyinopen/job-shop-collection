@@ -2,7 +2,7 @@ import { useReducer, useEffect } from 'react';
 import { stableSort, getSorting } from '../functions/sort';
 
 const actionTypes = {
-  initializeRows: "initialize-rows",
+  updateRows: "initialize-rows",
   requestSort: "request-sort",
   selectAll: "select-all",
   selectOne: "select-one",
@@ -11,8 +11,8 @@ const actionTypes = {
 };
 
 export const actionCreators = {
-  initializeRows: rows => ({
-    type: actionTypes.initializeRows,
+  updateRows: rows => ({
+    type: actionTypes.updateRows,
     rows
   }),
   requestSort: property => ({
@@ -36,30 +36,36 @@ export const actionCreators = {
   })
 };
 
+const rowsInitialState = [];
 const orderInitialState = 'desc'; // 'desc' or 'asc'
 const orderByInitialState = 'id';
 const selectedInitialState = [];
 const pageIndexInitialState = 0;
 const rowsPerPageInitialState = 10;
 
-const init = rows => {
-  const order = orderInitialState;
-  const orderBy = orderByInitialState;
-  const sortedRows = stableSort(rows, getSorting(order, orderBy));
-  return {
-    rows: sortedRows,
-    order,
-    orderBy,
-    selected: selectedInitialState,
-    pageIndex: pageIndexInitialState,
-    rowsPerPage: rowsPerPageInitialState
-  };
-}
+const initialState = ({
+  rows: rowsInitialState,
+  order: orderInitialState,
+  orderBy: orderByInitialState,
+  selected: selectedInitialState,
+  pageIndex: pageIndexInitialState,
+  rowsPerPage: rowsPerPageInitialState
+});
 
 const reducer = (state, action) => {
-  if (action.type === actionTypes.initializeRows) {
+  if (action.type === actionTypes.updateRows) {
     const { rows } = action;
-    return init(rows);
+    const sortedRows = stableSort(rows, getSorting(state.order, state.orderBy));
+    const lastRowIndex = Math.max(rows.length - 1, 0);
+    const maxPageIndex = Math.floor(lastRowIndex / state.rowsPerPage);
+    const pageIndex = state.pageIndex > maxPageIndex ? maxPageIndex : state.pageIndex;
+    const selected = state.selected.filter(s => rows.some(r => r.id === s));
+    return {
+      ...state,
+      rows: sortedRows,
+      pageIndex,
+      selected: selected === state.selected ? state.selected : selected
+    };
   }
   if (action.type === actionTypes.requestSort) {
     const { property } = action;
@@ -134,12 +140,11 @@ const reducer = (state, action) => {
 const usePage = rows => {
   const [state, dispatch] = useReducer(
     reducer,
-    rows,
-    init
+    initialState
   );
   useEffect(
     () => {
-      dispatch(actionCreators.initializeRows(rows))
+      dispatch(actionCreators.updateRows(rows))
     },
     [rows]
   );
@@ -147,28 +152,6 @@ const usePage = rows => {
   // maybe other useEffects to respond to changes of those props
   // e.g.focus a specific row after creation
   // e.g. keep sort and filters?
-
-  // const requestSortCallback = useCallback(
-  //   property => dispatch(actionCreators.requestSort(property)),
-  //   []
-  // );
-  // const selectAllCallback = useCallback(
-  //   () => dispatch(actionCreators.selectAll()),
-  //   []
-  // );
-  // const selectOneCallback = useCallback(
-  //   id => dispatch(actionCreators.selectOne(id)),
-  //   []
-  // );
-  // const changePageCallback = useCallback(
-  //   pageIndex => dispatch(actionCreators.changePage(pageIndex)),
-  //   []
-  // );
-  // const changeRowsPerPageCallback = useCallback(
-  //   rowsPerPage => dispatch(actionCreators.changeRowsPerPage(rowsPerPage)),
-  //   []
-  // );
-
   return [state, dispatch]
 };
 

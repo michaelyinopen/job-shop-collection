@@ -61,3 +61,19 @@ export const useJobSetHeader = id => {
   )
   return jobSetHeader;
 };
+
+// returns [isDeleting, deleteSucceed, deleteFailed]
+export const useJobSetDeleting = id => {
+  const state = useContext(JobShopCollectionStateContext);
+  const deletingJobSet = state.deletingJobSets[id];
+  if (deletingJobSet === undefined) {
+    const isDeleting = false;
+    const deleteSucceed = false;
+    const deleteFailed = false;
+    return [isDeleting, deleteSucceed, deleteFailed];
+  }
+  const isDeleting = true;
+  const deleteSucceed = deletingJobSet.succeed;
+  const deleteFailed = deletingJobSet.failed;
+  return [isDeleting, deleteSucceed, deleteFailed];
+};

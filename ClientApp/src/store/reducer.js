@@ -3,7 +3,12 @@ import createReducer from '../functions/createReducer';
 import {
   getJobSetsBegin,
   getJobSetsSucceed,
-  getJobSetsFailed
+  getJobSetsFailed,
+
+  deleteJobSetBegin,
+  deleteJobSetSucceed,
+  deleteJobSetFailed,
+  clearDeletingJobSets
 } from './actionTypes';
 
 const getJobSetIsLoadingInitialState = false;
@@ -48,7 +53,7 @@ const jobSet = createReducer(
   }
 );
 
-const jobSetsInitialState = [];
+const jobSetsInitialState = {}
 const jobSets = createReducer(
   jobSetsInitialState,
   {
@@ -61,16 +66,97 @@ const jobSets = createReducer(
   }
 );
 
+const deletingJobSetInitialState = {
+  id: undefined,
+  succeed: false,
+  failed: false,
+};
+const deletingJobSet = createReducer(
+  deletingJobSetInitialState,
+  {
+    [deleteJobSetBegin]: (state, { id }) => ({
+      ...state,
+      id
+    }),
+    [deleteJobSetSucceed]: (state, _action) => {
+      if (state.succeed && !state.failed) {
+        return state;
+      }
+      return {
+        ...state,
+        succeed: true,
+        failed: false,
+      };
+    },
+    [deleteJobSetFailed]: (state, { id }) => {
+      if (!state.succeed && state.failed) {
+        return state;
+      }
+      return {
+        ...state,
+        succeed: false,
+        failed: true,
+      };
+    }
+  }
+);
+
+const deletingJobSetsInitialState = {};
+const deletingJobSets = createReducer(
+  deletingJobSetsInitialState,
+  {
+    [deleteJobSetBegin]: (state, action) => {
+      const { id } = action;
+      return Object.assign({}, state, {
+        [id]: deletingJobSet(undefined, action)
+      });
+    },
+    [deleteJobSetSucceed]: (state, action) => {
+      const { id, clear } = action;
+      if (clear) {
+        const { [id]: undefiend, ...restState } = state;
+        return restState;
+      }
+      const element = state[id];
+      const updatedElement = deletingJobSet(element, action);
+      if (element === updatedElement) {
+        return state;
+      }
+      return Object.assign({}, state, {
+        [id]: updatedElement
+      });
+    },
+    [deleteJobSetFailed]: (state, action) => {
+      const { id, clear } = action;
+      if (clear) {
+        const { [id]: undefiend, ...restState } = state;
+        return restState;
+      }
+      const element = state[id];
+      const updatedElement = deletingJobSet(element, action);
+      if (element === updatedElement) {
+        return state;
+      }
+      return Object.assign({}, state, {
+        [id]: updatedElement
+      });
+    },
+    [clearDeletingJobSets]: (_state, _action) => deletingJobSetsInitialState,
+  }
+);
+
 export const initialState = {
   getJobSetIsLoading: getJobSetIsLoadingInitialState,
   getJobSetFailedMessage: getJobSetFailedMessageInitialState,
-  jobSets: jobSetsInitialState
+  jobSets: jobSetsInitialState,
+  deletingJobSets: deletingJobSetsInitialState,
 };
 
 const reducer = combineReducers({
   getJobSetIsLoading,
   getJobSetFailedMessage,
-  jobSets
+  jobSets,
+  deletingJobSets
 });
 
 export default reducer;
