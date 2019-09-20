@@ -77,3 +77,9 @@ export const useJobSetDeleting = id => {
   const deleteFailed = deletingJobSet.failed;
   return [isDeleting, deleteSucceed, deleteFailed];
 };
+
+export const useJobSetSomeDeleting = () => {
+  const state = useContext(JobShopCollectionStateContext);
+  const someDeleting = state.deletingJobSets.keys().length > 0;
+  return someDeleting;
+};
