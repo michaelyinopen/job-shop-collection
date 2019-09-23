@@ -1,9 +1,15 @@
-import React, { useMemo, useContext, useEffect, useCallback } from 'react';
+import React, { useMemo, useContext, useEffect, useCallback, useState } from 'react';
+import queryString from 'query-string';
+import { generatePath } from 'react-router';
+import useReactRouter from 'use-react-router';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,7 +24,13 @@ import { green, red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import ForwardIcon from '@material-ui/icons/Forward';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import preventDefaultPropagation from '../functions/preventDefaultPropagation';
+import { jobSet as jobSetPath } from '../routePaths';
 import JobShopCollectionDispatchContext from './JobShopCollectionDispatchContext';
 import {
   getJobSetsBegin,
@@ -71,7 +83,8 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
   },
   actionsFlexbox: {
-    display: 'flex'
+    display: 'flex',
+    justifyContent: 'space-evenly'
   },
   progressOnButton: {
     position: 'absolute',
@@ -81,6 +94,12 @@ const useStyles = makeStyles(theme => ({
   },
   table: {
     minWidth: 650,
+  },
+  rowWithMenu: {
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? 'rgba(0, 0, 0, 0.07)' // grey[200]
+        : 'rgba(255, 255, 255, 0.14)',
   },
   descriptionCell: {
     width: '700px',
@@ -337,6 +356,7 @@ const RowDeleteButton = React.memo(({
           [classes.buttonFailed]: deleteFailed
         })}
         onClick={onDelete}
+        onContextMenu={preventDefaultPropagation}
         size={dense ? 'small' : 'medium'}
       >
         {deleteFailed ? <ReportProblemIcon /> : deleteSucceed ? <CheckIcon /> : <DeleteIcon />}
@@ -358,7 +378,8 @@ const RowDeleteButtonContainer = ({
     () => {
       let isDeleting = false;
       const getIsDeleting = () => isDeleting;
-      const callback = () => {
+      const callback = e => {
+        e.stopPropagation();
         if (getIsDeleting()) {
           return;
         }
@@ -403,26 +424,102 @@ const RowDeleteButtonContainer = ({
   );
 };
 
+const RowMoreActionsMenu = ({
+  viewJobSetCallback,
+  editJobSetCallback,
+  openInNewTabCallback,
+  anchorEl,
+  anchorReference,
+  anchorPosition,
+  open,
+  handleClose
+}) => {
+  return (
+    <Menu
+      anchorReference={anchorReference}
+      anchorEl={anchorEl}
+      anchorPosition={anchorPosition}
+      keepMounted
+      open={open}
+      onClose={handleClose}
+    >
+      <MenuItem onClick={viewJobSetCallback} onContextMenu={preventDefaultPropagation}>
+        <ListItemIcon>
+          <ForwardIcon />
+        </ListItemIcon>
+        View
+      </MenuItem>
+      <MenuItem onClick={editJobSetCallback} onContextMenu={preventDefaultPropagation}>
+        <ListItemIcon>
+          <EditIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>
+      <MenuItem onClick={openInNewTabCallback} onContextMenu={preventDefaultPropagation}>
+        <ListItemIcon>
+          <OpenInNewIcon />
+        </ListItemIcon>
+        Open in new tab
+      </MenuItem>
+    </Menu>
+  );
+};
+
 const JobSetRow = React.memo(({
   jobSetHeader,
   dense,
   pageDispatch,
   rowIsSelectedFunction,
   reloadCallback,
-  index
+  index,
+  viewJobSetCallback,
+  editJobSetCallback,
+  openInNewTabCallback,
 }) => {
   const { id } = jobSetHeader;
   const classes = useStyles();
   const isItemSelected = rowIsSelectedFunction(jobSetHeader.id);
   const labelId = `job-set-table-checkbox-${index}`;
   const onSelect = useCallback(
-    () => pageDispatch(pageActionCreators.selectOne(jobSetHeader.id)),
+    e => {
+      e.stopPropagation();
+      pageDispatch(pageActionCreators.selectOne(jobSetHeader.id));
+    },
     [pageDispatch, jobSetHeader.id]
   );
+
+  const [menuPosition, setMenuPosition] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorReference, setAnchorReference] = useState('none');
+  const menuOpen = Boolean(anchorEl) || Boolean(menuPosition);
+
+  const onMoreActionButtonClick = event => {
+    event.stopPropagation();
+    event.preventDefault();
+    setAnchorReference('anchorEl');
+    setAnchorEl(event.currentTarget);
+    setMenuPosition(null);
+  };
+  const onContextMenu = event => {
+    event.stopPropagation();
+    event.preventDefault();
+    const cursorPositon = { top: event.pageY, left: event.pageX };
+    setAnchorReference('anchorPosition');
+    setMenuPosition(cursorPositon);
+    setAnchorEl(null);
+  };
+
+  const handleCloseContextMenu = () => {
+    setAnchorReference('none');
+    setMenuPosition(null);
+    setAnchorEl(null);
+  };
   return (
     <TableRow
+      className={clsx({ [classes.rowWithMenu]: menuOpen })}
       hover
-      onClick={() => { }}
+      onClick={viewJobSetCallback}
+      onContextMenu={onContextMenu} // TODO replace with custom context menu, also stop propagation on buttons
       role="checkbox"
       aria-checked={isItemSelected}
       tabIndex={-1}
@@ -433,6 +530,7 @@ const JobSetRow = React.memo(({
           checked={isItemSelected}
           inputProps={{ 'aria-labelledby': labelId }}
           onClick={onSelect}
+          onContextMenu={preventDefaultPropagation}
         />
       </TableCell>
       <TableCell component="th" id={labelId} scope="row" padding="none">
@@ -456,11 +554,65 @@ const JobSetRow = React.memo(({
             dense={dense}
             reloadCallback={reloadCallback}
           />
+          <IconButton
+            onClick={onMoreActionButtonClick}
+            onContextMenu={preventDefaultPropagation}
+            size={dense ? 'small' : 'medium'}
+          >
+            <MoreVertIcon />
+          </IconButton>
         </div>
       </TableCell>
+      <RowMoreActionsMenu
+        viewJobSetCallback={viewJobSetCallback}
+        editJobSetCallback={editJobSetCallback}
+        openInNewTabCallback={openInNewTabCallback}
+        anchorReference={anchorReference}
+        anchorEl={anchorEl}
+        anchorPosition={menuPosition}
+        open={menuOpen}
+        handleClose={handleCloseContextMenu}
+      />
     </TableRow>
   );
 });
+
+const JobSetRowWithRouter = (props) => {
+  const { history: { push }, match: _match, location: _location } = useReactRouter();
+  const { jobSetHeader: { id } } = props;
+  const [viewJobSetCallback, editJobSetCallback, openInNewTabCallback] = useMemo(
+    () => {
+      const path = generatePath(jobSetPath, { id });
+      const openInNewTabCallback = e => {
+        e.stopPropagation();
+        const win = window.open(path, '_blank');
+        win.focus();
+      };
+      const viewCallback = e => {
+        e.stopPropagation();
+        push(path);
+      };
+      let editQueryString = queryString.stringify({ edit: true });
+      editQueryString = editQueryString ? '?' + editQueryString : '';
+      const editPath = path + editQueryString;
+      const editCallback = e => {
+        e.stopPropagation();
+        e.preventDefault();
+        push(editPath);
+      }
+      return [viewCallback, editCallback, openInNewTabCallback];
+    },
+    [push, id]
+  );
+  return (
+    <JobSetRow
+      {...props}
+      viewJobSetCallback={viewJobSetCallback}
+      editJobSetCallback={editJobSetCallback}
+      openInNewTabCallback={openInNewTabCallback}
+    />
+  );
+};
 //#endregion row
 
 //#region Table
@@ -498,7 +650,7 @@ const JobSets = React.memo(({
           {jobSetHeadersRows
             .slice(pageIndex * rowsPerPage, pageIndex * rowsPerPage + rowsPerPage)
             .map((jsh, index) => (
-              <JobSetRow
+              <JobSetRowWithRouter
                 key={jsh.id}
                 jobSetHeader={jsh}
                 dense={dense}

@@ -114,7 +114,7 @@ const deletingJobSets = createReducer(
     [deleteJobSetSucceed]: (state, action) => {
       const { id, clear } = action;
       if (clear) {
-        const { [id]: undefiend, ...restState } = state;
+        const { [id]: _id, ...restState } = state;
         return restState;
       }
       const element = state[id];

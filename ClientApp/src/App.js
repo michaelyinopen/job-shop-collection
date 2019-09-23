@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 import Layout from './components/Layout';
 import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
 import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
+import * as fromRoutePaths from './routePaths';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -14,9 +14,9 @@ export default class App extends Component {
       <Layout>
         <JobShopCollection>
           <Switch>
-            <Route exact path='/' component={Home} />
-            <Route path='/fetch-data' component={FetchData} />
-            <Route path='/job-sets' component={JobSets} />
+            <Route exact path={fromRoutePaths.home} component={Home} />
+            <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
+            <Route path={fromRoutePaths.jobSet} component={JobSets} />
           </Switch>
         </JobShopCollection>
       </Layout>
