@@ -6,6 +6,7 @@ import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
@@ -54,6 +55,10 @@ import { deleteJobSetsApiAsync } from '../../api';
 import usePage, { actionCreators as pageActionCreators } from './usePage';
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    backgroundColor: theme.palette.background.default,
+    paddingTop: theme.spacing(1)
+  },
   root: {
     width: '100%',
     overflowX: 'auto',
@@ -661,44 +666,46 @@ const JobSets = React.memo(({
   const classes = useStyles();
   const dense = rowsPerPage > 10;
   return (
-    <Paper className={classes.root}>
-      {jobSetToolbarTitle}
-      <Table
-        className={classes.table}
-        aria-labelledby="table-title"
-        size={dense ? 'small' : 'medium'}
-      >
-        <colgroup>
-          <col />
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '30%' }} />
-          <col style={{ width: '50%' }} />
-          <col style={{ width: '10%' }} />
-        </colgroup>
-        {jobSetTableHead}
-        <TableBody>
-          {jobSetHeadersRows
-            .slice(pageIndex * rowsPerPage, pageIndex * rowsPerPage + rowsPerPage)
-            .map((jsh, index) => (
-              <JobSetRowWithRouter
-                key={jsh.id}
-                jobSetHeader={jsh}
-                dense={dense}
-                pageDispatch={pageDispatch}
-                rowIsSelectedFunction={rowIsSelectedFunction}
-                reloadCallback={reloadCallback}
-                index={index}
-              />
-            ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: (dense ? 37 : 53) * emptyRows }}>
-              <TableCell colSpan={5} />
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      {tablePagination}
-    </Paper >
+    <Container className={classes.container}>
+      <Paper className={classes.root}>
+        {jobSetToolbarTitle}
+        <Table
+          className={classes.table}
+          aria-labelledby="table-title"
+          size={dense ? 'small' : 'medium'}
+        >
+          <colgroup>
+            <col />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '30%' }} />
+            <col style={{ width: '50%' }} />
+            <col style={{ width: '10%' }} />
+          </colgroup>
+          {jobSetTableHead}
+          <TableBody>
+            {jobSetHeadersRows
+              .slice(pageIndex * rowsPerPage, pageIndex * rowsPerPage + rowsPerPage)
+              .map((jsh, index) => (
+                <JobSetRowWithRouter
+                  key={jsh.id}
+                  jobSetHeader={jsh}
+                  dense={dense}
+                  pageDispatch={pageDispatch}
+                  rowIsSelectedFunction={rowIsSelectedFunction}
+                  reloadCallback={reloadCallback}
+                  index={index}
+                />
+              ))}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: (dense ? 37 : 53) * emptyRows }}>
+                <TableCell colSpan={5} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        {tablePagination}
+      </Paper >
+    </Container>
   );
 });
 //#endregion Table

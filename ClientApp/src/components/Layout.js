@@ -5,7 +5,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,8 +24,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "auto"
   },
   container: {
-    backgroundColor: theme.palette.background.default,
-    paddingTop: theme.spacing(1),
     flex: "1 1 auto"
   }
 }));
@@ -51,9 +48,9 @@ const Layout = props => {
           <Button className={classes.rightButton} color="inherit">About</Button>{/*todo change to link component*/}
         </Toolbar>
       </AppBar>
-      <Container className={classes.container}>
+      <div className={classes.container}>
         {props.children}
-      </Container>
+      </div>
     </div>
   );
 };
