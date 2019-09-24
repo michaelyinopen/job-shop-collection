@@ -29,9 +29,9 @@ import ForwardIcon from '@material-ui/icons/Forward';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import preventDefaultPropagation from '../functions/preventDefaultPropagation';
-import { jobSet as jobSetPath } from '../routePaths';
-import JobShopCollectionDispatchContext from './JobShopCollectionDispatchContext';
+import preventDefaultPropagation from '../../functions/preventDefaultPropagation';
+import { jobSet as jobSetPath } from '../../routePaths';
+import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
 import {
   getJobSetsBegin,
   getJobSetsSucceed,
@@ -40,8 +40,8 @@ import {
   deleteJobSetSucceed,
   deleteJobSetFailed,
   clearDeletingJobSets,
-} from '../store/actionCreators';
-import getJobSetsRequest from '../requests/getJobSetsRequest'
+} from '../../store/actionCreators';
+import getJobSetsRequest from '../../requests/getJobSetsRequest'
 import {
   useGetJobSetIsLoading,
   useGetJobSetFailedMessage,
@@ -49,9 +49,9 @@ import {
   useJobSetDeleting,
   useJobSetSomeDeleting,
   useSelectedJobSets
-} from '../store/useSelectors';
-import { deleteJobSetsApiAsync } from '../api';
-import usePage, { actionCreators as pageActionCreators } from '../functions/usePage';
+} from '../../store/useSelectors';
+import { deleteJobSetsApiAsync } from '../../api';
+import usePage, { actionCreators as pageActionCreators } from './usePage';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,34 +63,24 @@ const useStyles = makeStyles(theme => ({
     paddingRight: theme.spacing(1),
     display: "flex",
   },
-  toolbarDeleteButton: {
-    marginLeft: "auto"
-  },
-  tableTitle: { // move
-    marginRight: theme.spacing(3),
-  },
-  highlight: {  //move
+  toolbarHighlight: {  //move
     color: theme.palette.text.primary,
     backgroundColor: lighten(theme.palette.secondary.light, 0.5),
   },
-  buttonSuccess: {
-    backgroundColor: green[500],
-  },
-  buttonFailed: {
-    backgroundColor: red[500],
+  toolbarDeleteButton: {
+    marginLeft: "auto"
   },
   withProgressWrapper: {
     position: 'relative',
-  },
-  actionsFlexbox: {
-    display: 'flex',
-    justifyContent: 'space-evenly'
   },
   progressOnButton: {
     position: 'absolute',
     zIndex: 1,
     top: theme.spacing(0.5),
     left: theme.spacing(0.5),
+  },
+  tableTitle: { // move
+    marginRight: theme.spacing(3),
   },
   table: {
     minWidth: 650,
@@ -103,6 +93,16 @@ const useStyles = makeStyles(theme => ({
   },
   descriptionCell: {
     width: '700px',
+  },
+  actionsFlexbox: {
+    display: 'flex',
+    justifyContent: 'space-evenly'
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+  },
+  buttonFailed: {
+    backgroundColor: red[500],
   },
   visuallyHidden: {
     border: 0,
@@ -199,7 +199,51 @@ const ToolbarDeleteButtonContainer = ({
   );
 };
 
-const JobSetToolbar = ({
+const JobSetSelectedToolbar = ({
+  selectedCount,
+  selected,
+  reloadCallback
+}) => {
+  return (
+    <React.Fragment>
+      <Typography color="inherit" variant="subtitle1">
+        {selectedCount} selected
+      </Typography>
+      <ToolbarDeleteButtonContainer
+        selected={selected}
+        reloadCallback={reloadCallback}
+      />
+    </React.Fragment>
+  );
+};
+
+const JobSetTitle = ({
+  classes,
+  isLoading,
+  failedMessage,
+  reloadCallback
+}) => {
+  return (
+    <React.Fragment>
+      <div className={classes.tableTitle}>
+        <Typography variant="h6" id="table-title">
+          Job Sets
+        </Typography>
+      </div>
+      <div className={classes.withProgressWrapper}>
+        <IconButton onClick={reloadCallback}>
+          <RefreshIcon />
+        </IconButton>
+        {isLoading ? <CircularProgress className={classes.progressOnButton} /> : null}
+      </div>
+      <Typography color="error">
+        {failedMessage}
+      </Typography>
+    </React.Fragment>
+  );
+};
+
+const JobSetToolbarTitle = ({
   isLoading,
   failedMessage,
   selected,
@@ -210,37 +254,23 @@ const JobSetToolbar = ({
   return (
     <Toolbar
       className={clsx(classes.toolbar, {
-        [classes.highlight]: selectedCount > 0,
+        [classes.toolbarHighlight]: selectedCount > 0,
       })}
     >
       {selectedCount > 0
         ? (
-          <React.Fragment>
-            <Typography color="inherit" variant="subtitle1">
-              {selectedCount} selected
-            </Typography>
-            <ToolbarDeleteButtonContainer
-              selected={selected}
-              reloadCallback={reloadCallback}
-            />
-          </React.Fragment>
+          <JobSetSelectedToolbar
+            selectedCount={selectedCount}
+            selected={selected}
+            reloadCallback={reloadCallback}
+          />
         ) : (
-          <React.Fragment>
-            <div className={classes.tableTitle}>
-              <Typography variant="h6" id="table-title">
-                Job Sets
-              </Typography>
-            </div>
-            <div className={classes.withProgressWrapper}>
-              <IconButton onClick={reloadCallback}>
-                <RefreshIcon />
-              </IconButton>
-              {isLoading ? <CircularProgress className={classes.progressOnButton} /> : null}
-            </div>
-            <Typography color="error">
-              {failedMessage}
-            </Typography>
-          </React.Fragment>
+          <JobSetTitle
+            classes={classes}
+            isLoading={isLoading}
+            failedMessage={failedMessage}
+            reloadCallback={reloadCallback}
+          />
         )
       }
     </Toolbar >
@@ -618,7 +648,7 @@ const JobSetRowWithRouter = (props) => {
 //#region Table
 const JobSets = React.memo(({
   jobSetHeadersRows,
-  jobSetToolbar,
+  jobSetToolbarTitle,
   jobSetTableHead,
   tablePagination,
   reloadCallback,
@@ -632,7 +662,7 @@ const JobSets = React.memo(({
   const dense = rowsPerPage > 10;
   return (
     <Paper className={classes.root}>
-      {jobSetToolbar}
+      {jobSetToolbarTitle}
       <Table
         className={classes.table}
         aria-labelledby="table-title"
@@ -724,10 +754,10 @@ const JobSetsContainer = () => {
     [pageDispatch]
   );
 
-  const jobSetToolbar = useMemo(
+  const jobSetToolbarTitle = useMemo(
     () => {
       return (
-        <JobSetToolbar
+        <JobSetToolbarTitle
           isLoading={isLoading}
           failedMessage={failedMessage}
           selected={selected}
@@ -780,7 +810,7 @@ const JobSetsContainer = () => {
   return (
     <JobSets
       jobSetHeadersRows={jobSetHeadersRows}
-      jobSetToolbar={jobSetToolbar}
+      jobSetToolbarTitle={jobSetToolbarTitle}
       jobSetTableHead={jobSetTableHead}
       tablePagination={tablePagination}
       reloadCallback={jobSetsRequest}

@@ -1,5 +1,5 @@
 import { useReducer, useEffect } from 'react';
-import { stableSort, getSorting } from '../functions/sort';
+import { stableSort, getSorting } from './sort';
 
 const actionTypes = {
   updateRows: "initialize-rows",
