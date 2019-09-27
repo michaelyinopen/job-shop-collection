@@ -5,6 +5,8 @@ import memoizeOne from 'memoize-one';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns/fp';
 import compareJobSetWithState from './compareJobSetWithState';
 import createReducer from '../../../functions/createReducer';
+import updateObject from '../../../functions/updateObject';
+import updateKeyInObject from '../../../functions/updateKeyInObject';
 import getNextId, { getNextOfMax } from '../../../functions/getNextId';
 import getNewColor from '../jobColor';
 import {
@@ -40,49 +42,36 @@ const machineInitialState = id => ({
   description: `Machine ${id}`
 });
 
-// const machine = id => createReducer(
-//   machineInitialState(id),
-//   {
-//     // [addMachine]: state => state; // redundent because returns initial state
-//     [updateMachineTitle]: (state, { title }) => {
-//       if (state.title === title) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         title
-//       });
-//     },
-//     [updateMachineDescription]: (state, { description }) => {
-//       if (state.description === description) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         description
-//       });
-//     }
-//   }
-// );
+const machine = id => createReducer(
+  machineInitialState(id),
+  {
+    [addMachine]: state => state, // redundent because returns initial state
+    [updateMachineTitle]: updateObject,
+    [updateMachineDescription]: updateObject
+  }
+);
 
-const machinesInitialState = [];
-// const machines = createReducer(
-//   machinesInitialState,
-//   {
-//     [addMachine]: (state, action) => {
-//       const id = getNextId(state);
-//       return [...state, machine(id)(undefined, action)];
-//     },
-//     [updateMachineTitle]: updateItem(machine),
-//     [updateMachineDescription]: updateItem(machine),
-//     [removeMachine]: (state, { id }) => {
-//       if (!state.some(m => m.id === id)) {
-//         return state;
-//       }
-//       return state.filter(m => m.id !== id);
-//     },
-//   }
-// );
+const machinesInitialState = {};
+const machines = createReducer(
+  machinesInitialState,
+  {
+    [addMachine]: (state, action) => {
+      const id = getNextId(state);
+      return {
+        ...state,
+        [id]: machine(id)(undefined, action)
+      };
+    },
+    [updateMachineTitle]: (state, action) => updateKeyInObject(state, action.id, m => machine(action.id)(m, action)),
+    [updateMachineDescription]: (state, action) => updateKeyInObject(state, action.id, m => machine(action.id)(m, action)),
+    [removeMachine]: (state, { id }) => {
+      if (!state.some(m => m.id === id)) {
+        return state;
+      }
+      return state.filter(m => m.id !== id);
+    },
+  }
+);
 
 export const initMachines = machinesArg => {
   return machinesArg.map(m => ({
