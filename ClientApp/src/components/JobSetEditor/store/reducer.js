@@ -1,14 +1,13 @@
 import { combineReducers } from 'redux';
 import reduceReducers from 'reduce-reducers';
-import { isEqual } from 'lodash';
-import memoizeOne from 'memoize-one';
-import { addMilliseconds, differenceInMilliseconds } from 'date-fns/fp';
+import { addMilliseconds } from 'date-fns/fp';
 import compareJobSetWithState from './compareJobSetWithState';
 import createReducer from '../../../functions/createReducer';
 import updateObject from '../../../functions/updateObject';
 import updateKeyInObject from '../../../functions/updateKeyInObject';
 import getNextId, { getNextOfMax } from '../../../functions/getNextId';
 import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjustReducer'
+import getNewColor from './jobColor';
 import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
 import {
   setJobSet,

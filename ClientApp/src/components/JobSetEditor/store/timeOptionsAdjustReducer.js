@@ -1,11 +1,13 @@
+import { addMilliseconds, differenceInMilliseconds } from 'date-fns/fp';
 import updateObject from "../../../functions/updateObject";
+import memoizeOne from 'memoize-one';
 
 const memoizeGetProcessingTimeSum = memoizeOne(
-  procedures => procedures.reduce((prev, currProcess) => prev + currProcess.processingMilliseconds, 0)
+  procedures => Object.values(procedures).reduce((prev, currProcess) => prev + currProcess.processingMilliseconds, 0)
 );
 
 const memoizeSumOfMinTwoProcessingTime = memoizeOne(
-  procedures => procedures
+  procedures => Object.values(procedures)
     .reduce((minTimes, currProcess) => { // [process1, process2, ...] to [min1, min2]
       if (!currProcess.processingMilliseconds) {
         return minTimes;
@@ -54,7 +56,7 @@ const autoTimeOptions = state => {
   return updateObject(state, { timeOptions });
 }
 
-const adjustTimeOptions = state => {
+export const adjustTimeOptions = state => {
   if (state.isAutoTimeOptions) {
     return autoTimeOptions(state);
   }

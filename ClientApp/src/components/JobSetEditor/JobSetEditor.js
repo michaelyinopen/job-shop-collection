@@ -4,17 +4,12 @@ import JobSetEditorStateContext from './JobSetEditorStateContext';
 import reducer, { init as jobSetEditorInit } from './store/reducer';
 import { Fab, Tooltip } from '@material-ui/core';
 import { Code } from '@material-ui/icons';
-import Machines from './Machines';
-import Jobs from './Jobs';
-import TimeOptions from './TimeOptions';
-import JsonEditor from './JsonEditor';
+// import Machines from './Machines';
+// import Jobs from './Jobs';
+// import TimeOptions from './TimeOptions';
+// import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-
-import classNames from 'classnames/bind';
-import jobSetEditorStyles from '../css/JobSetEditor.module.css';
-
-const cx = classNames.bind(jobSetEditorStyles);
 
 const JobSetEditor = () => {
   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
@@ -28,8 +23,8 @@ const JobSetEditor = () => {
   );
   return (
     <SplitterLayout primaryIndex={1} >
-      <article className={cx("job-set-editor__form-editor")}>
-        <h1 className={cx("job-set-editor__title")}>New Job Set</h1>
+      <article>
+        <h1>New Job Set</h1>
         <Tooltip
           title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
         >
@@ -44,11 +39,11 @@ const JobSetEditor = () => {
             </Fab>
           </div>
         </Tooltip>
-        <Machines />
+        {/* <Machines />
         <Jobs />
-        <TimeOptions />
+        <TimeOptions /> */}
       </article>
-      {isJsonEditorOpen ? <JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} /> : null}
+      {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
     </SplitterLayout >
   );
 };

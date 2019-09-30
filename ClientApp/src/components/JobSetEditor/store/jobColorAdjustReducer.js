@@ -1,5 +1,5 @@
 import arrayEqual from '../../../functions/arrayEqual';
-import getNewColor from './jobColor;
+import getNewColor from './jobColor';
 
 export const adjustJobColors = (state, jobColors = []) => {
   const { jobs, jobColors: jobColorsFromState } = state;
@@ -16,7 +16,7 @@ export const adjustJobColors = (state, jobColors = []) => {
     };
   }
   return {
-    state,
+    ...state,
     jobColors: newJobColors
   };
 };
