@@ -5,8 +5,6 @@ import {
   initProcedures
 } from './reducer';
 
-const sortFn = (a, b) => a.id - b.id;
-
 // returns [
 //   isEqual:           bool,
 //   mappedMachines:    array<machine>?,
@@ -19,14 +17,10 @@ const compareJobSetWithState = (jobSet, machinesState, jobsState, proceduresStat
   const mappedJobs = initJobs(jobSet.jobs);
   const mappedProcedures = initProcedures(jobSet.jobs);
 
-  const isMachinesEqualFn = () => isEqual([...machinesState].sort(sortFn), [...mappedMachines].sort(sortFn));
-  const isJobsEqualFn = () => isEqual([...jobsState].sort(sortFn), [...mappedJobs].sort(sortFn));
-  const isJobsEqual = isJobsEqualFn();
-  const isProceduresEqualFn = () => isEqual([...proceduresState].sort(sortFn), [...mappedProcedures].sort(sortFn));
-  if (isJobsEqual && isMachinesEqualFn() && isProceduresEqualFn()) {
+  if (isEqual(machinesState, mappedMachines) && isEqual(jobsState, mappedJobs) && isEqual(proceduresState, mappedProcedures)) {
     return [true];
   }
-  return [false, mappedMachines, mappedJobs, mappedProcedures, isJobsEqual];
+  return [false, mappedMachines, mappedJobs, mappedProcedures];
 };
 
 export default compareJobSetWithState;

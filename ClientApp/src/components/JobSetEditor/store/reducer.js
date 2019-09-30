@@ -8,7 +8,8 @@ import createReducer from '../../../functions/createReducer';
 import updateObject from '../../../functions/updateObject';
 import updateKeyInObject from '../../../functions/updateKeyInObject';
 import getNextId, { getNextOfMax } from '../../../functions/getNextId';
-import getNewColor from '../jobColor';
+import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjustReducer'
+import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
 import {
   setJobSet,
 
@@ -322,35 +323,26 @@ const timeOptionsInitialState = {
 const timeOptions = createReducer(
   timeOptionsInitialState,
   {
-    [setMaxTimeFromRef]: (state, { maxTimeFromRef }) => {
-      const maxTime = addMilliseconds(maxTimeFromRef)(state.referenceDate);
-      return {
-        ...state,
-        maxTime
-      }
-    },
-    [setViewStartTimeFromRef]: (state, { viewStartTimeFromRef }) => {
-      const viewStartTime = addMilliseconds(viewStartTimeFromRef)(state.referenceDate);
-      return {
-        ...state,
-        viewStartTime
-      }
-    },
-    [setViewEndTimeFromRef]: (state, { viewEndTimeFromRef }) => {
-      const viewEndTime = addMilliseconds(viewEndTimeFromRef)(state.referenceDate);
-      return {
-        ...state,
-        viewEndTime
-      }
-    },
-    [setMinViewDuration]: (state, { minViewDuration }) => ({
-      ...state,
-      minViewDuration
-    }),
-    [setMaxViewDuration]: (state, { maxViewDuration }) => ({
-      ...state,
-      maxViewDuration
-    }),
+    [setMaxTimeFromRef]: (state, { maxTimeFromRef }) => updateObject(
+      state,
+      { maxTime: addMilliseconds(maxTimeFromRef)(state.referenceDate) }
+    ),
+    [setViewStartTimeFromRef]: (state, { viewStartTimeFromRef }) => updateObject(
+      state,
+      { viewStartTime: addMilliseconds(viewStartTimeFromRef)(state.referenceDate) }
+    ),
+    [setViewEndTimeFromRef]: (state, { viewEndTimeFromRef }) => updateObject(
+      state,
+      { viewEndTime: addMilliseconds(viewEndTimeFromRef)(state.referenceDate) }
+    ),
+    [setMinViewDuration]: (state, { minViewDuration }) => updateObject(
+      state,
+      { minViewDuration }
+    ),
+    [setMaxViewDuration]: (state, { maxViewDuration }) => updateObject(
+      state,
+      { maxViewDuration }
+    ),
   }
 )
 //#endregion Time Options
@@ -373,13 +365,6 @@ const jobColorsInitialState = {};
 const jobColors = createReducer(
   jobColorsInitialState,
   {
-    [deleteJob]: (state, { id }) => {
-      if (!state.hasOwnProperty(id)) {
-        return state;
-      }
-      const { [id]: _removed, ...restState } = state;
-      return restState;
-    },
     [changeJobColor]: (state, action) => {
       const { id } = action;
       const excludeColors = Object.values(state).map(jc => jc.color);
@@ -389,22 +374,6 @@ const jobColors = createReducer(
     }
   }
 );
-
-const initJobColors = (jobs, jobColors = []) => {
-  const predefinedJobColors = Object.values(jobColors).filter(jc => jobs.some(j => j.id === jc.id)); // exclude orphan jobColors
-  let newJobColors = {};
-  for (const id of Object.keys(jobs)) {
-    const predefinedJobColor = predefinedJobColors.find(jc => jc.id === id);
-    const excludeColors = [...Object.values(newJobColors), predefinedJobColors].map(jc => jc.color);
-    const [color, textColor] = predefinedJobColor ? [predefinedJobColor.color, predefinedJobColor.textColor] : getNewColor(excludeColors);
-    newJobColors[id] = {
-      id,
-      color,
-      textColor,
-    };
-  }
-  return newJobColors;
-}
 //#endregion jobColors
 
 export const init = ({
@@ -418,195 +387,54 @@ export const init = ({
   const mappedJobs = jobsArg ? initJobs(jobsArg) : jobsInitialState;
   const mappedProcedures = jobsArg ? initProcedures(jobsArg) : proceduresInitialState;
   const clonedTimeOptions = timeOptionsArg ? { ...timeOptionsArg } : timeOptionsInitialState;
-  const initializedJobColors = initJobColors(mappedJobs, jobColorsArg);
-  const state = {
+
+  let state = {
     machines: mappedMachines,
     jobs: mappedJobs,
     procedures: mappedProcedures,
     isAutoTimeOptions,
     timeOptions: clonedTimeOptions,
-    jobColors: initializedJobColors
+    jobColors: jobColorsInitialState
   };
-  return adjustTimeOptions(state);
-}
+  state = adjustJobColors(state, jobColorsArg);
+  state = adjustTimeOptions(state);
+  return state;
+};
 
-// const combinedReducer = combineReducers({
-//   machines,
-//   jobs,
-//   procedures,
-//   isAutoTimeOptions,
-//   timeOptions,
-//   jobColors
-// });
+const setJobSetReducer = (state, action) => {
+  if (action.type !== setJobSet) {
+    return state;
+  }
+  const { jobSet } = action;
+  const [isEqual, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
+    jobSet,
+    state.machines,
+    state.jobs,
+    state.procedures
+  );
+  if (isEqual) {
+    return state;
+  }
+  return {
+    ...state,
+    machines: mappedMachines,
+    jobs: mappedJobs,
+    procedures: mappedProcedures
+  };
+};
 
-// const reducer = (state, action) => {
-//   if (action.type === setJobSet) {
-//     const { jobSet } = action;
-//     const [isEqual, mappedMachines, mappedJobs, mappedProcedures, isJobsEqual] = compareJobSetWithState(
-//       jobSet,
-//       state.machines,
-//       state.jobs,
-//       state.procedures
-//     );
-//     if (isEqual) {
-//       return state;
-//     }
-//     return {
-//       ...state,
-//       machines: mappedMachines,
-//       jobs: mappedJobs,
-//       procedures: mappedProcedures,
-//       jobColors: isJobsEqual ? state.jobColors : initJobColors(mappedJobs, state.jobColors)
-//     };
-//   }
-//   else {
-//     return combinedReducer(state, action);
-//   }
-// };
+const reducer = (state, action) => reduceReducers(
+  setJobSetReducer,
+  combineReducers({
+    machines,
+    jobs,
+    procedures,
+    isAutoTimeOptions,
+    timeOptions,
+    jobColors
+  }),
+  timeOptionsAdjustReducer,
+  jobColorAdjustReducer
+)(state, action, state);
 
-// //#region adjustTimeOptions
-// const memoizeGetProcessingTimeSum = memoizeOne(
-//   procedures => procedures.reduce((prev, currProcess) => prev + currProcess.processingMilliseconds, 0)
-// );
-
-// const memoizeSumOfMinTwoProcessingTime = memoizeOne(
-//   procedures => procedures
-//     .reduce((prev, currProcess) => { // [process1, process2, ...] to [min1, min2]
-//       if (!currProcess.processingMilliseconds) {
-//         return prev;
-//       }
-//       if (!prev[0]) { // first element
-//         prev.push(currProcess.processingMilliseconds);
-//         return prev;
-//       }
-//       if (!prev[1]) { // second element
-//         if (currProcess.processingMilliseconds < prev[0]) {
-//           prev.unshift(currProcess.processingMilliseconds); // insert at beginning
-//           return prev;
-//         }
-//         prev.push(currProcess.processingMilliseconds); // insert at end
-//         return prev;
-//       }
-//       if (currProcess.processingMilliseconds < prev[0]) {
-//         prev.unshift(currProcess.processingMilliseconds);
-//         prev.pop(currProcess.processingMilliseconds);
-//         return prev; //[currProcess.processingMilliseconds, prev[0]]
-//       }
-//       if (currProcess.processingMilliseconds < prev[1]) {
-//         prev.splice(1, 1, currProcess.processingMilliseconds);
-//         return prev; //[ prev[0], currProcess.processingMilliseconds]
-//       }
-//       return prev;
-//     }, [])
-//     .reduce((a, b) => a + b, 0)// [min1, min2] to min1 + min2
-// );
-
-// const autoTimeOptions = state => {
-//   const processingTimeSum = memoizeGetProcessingTimeSum(state.procedures);  // remove memoization, because always/usually changed
-//   const maxTime = addMilliseconds(processingTimeSum)(state.timeOptions.referenceDate);
-//   const sumOfMinTwoProcessingTime = memoizeSumOfMinTwoProcessingTime(state.procedures); // remove memoization
-
-//   const autoTimeOptions = {
-//     ...state.timeOptions,
-//     maxTime: maxTime,
-//     viewStartTime: state.timeOptions.referenceDate,
-//     viewEndTime: maxTime,
-//     minViewDuration: sumOfMinTwoProcessingTime,
-//     maxViewDuration: processingTimeSum
-//   };
-//   if (!isEqual(state.timeOptions, autoTimeOptions)) {
-//     return {
-//       ...state,
-//       timeOptions: autoTimeOptions
-//     };
-//   }
-//   return state;
-// }
-
-// const adjustTimeOptions = state => {
-//   if (state.isAutoTimeOptions) {
-//     return autoTimeOptions(state);
-//   }
-//   let fixUndefinedTimeOptions = { ...state.timeOptions };
-//   if (!fixUndefinedTimeOptions.maxTime) {
-//     fixUndefinedTimeOptions.maxTime = addMilliseconds(memoizeGetProcessingTimeSum(state.procedures))(fixUndefinedTimeOptions.referenceDate);
-//   }
-//   if (!fixUndefinedTimeOptions.viewStartTime) {
-//     fixUndefinedTimeOptions.viewStartTime = fixUndefinedTimeOptions.referenceDate;
-//   }
-//   if (!fixUndefinedTimeOptions.viewEndTime) {
-//     fixUndefinedTimeOptions.viewEndTime = fixUndefinedTimeOptions.maxTime;
-//   }
-//   if (!fixUndefinedTimeOptions.minViewDuration) {
-//     //minViewDuration <= (viewEnd - viewStart)
-//     // && maxViewDuration <= (fixUndefinedTimeOptions.maxTime - referenceDate)
-//     fixUndefinedTimeOptions.minViewDuration = Math.min(
-//       memoizeSumOfMinTwoProcessingTime(state.procedures),
-//       differenceInMilliseconds(fixUndefinedTimeOptions.viewStartTime)(fixUndefinedTimeOptions.viewEndTime)
-//     );
-//     fixUndefinedTimeOptions.minViewDuration = Math.min(
-//       fixUndefinedTimeOptions.minViewDuration,
-//       differenceInMilliseconds(fixUndefinedTimeOptions.referenceDate)(fixUndefinedTimeOptions.maxTime)
-//     );
-//   }
-//   if (!fixUndefinedTimeOptions.maxViewDuration) {
-//     //maxViewDuration >= minViewDuration
-//     // && maxViewDuration <= (fixUndefinedTimeOptions.maxTime - referenceDate)
-//     fixUndefinedTimeOptions.maxViewDuration = Math.max(
-//       memoizeGetProcessingTimeSum(state.procedures),
-//       fixUndefinedTimeOptions.minViewDuration
-//     );
-//     fixUndefinedTimeOptions.maxViewDuration = Math.min(
-//       fixUndefinedTimeOptions.maxViewDuration,
-//       differenceInMilliseconds(fixUndefinedTimeOptions.referenceDate)(fixUndefinedTimeOptions.maxTime)
-//     );
-//   }
-//   if (!isEqual(state.timeOptions, fixUndefinedTimeOptions)) {
-//     return {
-//       ...state,
-//       timeOptions: fixUndefinedTimeOptions
-//     };
-//   }
-//   return state;
-// }
-
-// const isAdjustTimeOptionsRequired = (state, newState) => {
-//   const isAutoChangedToTrueFn = () => newState.isAutoTimeOptions && state.isAutoTimeOptions !== newState.isAutoTimeOptions;
-//   const isAutoAndProceduresChangedFn = () => newState.isAutoTimeOptions && state.procedures !== newState.procedures;
-//   return isAutoChangedToTrueFn() || isAutoAndProceduresChangedFn();
-// }
-
-// const adjustNewJobColor = state => {
-//   // if some jobs does not have job color
-//   if (state.jobs.some(j => !state.jobColors.some(jc => jc.id === j.id))) {
-//     return {
-//       ...state,
-//       jobColors: initJobColors(state.jobs, state.jobColors)
-//     };
-//   }
-//   return state;
-// };
-
-// const reducerWithAdjustedTimeOptionsAndJobColor = (state, action) => {
-//   const newState = reducer(state, action);
-//   const newStateWithTimeOptions = isAdjustTimeOptionsRequired(state, newState) ? adjustTimeOptions(newState) : newState;
-//   const newStateWithJobColor = adjustNewJobColor(newStateWithTimeOptions);
-//   return newStateWithJobColor;
-// }
-// //#endregion adjustTimeOptions
-
-//todo
-// const  timeOptionsAdjustReducer = (state, action, stateBeforeAnyReducers)=>{
-//   ...
-// }
-
-// const reducer = (state, action) => reduceReducers(
-//   combineReducer({
-
-//   }),
-//   timeOptionsAdjustReducer,
-//   jobColorAdjustReducer,
-
-// )(state, action, state);
-
-// export default reducerWithAdjustedTimeOptionsAndJobColor;
+export default reducer;
