@@ -46,8 +46,8 @@ const machine = id => createReducer(
   machineInitialState(id),
   {
     [addMachine]: state => state, // redundent because returns initial state
-    [updateMachineTitle]: updateObject,
-    [updateMachineDescription]: updateObject
+    [updateMachineTitle]: (state, action) => updateObject(state, { title: action.title }),
+    [updateMachineDescription]: (state, action) => updateObject(state, { description: action.description }),
   }
 );
 
@@ -65,20 +65,27 @@ const machines = createReducer(
     [updateMachineTitle]: (state, action) => updateKeyInObject(state, action.id, m => machine(action.id)(m, action)),
     [updateMachineDescription]: (state, action) => updateKeyInObject(state, action.id, m => machine(action.id)(m, action)),
     [removeMachine]: (state, { id }) => {
-      if (!state.some(m => m.id === id)) {
+      if (!state.hasOwnProperty(id)) {
         return state;
       }
-      return state.filter(m => m.id !== id);
+      const { [id]: _removed, ...restState } = state;
+      return restState;
     },
   }
 );
 
 export const initMachines = machinesArg => {
-  return machinesArg.map(m => ({
-    ...machineInitialState(m.id),
-    title: m.title,
-    description: m.description,
-  }));
+  return machinesArg.reduce(
+    (acc, m) => {
+      acc[m.id] = {
+        ...machineInitialState(m.id),
+        title: m.title,
+        description: m.description,
+      };
+      return acc;
+    },
+    {}
+  );
 };
 //#endregion Machines
 
@@ -87,36 +94,44 @@ const jobInitialState = id => ({
   id
 });
 
-// const job = id => createReducer(
-//   jobInitialState(id),
-//   {
-//     // [createJob], // redundent because returns initial state
-//     // [deleteJob], // redundent because returns initial state
-//     // [setJobSet] // redundent because returns initial state
-//   }
-// );
+const job = id => createReducer(
+  jobInitialState(id),
+  {
+    [createJob]: state => state// redundent because returns initial state
+  }
+);
 
-const jobsInitialState = [];
-// const jobs = createReducer(
-//   jobsInitialState,
-//   {
-//     [createJob]: (state, action) => {
-//       const id = getNextId(state);
-//       return [...state, job(id)(undefined, action)];
-//     },
-//     [deleteJob]: (state, { id }) => {
-//       if (!state.some(j => j.id === id)) {
-//         return state;
-//       }
-//       return state.filter(j => j.id !== id);
-//     },
-//   }
-// );
+const jobsInitialState = {};
+const jobs = createReducer(
+  jobsInitialState,
+  {
+    [createJob]: (state, action) => {
+      const id = getNextId(state);
+      return {
+        ...state,
+        [id]: job(id)(undefined, action)
+      };
+    },
+    [deleteJob]: (state, { id }) => {
+      if (!state.hasOwnProperty(id)) {
+        return state;
+      }
+      const { [id]: _removed, ...restState } = state;
+      return restState;
+    },
+  }
+);
 
 export const initJobs = jobsArg => {
-  return jobsArg.map(j => ({
-    ...jobInitialState(j.id),
-  }));
+  return jobsArg.reduce(
+    (acc, j) => {
+      acc[j.id] = {
+        ...jobInitialState(j.id),
+      };
+      return acc;
+    },
+    {}
+  );
 };
 //#endregion jobs
 
@@ -129,152 +144,159 @@ const procedureInitialState = id => ({
   processingMilliseconds: undefined
 });
 
-// const procedure = id => createReducer(
-//   procedureInitialState(id),
-//   {
-//     [createProcedure]: (state, { jobId }, sequence) => ({
-//       ...state,
-//       jobId,
-//       sequence
-//     }),
-//     [updateProcedure]: (state, { machineId, processingMilliseconds }) => {
-//       if (state.machineId === machineId
-//         && state.processingMilliseconds === processingMilliseconds) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         machineId,
-//         processingMilliseconds
-//       });
-//     },
-//     [moveProcedure]: (state, _action, sequence) => {
-//       if (state.sequence === sequence) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         sequence
-//       });
-//     },
-//     [deleteProcedure]: (state, _action, sequence) => {
-//       if (state.sequence === sequence) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         sequence
-//       });
-//     },
-//     [removeMachine]: (state, { id: machineId }) => {
-//       if (state.machineId !== machineId) {
-//         return state;
-//       }
-//       return ({
-//         ...state,
-//         machineId: undefined
-//       });
-//     },
-//   }
-// );
+const procedure = id => createReducer(
+  procedureInitialState(id),
+  {
+    [createProcedure]: (state, { jobId }, sequence) => ({
+      ...state,
+      jobId,
+      sequence
+    }),
+    [updateProcedure]: (state, action) => updateObject(state, { machineId: action.machineId, processingMilliseconds: action.processingMilliseconds }),
+    [moveProcedure]: (state, _action, sequence) => updateObject(state, { sequence }),
+    [deleteProcedure]: (state, _action, sequence) => updateObject(state, { sequence }),
+    [removeMachine]: (state, { id: machineId }) => {
+      if (state.machineId !== machineId) {
+        return state;
+      }
+      return {
+        ...state,
+        machineId: undefined
+      };
+    },
+  }
+);
 
-const proceduresInitialState = [];
-// const procedures = createReducer(
-//   proceduresInitialState,
-//   {
-//     [createProcedure]: (state, action) => {
-//       const { jobId } = action;
-//       const id = getNextId(state);
-//       const proceduresOfJobSequences = state.filter(p => p.jobId === jobId).map(p => p.sequence);
-//       const nextSequence = getNextOfMax(proceduresOfJobSequences);
-//       return [...state, procedure(id)(undefined, action, nextSequence)];
-//     },
-//     [updateProcedure]: updateItem(procedure),
-//     [moveProcedure]: (state, action) => {
-//       // targetSequence is this procedure's sequence after move
-//       const { id, targetSequence } = action;
-//       const actingProcedure = state.find(p => p.id === id);
-//       if (!actingProcedure) {
-//         return state;
-//       }
-//       const { jobId, sequence: sourceSequence } = actingProcedure;
-//       if (sourceSequence === targetSequence) {
-//         return state;
-//       }
-//       return state.map(p => {
-//         const { id: currentId, jobId: currentJobId, sequence } = p;
-//         if (currentJobId !== jobId) {
-//           return p;
-//         }
-//         if (currentId === id) {
-//           return procedure(currentId)(p, action, targetSequence);
-//         }
-//         let updatedSequence = sequence;
-//         if (updatedSequence > sourceSequence) {
-//           updatedSequence = updatedSequence - 1;
-//         }
-//         if (updatedSequence >= targetSequence) { // note: use updatedSequence here
-//           updatedSequence = updatedSequence + 1;
-//         }
-//         return procedure(currentId)(p, action, updatedSequence);
-//       });
-//     },
-//     [deleteProcedure]: (state, action) => {
-//       const { id } = action;
-//       const procedureToDelete = state.find(p => p.id === id);
-//       if (!procedureToDelete) {
-//         return state;
-//       }
-//       const jobId = procedureToDelete.jobId;
-//       const sequenceOfDelete = procedureToDelete.sequence;
-//       return state
-//         .filter(j => j.id !== id)
-//         .map(p => {
-//           const { id: currentId, jobId: currentJobId, sequence } = p;
-//           if (currentJobId !== jobId) {
-//             return p;
-//           }
-//           let updatedSequence = sequence;
-//           if (updatedSequence > sequenceOfDelete) {
-//             updatedSequence = updatedSequence - 1;
-//           }
-//           return procedure(currentId)(p, action, updatedSequence);
-//         });
-//     },
-//     [deleteJob]: (state, { id: jobId }) => {
-//       if (!state.some(p => p.jobId === jobId)) {
-//         return state;
-//       }
-//       return state.filter(p => p.jobId !== jobId);
-//     },
-//     [removeMachine]: (state, action) => {
-//       const { id: machineId } = action;
-//       if (!state.some(p => p.machineId === machineId)) {
-//         return state;
-//       }
-//       return state
-//         .map(p => {
-//           const { id: currentId, machineId: currentMachineId } = p;
-//           if (currentMachineId !== machineId) {
-//             return p;
-//           }
-//           return procedure(currentId)(p, action);
-//         });
-//     }
-//   }
-// );
+const proceduresInitialState = {};
+const procedures = createReducer(
+  proceduresInitialState,
+  {
+    [createProcedure]: (state, action) => {
+      const { jobId } = action;
+      const id = getNextId(state);
+      const proceduresOfJobSequences = state.filter(p => p.jobId === jobId).map(p => p.sequence);
+      const nextSequence = getNextOfMax(proceduresOfJobSequences);
+      return {
+        ...state,
+        [id]: procedure(id)(undefined, action, nextSequence)
+      };
+    },
+    [updateProcedure]: (state, action) => updateKeyInObject(state, action.id, p => procedure(action.id)(p, action)),
+    [moveProcedure]: (state, action) => {
+      // targetSequence is this procedure's sequence after move
+      const { id, targetSequence } = action;
+      const actionProcedure = state[id];
+      if (!actionProcedure) {
+        return state;
+      }
+      const { jobId, sequence: sourceSequence } = actionProcedure;
+      if (sourceSequence === targetSequence) {
+        return state;
+      }
+      return Object.entries(state).reduce(
+        (acc, [key, p]) => {
+          const { id: currentId, jobId: currentJobId, sequence } = p;
+          if (currentJobId !== jobId) {
+            return acc;
+          }
+          if (currentId === id) {
+            acc[currentId] = procedure(currentId)(p, action, targetSequence);
+            return acc;
+          }
+          let updatedSequence = sequence;
+          if (updatedSequence > sourceSequence) {
+            updatedSequence = updatedSequence - 1;
+          }
+          if (updatedSequence >= targetSequence) { // note: use updatedSequence here
+            updatedSequence = updatedSequence + 1;
+          }
+
+          acc[key] = procedure(currentId)(p, action, updatedSequence);
+          return acc;
+        },
+        {}
+      );
+    },
+    [deleteProcedure]: (state, action) => {
+      const { id } = action;
+      const procedureToDelete = state[id];
+      if (!procedureToDelete) {
+        return state;
+      }
+      const jobId = procedureToDelete.jobId;
+      const sequenceOfDelete = procedureToDelete.sequence;
+      return Object.entries(state)
+        .reduce(
+          (acc, [key, p]) => {
+            const { id: currentId, jobId: currentJobId, sequence } = p;
+            if (currentId === id) {
+              return acc;
+            }
+            if (currentJobId !== jobId) {
+              return acc;
+            }
+            let updatedSequence = sequence;
+            if (updatedSequence > sequenceOfDelete) {
+              updatedSequence = updatedSequence - 1;
+            }
+            acc[key] = procedure(currentId)(p, action, updatedSequence);
+            return acc;
+          },
+          {}
+        );
+    },
+    [deleteJob]: (state, { id: jobId }) => {
+      if (!Object.values(state).some(p => p.jobId === jobId)) {
+        return state;
+      }
+      return Object.entries(state)
+        .filter(([_key, p]) => p.jobId !== jobId)
+        .reduce(
+          (acc, [key, p]) => {
+            acc[key] = p
+            return acc;
+          },
+          {}
+        );
+    },
+    [removeMachine]: (state, action) => {
+      const { id: machineId } = action;
+      if (!Object.values(state).some(p => p.machineId === machineId)) {
+        return state;
+      }
+      return Object.entries(state)
+        .reduce(
+          (acc, [key, p]) => {
+            const { id: currentId, machineId: currentMachineId } = p;
+            if (currentMachineId !== machineId) {
+              return acc;
+            }
+            acc[key] = procedure(currentId)(p, action);
+            return acc;
+          },
+          {}
+        );
+    }
+  }
+);
 
 export const initProcedures = jobsArg => {
   return jobsArg
     .map(j => j.procedures)
     .reduce((acc, cur) => acc.concat(cur), [])
-    .map(p => ({
-      ...procedureInitialState(p.id),
-      jobId: p.jobId,
-      machineId: p.machineId,
-      sequence: p.sequence,
-      processingMilliseconds: p.processingMilliseconds,
-    }));
+    .reduce(
+      (acc, p) => {
+        acc[p.id] = {
+          ...procedureInitialState(p.id),
+          jobId: p.jobId,
+          machineId: p.machineId,
+          sequence: p.sequence,
+          processingMilliseconds: p.processingMilliseconds,
+        };
+        return acc;
+      },
+      {}
+    );
 }
 //#endregion Procedures
 
@@ -343,56 +365,45 @@ const jobColorInitialState = id => ({
 const jobColor = id => createReducer(
   jobColorInitialState(id),
   {
-    //[createJob]
-    [changeJobColor]: (state, _action, jobColor) => ({
-      ...state,
-      color: jobColor.color,
-      textColor: jobColor.textColor,
-    }),
+    [changeJobColor]: (state, _action, jobColor) => updateObject(state, { color: jobColor.color, textColor: jobColor.textColor }),
   }
 );
 
-const jobColorsInitialState = [];
+const jobColorsInitialState = {};
 const jobColors = createReducer(
   jobColorsInitialState,
   {
-    //[createJob]
     [deleteJob]: (state, { id }) => {
-      if (!state.some(jc => jc.id === id)) {
+      if (!state.hasOwnProperty(id)) {
         return state;
       }
-      return state.filter(jc => jc.id !== id);
+      const { [id]: _removed, ...restState } = state;
+      return restState;
     },
     [changeJobColor]: (state, action) => {
       const { id } = action;
-      const excludeColors = state.map(jc => jc.color);
-      return state.map(jc => {
-        if (jc.id === id) {
-          const currentColor = jc.color;
-          const [color, textColor] = getNewColor(excludeColors, currentColor);
-          return jobColor(id)(jc, action, { color, textColor });
-        }
-        return jc;
-      });
-    },
+      const excludeColors = Object.values(state).map(jc => jc.color);
+      const currentColor = state[id].color;
+      const [color, textColor] = getNewColor(excludeColors, currentColor);
+      return updateKeyInObject(state, id, jc => jobColor(id)(jc, action, { color, textColor }));
+    }
   }
 );
 
 const initJobColors = (jobs, jobColors = []) => {
-  const predefinedJobColors = jobColors.filter(jc => jobs.some(j => j.id === jc.id)); // exclude orphan jobColors
-  let newJobColors = [];
-  for (var i = 0; i < jobs.length; ++i) {
-    const id = jobs[i].id;
+  const predefinedJobColors = Object.values(jobColors).filter(jc => jobs.some(j => j.id === jc.id)); // exclude orphan jobColors
+  let newJobColors = {};
+  for (const id of Object.keys(jobs)) {
     const predefinedJobColor = predefinedJobColors.find(jc => jc.id === id);
-    const excludeColors = [...newJobColors, predefinedJobColors].map(jc => jc.color);
+    const excludeColors = [...Object.values(newJobColors), predefinedJobColors].map(jc => jc.color);
     const [color, textColor] = predefinedJobColor ? [predefinedJobColor.color, predefinedJobColor.textColor] : getNewColor(excludeColors);
-    newJobColors.push(({
+    newJobColors[id] = {
       id,
       color,
       textColor,
-    }));
+    };
   }
-  return [...newJobColors];
+  return newJobColors;
 }
 //#endregion jobColors
 

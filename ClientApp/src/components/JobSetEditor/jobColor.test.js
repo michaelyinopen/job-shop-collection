@@ -118,6 +118,7 @@ test("Random after all pre-defined colors", () => {
   let currentColor = preDefiendColors[preDefiendColors.length - 1];
   const excludeColors = [...preDefiendColors];
   const [resultColor] = getNewColor(excludeColors, currentColor);
+  expect(preDefiendColors).not.toContain(resultColor);
   expect(resultColor).toMatch(new RegExp('^#[0123456789abcdef]{6}$')); // start with #, then 6 characters of 0-f
 });
 
