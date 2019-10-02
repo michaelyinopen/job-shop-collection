@@ -5,7 +5,7 @@ import compareJobSetWithState from './compareJobSetWithState';
 import createReducer from '../../../functions/createReducer';
 import updateObject from '../../../functions/updateObject';
 import updateKeyInObject from '../../../functions/updateKeyInObject';
-import getNextId, { getNextOfMax } from '../../../functions/getNextId';
+import getNextOfMax from '../../../functions/getNextOfMax';
 import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjustReducer'
 import getNewColor from './jobColor';
 import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
@@ -56,7 +56,7 @@ const machines = createReducer(
   machinesInitialState,
   {
     [addMachine]: (state, action) => {
-      const id = getNextId(state);
+      const id = getNextOfMax(Object.keys(state));
       return {
         ...state,
         [id]: machine(id)(undefined, action)
@@ -106,7 +106,7 @@ const jobs = createReducer(
   jobsInitialState,
   {
     [createJob]: (state, action) => {
-      const id = getNextId(state);
+      const id = getNextOfMax(Object.keys(state));
       return {
         ...state,
         [id]: job(id)(undefined, action)
@@ -173,7 +173,7 @@ const procedures = createReducer(
   {
     [createProcedure]: (state, action) => {
       const { jobId } = action;
-      const id = getNextId(state);
+      const id = getNextOfMax(Object.keys(state));
       const proceduresOfJobSequences = state.filter(p => p.jobId === jobId).map(p => p.sequence);
       const nextSequence = getNextOfMax(proceduresOfJobSequences);
       return {
@@ -197,10 +197,11 @@ const procedures = createReducer(
         (acc, [key, p]) => {
           const { id: currentId, jobId: currentJobId, sequence } = p;
           if (currentJobId !== jobId) {
+            acc[key] = p;
             return acc;
           }
           if (currentId === id) {
-            acc[currentId] = procedure(currentId)(p, action, targetSequence);
+            acc[key] = procedure(currentId)(p, action, targetSequence);
             return acc;
           }
           let updatedSequence = sequence;
@@ -233,6 +234,7 @@ const procedures = createReducer(
               return acc;
             }
             if (currentJobId !== jobId) {
+              acc[key] = p;
               return acc;
             }
             let updatedSequence = sequence;
@@ -267,11 +269,7 @@ const procedures = createReducer(
       return Object.entries(state)
         .reduce(
           (acc, [key, p]) => {
-            const { id: currentId, machineId: currentMachineId } = p;
-            if (currentMachineId !== machineId) {
-              return acc;
-            }
-            acc[key] = procedure(currentId)(p, action);
+            acc[key] = procedure(key)(p, action);
             return acc;
           },
           {}
