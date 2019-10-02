@@ -11,10 +11,9 @@ import * as fromActionTypes from './actionTypes';
 //               {id: 4, jobId: 2, machineId: 1, sequence: 2, processingMilliseconds:60000}
 //            ]},
 //          ]}
-export const setJobSet = (jobSet, jsonText) => ({
+export const setJobSet = jobSet => ({
   type: fromActionTypes.setJobSet,
-  jobSet,
-  jsonText
+  jobSet
 });
 
 export const addMachine = () => ({

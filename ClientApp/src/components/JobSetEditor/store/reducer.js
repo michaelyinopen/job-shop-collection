@@ -375,6 +375,28 @@ const jobColors = createReducer(
 );
 //#endregion jobColors
 
+const setJobSetReducer = (state, action) => {
+  if (action.type !== setJobSet) {
+    return state;
+  }
+  const { jobSet } = action;
+  const [isEqual, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
+    jobSet,
+    state.machines,
+    state.jobs,
+    state.procedures
+  );
+  if (isEqual) {
+    return state;
+  }
+  return {
+    ...state,
+    machines: mappedMachines,
+    jobs: mappedJobs,
+    procedures: mappedProcedures
+  };
+};
+
 export const init = ({
   machines: machinesArg,
   jobs: jobsArg,
@@ -398,28 +420,6 @@ export const init = ({
   state = adjustJobColors(state, jobColorsArg);
   state = adjustTimeOptions(state);
   return state;
-};
-
-const setJobSetReducer = (state, action) => {
-  if (action.type !== setJobSet) {
-    return state;
-  }
-  const { jobSet } = action;
-  const [isEqual, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
-    jobSet,
-    state.machines,
-    state.jobs,
-    state.procedures
-  );
-  if (isEqual) {
-    return state;
-  }
-  return {
-    ...state,
-    machines: mappedMachines,
-    jobs: mappedJobs,
-    procedures: mappedProcedures
-  };
 };
 
 const reducer = (state, action) => reduceReducers(

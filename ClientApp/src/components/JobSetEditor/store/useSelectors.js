@@ -154,4 +154,4 @@ export const useIsJobSetEqualFn = () => {
     [state.machines, state.jobs, state.procedures]
   );
   return isJobSetEqualFn;
-}
+};
