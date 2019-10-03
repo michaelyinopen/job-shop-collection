@@ -82,6 +82,7 @@ export const adjustTimeOptions = state => {
       differenceInMilliseconds(timeOptions.referenceDate)(maxTime),
       Math.max(
         memoizeGetProcessingTimeSum(state.procedures),
+        differenceInMilliseconds(viewStartTime)(viewEndTime),
         minViewDuration
       )
     )

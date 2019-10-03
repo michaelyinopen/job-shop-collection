@@ -6,6 +6,8 @@ import {
   deleteJob,
   moveProcedure,
   deleteProcedure,
+  changeJobColor,
+  createJob,
 } from './actionCreators';
 
 const initialState = {
@@ -83,7 +85,7 @@ test("init function produces initial state", () => {
       ]
     },
   ];
-  const isAutoTimeOption = true;
+  const isAutoTimeOptions = true;
   const jobColors = [
     { id: 1, color: '#3cb44b', textColor: '#000000' },
     { id: 2, color: '#ffe119', textColor: '#000000' },
@@ -93,7 +95,7 @@ test("init function produces initial state", () => {
   const resultState = init({
     machines,
     jobs,
-    isAutoTimeOption,
+    isAutoTimeOptions,
     jobColors
   });
 
@@ -491,7 +493,7 @@ test("init function with auto time options overrides provided", () => {
       ]
     },
   ];
-  const isAutoTimeOption = true;
+  const isAutoTimeOptions = true;
   const timeOptions = {
     referenceDate: new Date(0), // minTime === referenceDate
     maxTime: new Date(5000000),
@@ -509,7 +511,7 @@ test("init function with auto time options overrides provided", () => {
   const resultState = init({
     machines,
     jobs,
-    isAutoTimeOption,
+    isAutoTimeOptions,
     timeOptions,
     jobColors
   });
@@ -551,7 +553,7 @@ test("init function with manual time options uses provided options", () => {
       ]
     },
   ];
-  const isAutoTimeOption = false;
+  const isAutoTimeOptions = false;
   const timeOptions = {
     referenceDate: new Date(0), // minTime === referenceDate
     maxTime: new Date(5000000),
@@ -569,13 +571,14 @@ test("init function with manual time options uses provided options", () => {
   const resultState = init({
     machines,
     jobs,
-    isAutoTimeOption,
+    isAutoTimeOptions,
     timeOptions,
     jobColors
   });
 
   expect(resultState).toEqual({
     ...initialState,
+    isAutoTimeOptions: false,
     timeOptions: {
       referenceDate: new Date(0), // minTime === referenceDate
       maxTime: new Date(5000000),
@@ -587,35 +590,343 @@ test("init function with manual time options uses provided options", () => {
   });
 });
 
-test.skip("init function with manual time options fills undefined time options", () => {
+test("init function with manual time options fills undefined time options", () => {
+  const machines = [
+    { "id": 1, title: "M1", description: "Machine 1" },
+    { "id": 2, title: "M2", description: "Machine 2" },
+    { "id": 3, title: "M3", description: "Machine 3" },
+    { "id": 4, title: "M4", description: "Machine 4" }
+  ];
+  const jobs = [
+    {
+      "id": 1,
+      "procedures": [
+        { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 600000 },
+        { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 480000 },
+        { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 240000 }
+      ]
+    },
+    {
+      "id": 2,
+      "procedures": [
+        { "id": 4, "jobId": 2, "machineId": 2, "sequence": 1, "processingMilliseconds": 480000 },
+        { "id": 5, "jobId": 2, "machineId": 1, "sequence": 2, "processingMilliseconds": 180000 },
+        { "id": 6, "jobId": 2, "machineId": 4, "sequence": 3, "processingMilliseconds": 300000 },
+        { "id": 7, "jobId": 2, "machineId": 3, "sequence": 4, "processingMilliseconds": 360000 }
+      ]
+    },
+    {
+      "id": 3,
+      "procedures": [
+        { "id": 8, "jobId": 3, "machineId": 1, "sequence": 1, "processingMilliseconds": 240000 },
+        { "id": 9, "jobId": 3, "machineId": 2, "sequence": 2, "processingMilliseconds": 420000 },
+        { "id": 10, "jobId": 3, "machineId": 4, "sequence": 3, "processingMilliseconds": 180000 }
+      ]
+    },
+  ];
+  const isAutoTimeOptions = false;
+  const timeOptions = {
+    referenceDate: new Date(0), // minTime === referenceDate
+    maxTime: new Date(5000000),
+    viewStartTime: new Date(0),
+    viewEndTime: new Date(3500000),
+    maxViewDuration: 3500000
+  };
+  const jobColors = [
+    { id: 1, color: '#3cb44b', textColor: '#000000' },
+    { id: 2, color: '#ffe119', textColor: '#000000' },
+    { id: 3, color: '#4363d8', textColor: '#ffffff' },
+  ];
 
+  const resultState = init({
+    machines,
+    jobs,
+    isAutoTimeOptions,
+    timeOptions,
+    jobColors
+  });
+
+  expect(resultState).toEqual({
+    ...initialState,
+    isAutoTimeOptions: false,
+    timeOptions: {
+      referenceDate: new Date(0), // minTime === referenceDate
+      maxTime: new Date(5000000),
+      viewStartTime: new Date(0),
+      viewEndTime: new Date(3500000),
+      minViewDuration: 360000, // this minViewDuration is not provided, and generated during init
+      maxViewDuration: 3500000
+    }
+  });
 });
 
-test.skip("init function with manual time options uses provided options to fill undefined time options", () => {
+test("init function with manual time options uses provided options to fill undefined time options", () => {
   // maxTime > minViewDuration > sumOfProcessingTime is provided, others undefined
+  const machines = [
+    { "id": 1, title: "M1", description: "Machine 1" },
+    { "id": 2, title: "M2", description: "Machine 2" },
+    { "id": 3, title: "M3", description: "Machine 3" },
+    { "id": 4, title: "M4", description: "Machine 4" }
+  ];
+  const jobs = [
+    {
+      "id": 1,
+      "procedures": [
+        { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 600000 },
+        { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 480000 },
+        { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 240000 }
+      ]
+    },
+    {
+      "id": 2,
+      "procedures": [
+        { "id": 4, "jobId": 2, "machineId": 2, "sequence": 1, "processingMilliseconds": 480000 },
+        { "id": 5, "jobId": 2, "machineId": 1, "sequence": 2, "processingMilliseconds": 180000 },
+        { "id": 6, "jobId": 2, "machineId": 4, "sequence": 3, "processingMilliseconds": 300000 },
+        { "id": 7, "jobId": 2, "machineId": 3, "sequence": 4, "processingMilliseconds": 360000 }
+      ]
+    },
+    {
+      "id": 3,
+      "procedures": [
+        { "id": 8, "jobId": 3, "machineId": 1, "sequence": 1, "processingMilliseconds": 240000 },
+        { "id": 9, "jobId": 3, "machineId": 2, "sequence": 2, "processingMilliseconds": 420000 },
+        { "id": 10, "jobId": 3, "machineId": 4, "sequence": 3, "processingMilliseconds": 180000 }
+      ]
+    },
+  ];
+  const isAutoTimeOptions = false;
+  const timeOptions = {
+    maxTime: new Date(5000000),
+  };
+  const jobColors = [
+    { id: 1, color: '#3cb44b', textColor: '#000000' },
+    { id: 2, color: '#ffe119', textColor: '#000000' },
+    { id: 3, color: '#4363d8', textColor: '#ffffff' },
+  ];
 
+  const resultState = init({
+    machines,
+    jobs,
+    isAutoTimeOptions,
+    timeOptions,
+    jobColors
+  });
+
+  expect(resultState).toEqual({
+    ...initialState,
+    isAutoTimeOptions: false,
+    timeOptions: {
+      referenceDate: new Date(0), // minTime === referenceDate // generated during init
+      maxTime: new Date(5000000),
+      viewStartTime: new Date(0), // generated during init
+      viewEndTime: new Date(5000000), // generated during init, depending on provided maxTime
+      minViewDuration: 360000, // generated during init
+      maxViewDuration: 5000000 // generated during init, depending on provided maxTime
+    }
+  });
 });
 
-test.skip("changeJobColor action", () => {
-
+test("changeJobColor action", () => {
+  const state = { ...initialState };
+  const changeJobColorAction = changeJobColor(1);
+  const resultState = reducer(state, changeJobColorAction);
+  expect(resultState).toEqual({
+    ...initialState,
+    jobColors: {
+      ...initialState.jobColors,
+      [1]: { id: 1, color: '#f58231', textColor: '#000000' }
+    }
+  });
 });
 
-test.skip("init function fills empty job color", () => {
-
+test("changeJobColor action 2", () => {
+  const state = { ...initialState };
+  const changeJobColorAction = changeJobColor(1);
+  const intermediateState = reducer(state, changeJobColorAction);
+  const resultState = reducer(intermediateState, changeJobColorAction);
+  expect(resultState).toEqual({
+    ...initialState,
+    jobColors: {
+      ...initialState.jobColors,
+      [1]: { id: 1, color: '#911eb4', textColor: '#ffffff' }
+    }
+  });
 });
 
-test.skip("init function uses provided job colors and fills missing", () => {
+test("init function fills empty job color", () => {
+  const machines = [
+    { "id": 1, title: "M1", description: "Machine 1" },
+    { "id": 2, title: "M2", description: "Machine 2" },
+    { "id": 3, title: "M3", description: "Machine 3" },
+    { "id": 4, title: "M4", description: "Machine 4" }
+  ];
+  const jobs = [
+    {
+      "id": 1,
+      "procedures": [
+        { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 600000 },
+        { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 480000 },
+        { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 240000 }
+      ]
+    },
+    {
+      "id": 2,
+      "procedures": [
+        { "id": 4, "jobId": 2, "machineId": 2, "sequence": 1, "processingMilliseconds": 480000 },
+        { "id": 5, "jobId": 2, "machineId": 1, "sequence": 2, "processingMilliseconds": 180000 },
+        { "id": 6, "jobId": 2, "machineId": 4, "sequence": 3, "processingMilliseconds": 300000 },
+        { "id": 7, "jobId": 2, "machineId": 3, "sequence": 4, "processingMilliseconds": 360000 }
+      ]
+    },
+    {
+      "id": 3,
+      "procedures": [
+        { "id": 8, "jobId": 3, "machineId": 1, "sequence": 1, "processingMilliseconds": 240000 },
+        { "id": 9, "jobId": 3, "machineId": 2, "sequence": 2, "processingMilliseconds": 420000 },
+        { "id": 10, "jobId": 3, "machineId": 4, "sequence": 3, "processingMilliseconds": 180000 }
+      ]
+    },
+  ];
+  const isAutoTimeOptions = true;
 
+  const resultState = init({
+    machines,
+    jobs,
+    isAutoTimeOptions
+  });
+
+  expect(resultState).toEqual(initialState);
 });
 
-test.skip("init function skips provided job colors tha does not have job", () => {
+test("init function uses provided job colors and fills missing", () => {
+  const machines = [
+    { "id": 1, title: "M1", description: "Machine 1" },
+    { "id": 2, title: "M2", description: "Machine 2" },
+    { "id": 3, title: "M3", description: "Machine 3" },
+    { "id": 4, title: "M4", description: "Machine 4" }
+  ];
+  const jobs = [
+    {
+      "id": 1,
+      "procedures": [
+        { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 600000 },
+        { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 480000 },
+        { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 240000 }
+      ]
+    },
+    {
+      "id": 2,
+      "procedures": [
+        { "id": 4, "jobId": 2, "machineId": 2, "sequence": 1, "processingMilliseconds": 480000 },
+        { "id": 5, "jobId": 2, "machineId": 1, "sequence": 2, "processingMilliseconds": 180000 },
+        { "id": 6, "jobId": 2, "machineId": 4, "sequence": 3, "processingMilliseconds": 300000 },
+        { "id": 7, "jobId": 2, "machineId": 3, "sequence": 4, "processingMilliseconds": 360000 }
+      ]
+    },
+    {
+      "id": 3,
+      "procedures": [
+        { "id": 8, "jobId": 3, "machineId": 1, "sequence": 1, "processingMilliseconds": 240000 },
+        { "id": 9, "jobId": 3, "machineId": 2, "sequence": 2, "processingMilliseconds": 420000 },
+        { "id": 10, "jobId": 3, "machineId": 4, "sequence": 3, "processingMilliseconds": 180000 }
+      ]
+    },
+  ];
+  const isAutoTimeOptions = true;
+  const jobColors = [
+    { id: 3, color: '#eeeeee', textColor: '#111111' },
+  ];
 
+  const resultState = init({
+    machines,
+    jobs,
+    isAutoTimeOptions,
+    jobColors
+  });
+
+  expect(resultState).toEqual({
+    ...initialState,
+    jobColors: {
+      ...initialState.jobColors,
+      [3]: { id: 3, color: '#eeeeee', textColor: '#111111' }
+    }
+  });
 });
 
-test.skip("adding job will have corresponding a job color", () => {
+test("init function skips provided job colors that does not have job", () => {
+  const machines = [
+    { "id": 1, title: "M1", description: "Machine 1" },
+    { "id": 2, title: "M2", description: "Machine 2" },
+    { "id": 3, title: "M3", description: "Machine 3" },
+    { "id": 4, title: "M4", description: "Machine 4" }
+  ];
+  const jobs = [
+    {
+      "id": 1,
+      "procedures": [
+        { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 600000 },
+        { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 480000 },
+        { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 240000 }
+      ]
+    },
+    {
+      "id": 2,
+      "procedures": [
+        { "id": 4, "jobId": 2, "machineId": 2, "sequence": 1, "processingMilliseconds": 480000 },
+        { "id": 5, "jobId": 2, "machineId": 1, "sequence": 2, "processingMilliseconds": 180000 },
+        { "id": 6, "jobId": 2, "machineId": 4, "sequence": 3, "processingMilliseconds": 300000 },
+        { "id": 7, "jobId": 2, "machineId": 3, "sequence": 4, "processingMilliseconds": 360000 }
+      ]
+    },
+    {
+      "id": 3,
+      "procedures": [
+        { "id": 8, "jobId": 3, "machineId": 1, "sequence": 1, "processingMilliseconds": 240000 },
+        { "id": 9, "jobId": 3, "machineId": 2, "sequence": 2, "processingMilliseconds": 420000 },
+        { "id": 10, "jobId": 3, "machineId": 4, "sequence": 3, "processingMilliseconds": 180000 }
+      ]
+    },
+  ];
+  const isAutoTimeOptions = true;
+  const jobColors = [
+    { id: 3, color: '#eeeeee', textColor: '#111111' },
+  ];
 
+  const resultState = init({
+    machines,
+    jobs,
+    isAutoTimeOptions,
+    jobColors
+  });
+
+  expect(resultState).toEqual({
+    ...initialState,
+    jobColors: {
+      ...initialState.jobColors,
+      [3]: { id: 3, color: '#eeeeee', textColor: '#111111' }
+    }
+  });
 });
 
-test.skip("removing job will remove corresponding a job color", () => {
+test("adding job will have a corresponding job color", () => {
+  const state = { ...initialState };
+  const createJobAction = createJob();
+  const resultState = reducer(state, createJobAction);
+  expect(resultState).toMatchObject({
+    jobColors: expect.objectContaining({
+      [4]: { id: 4, color: '#f58231', textColor: '#000000' }
+    })
+  });
+});
 
+test("removing job will remove the corresponding job color", () => {
+  const state = { ...initialState };
+  const deleteJobAction = deleteJob(1);
+  const resultState = reducer(state, deleteJobAction);
+  expect(resultState).toMatchObject({
+    jobColors: expect.not.objectContaining({
+      [1]: expect.anything()
+    })
+  });
 });

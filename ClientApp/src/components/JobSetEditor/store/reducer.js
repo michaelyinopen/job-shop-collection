@@ -405,7 +405,7 @@ export const init = ({
   const mappedMachines = machinesArg ? initMachines(machinesArg) : machinesInitialState;
   const mappedJobs = jobsArg ? initJobs(jobsArg) : jobsInitialState;
   const mappedProcedures = jobsArg ? initProcedures(jobsArg) : proceduresInitialState;
-  const clonedTimeOptions = timeOptionsArg ? { ...timeOptionsArg } : timeOptionsInitialState;
+  const clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
 
   let state = {
     machines: mappedMachines,
