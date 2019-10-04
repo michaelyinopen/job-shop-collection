@@ -1,4 +1,6 @@
-// does not change time options if property is undefined
+export const setTitle = "SET_TITLE";
+export const setDescription = "SET_DESCRIPTION";
+
 export const setJobSet = "SET_JOB_SET";
 
 export const addMachine = "ADD_MACHINE";

@@ -1,5 +1,15 @@
 import * as fromActionTypes from './actionTypes';
 
+export const setTitle = title => ({
+  type: fromActionTypes.setTitle,
+  title
+});
+
+export const setDescription = description => ({
+  type: fromActionTypes.setDescription,
+  description
+});
+
 // jobSet = {machines:[{id: 1, title: "M1", description: "Machine 1"}, {id: 2, title: "M2", description: "Machine 2"}],
 //           jobs:[
 //            {id: 1, procedures:[

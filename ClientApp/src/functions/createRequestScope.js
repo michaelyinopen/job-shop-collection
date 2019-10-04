@@ -1,4 +1,4 @@
-import getNextId from './getNextId';
+import getNextOfMax from './getNextOfMax';
 
 // this is to handle requests that can cause race conditons.
 // all requests will be called
@@ -31,7 +31,7 @@ const createRequestScope = () => {
     if (!previousRequests.some(r => r.status === requestStatus.started)) {
       previousRequests = previousRequestsInitial;
     }
-    const id = getNextId(previousRequests);
+    const id = getNextOfMax(previousRequests.map(r => r.id));
     previousRequests = [...previousRequests, { id, status: requestStatus.started }];
     return id;
   };

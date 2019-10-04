@@ -4,6 +4,7 @@ import JobSetEditorStateContext from './JobSetEditorStateContext';
 import reducer, { init as jobSetEditorInit } from './store/reducer';
 import { Fab, Tooltip } from '@material-ui/core';
 import { Code } from '@material-ui/icons';
+import Title from './Title';
 // import Machines from './Machines';
 // import Jobs from './Jobs';
 // import TimeOptions from './TimeOptions';
@@ -23,7 +24,7 @@ const JobSetEditor = () => {
   );
   return (
     <SplitterLayout primaryIndex={1} >
-      <article>
+      <form>
         <h1>New Job Set</h1>
         <Tooltip
           title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
@@ -38,17 +39,36 @@ const JobSetEditor = () => {
               <Code />
             </Fab>
           </div>
+          {/* add error*/}
         </Tooltip>
+        <Title />
         {/* <Machines />
         <Jobs />
         <TimeOptions /> */}
-      </article>
+      </form>
       {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
     </SplitterLayout >
   );
 };
 
+// const JobSetEditorContainer = () => {
+//   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
+//   const openJsonEditorCallback = useCallback(
+//     () => setIsJsonEditorOpen(true),
+//     []
+//   );
+//   const closeJsonEditorCallback = useCallback(
+//     () => setIsJsonEditorOpen(false),
+//     []
+//   );
+//   return (
+    
+//   );
+// };
+
 const JobSetEditorWithContext = ({
+  title,
+  description,
   jobSet = {},
   isAutoTimeOptions,
   timeOptions,
@@ -58,6 +78,8 @@ const JobSetEditorWithContext = ({
   const [state, dispatch] = useReducer(
     reducer,
     {
+      title,
+      description,
       machines,
       jobs,
       isAutoTimeOptions,

@@ -10,6 +10,8 @@ import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjust
 import getNewColor from './jobColor';
 import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
 import {
+  setTitle,
+  setDescription,
   setJobSet,
 
   addMachine,
@@ -34,6 +36,26 @@ import {
 
   changeJobColor
 } from './actionTypes';
+
+//#region title description
+const titleInitialState = null;
+
+const title = createReducer(
+  titleInitialState,
+  {
+    [setTitle]: (_state, action) => action.title
+  }
+);
+
+const descriptionInitialState = null;
+
+const description = createReducer(
+  descriptionInitialState,
+  {
+    [setDescription]: (_state, action) => action.description
+  }
+);
+//#endregion title description
 
 //#region Machines
 const machineInitialState = id => ({
@@ -396,6 +418,8 @@ const setJobSetReducer = (state, action) => {
 };
 
 export const init = ({
+  title = titleInitialState,
+  description = descriptionInitialState,
   machines: machinesArg,
   jobs: jobsArg,
   isAutoTimeOptions = isAutoTimeOptionsInitialState,
@@ -408,6 +432,8 @@ export const init = ({
   const clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
 
   let state = {
+    title,
+    description,
     machines: mappedMachines,
     jobs: mappedJobs,
     procedures: mappedProcedures,
@@ -423,6 +449,8 @@ export const init = ({
 const reducer = (state, action) => reduceReducers(
   setJobSetReducer,
   combineReducers({
+    title,
+    description,
     machines,
     jobs,
     procedures,

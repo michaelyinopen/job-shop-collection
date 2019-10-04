@@ -11,6 +11,8 @@ import {
 } from './actionCreators';
 
 const initialState = {
+  title: null,
+  description: null,
   machines:
   {
     [1]: { "id": 1, title: "M1", description: "Machine 1" },
@@ -156,6 +158,8 @@ test("init function with all defaults", () => {
   const resultState = init({});
 
   expect(resultState).toEqual({
+    title: null,
+    description: null,
     machines: {},
     jobs: {},
     procedures: {},
@@ -231,6 +235,8 @@ test("removeMachine action unsets procedures", () => {
   const removeMachineAction = removeMachine(1);
   const resultState = reducer(state, removeMachineAction);
   expect(resultState).toEqual({
+    title: null,
+    description: null,
     machines:
     {
       [2]: { "id": 2, title: "M2", description: "Machine 2" },
@@ -277,6 +283,8 @@ test("deleteJob action", () => {
   const deleteJobAction = deleteJob(1);
   const resultState = reducer(state, deleteJobAction);
   expect(resultState).toEqual({
+    title: null,
+    description: null,
     machines:
     {
       [1]: { "id": 1, title: "M1", description: "Machine 1" },
@@ -419,6 +427,8 @@ test("deleteProcedure action", () => {
   const deleteProcedureAction = deleteProcedure(1);
   const resultState = reducer(state, deleteProcedureAction);
   expect(resultState).toEqual({
+    title: null,
+    description: null,
     machines:
     {
       [1]: { "id": 1, title: "M1", description: "Machine 1" },

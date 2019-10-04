@@ -3,6 +3,16 @@ import { differenceInMilliseconds } from 'date-fns/fp';
 import JobSetEditorStateContext from '../JobSetEditorStateContext';
 import compareJobSetWithState from './compareJobSetWithState';
 
+export const useTitle = () => {
+  const state = useContext(JobSetEditorStateContext);
+  return state.title;
+};
+
+export const useDescription = () => {
+  const state = useContext(JobSetEditorStateContext);
+  return state.description;
+};
+
 export const useMachineIds = () => {
   const state = useContext(JobSetEditorStateContext);
   const machineIds = useMemo(
@@ -53,7 +63,7 @@ export const useProcedureOfJobIds = jobId => {
   const state = useContext(JobSetEditorStateContext);
   const procedureIds = useMemo(
     () => Object.values(state.procedures).filter(p => p.jobId === jobId).sort((a, b) => a.sequence - b.sequence).map(p => p.id),
-    [state.procedures]
+    [state.procedures, jobId]
   );
   return procedureIds;
 };
@@ -79,7 +89,7 @@ export const useProceduresOfMachine = machineId => {
   const state = useContext(JobSetEditorStateContext);
   const proceduresOfMachine = useMemo(
     () => Object.values(state.procedures).filter(p => p.machineId === machineId),
-    [state.procedures]
+    [state.procedures, machineId]
   );
   return proceduresOfMachine;
 }
