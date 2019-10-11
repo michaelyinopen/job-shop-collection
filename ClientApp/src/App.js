@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
-import queryString from 'query-string';
 import Layout from './components/Layout';
-import Home from './components/Home';
+import { Home } from './components/Home';
 import About from './components/About';
-import * as fromRoutePaths from './routePaths';
 import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
-import JobSet from './components/JobSet';
-import ComingSoon from './components/ComingSoon';
+import * as fromRoutePaths from './routePaths';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -21,12 +18,7 @@ export default class App extends Component {
             <Route exact path={fromRoutePaths.home} component={Home} />
             <Route exact path={fromRoutePaths.about} component={About} />
             <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
-            <Route exact path={fromRoutePaths.jobSet} render={({ match, location }) => (
-              <JobSet
-                id={+match.params.id}
-                edit={Boolean(queryString.parse(location.search)["edit"])}
-              />
-            )} />
+            <Route path={fromRoutePaths.jobSet} component={JobSets} />
           </Switch>
         </JobShopCollection>
       </Layout>
