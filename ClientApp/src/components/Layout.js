@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import * as fromRoutePaths from '../routePaths';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,7 +30,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const JobSetsLink = React.forwardRef((props, ref) => (
-  <Link innerRef={ref} to="/job-sets/" {...props} />
+  <Link innerRef={ref} to={fromRoutePaths.jobSets} {...props} />
+));
+
+const AboutLink = React.forwardRef((props, ref) => (
+  <Link innerRef={ref} to={fromRoutePaths.about} {...props} />
 ));
 
 const Layout = props => {
@@ -45,7 +50,7 @@ const Layout = props => {
             </Typography>
           </Link>
           <Button className={classes.button} component={JobSetsLink} color="inherit">Job Sets</Button>
-          <Button className={classes.rightButton} color="inherit">About</Button>{/*todo change to link component*/}
+          <Button className={classes.rightButton} component={AboutLink} color="inherit">About</Button>
         </Toolbar>
       </AppBar>
       <div className={classes.container}>
