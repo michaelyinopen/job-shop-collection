@@ -28,9 +28,9 @@ export async function getJobSetsApiAsync(pageToken) {
   return responseBody;
 };
 
-export const deleteJobSetsUrlTemplate = `api/job-sets/{id}`;
-export async function deleteJobSetsApiAsync(id, eTag) {
-  const url = template.parse(deleteJobSetsUrlTemplate).expand({ id });
+export const deleteJobSetUrlTemplate = `api/job-sets/{id}`;
+export async function deleteJobSetApiAsync(id, eTag) {
+  const url = template.parse(deleteJobSetUrlTemplate).expand({ id });
   const init = !eTag ?
   { method: "DELETE" } :
   {
@@ -43,4 +43,22 @@ export async function deleteJobSetsApiAsync(id, eTag) {
   if (!response.ok) {
     throw Error(response.statusText);
   }
+};
+
+export const getJobSetUrlTemplate = `api/job-sets/{id}`;
+export async function getJobSetApiAsync(id) {
+  const url = template.parse(getJobSetUrlTemplate).expand({ id });
+  const response = await fetch(url);
+  if (!response.ok) {
+    // maybe error message?
+    throw Error(response.statusText);
+  }
+  let responseBody;
+  try {
+    responseBody = await response.json();
+  }
+  catch (e) {
+    throw new Error(`Wrong api response format. ${e.message}`);
+  }
+  return responseBody;
 };

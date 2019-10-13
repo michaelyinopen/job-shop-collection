@@ -6,3 +6,7 @@ export const deleteJobSetBegin = "deleteJobSetBegin";
 export const deleteJobSetSucceed = "deleteJobSetSucceed";
 export const deleteJobSetFailed = "deleteJobSetFailed";
 export const clearDeletingJobSets = "clearDeletingJobSets";
+
+export const getJobSetBegin = "getJobSetBegin";
+export const getJobSetSucceed = "getJobSetSucceed";
+export const getJobSetFailed = "getJobSetFailed";

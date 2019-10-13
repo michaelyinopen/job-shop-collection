@@ -51,7 +51,7 @@ import {
   useJobSetSomeDeleting,
   useSelectedJobSets
 } from '../../store/useSelectors';
-import { deleteJobSetsApiAsync } from '../../api';
+import { deleteJobSetApiAsync } from '../../api';
 import usePage, { actionCreators as pageActionCreators } from './usePage';
 
 const useStyles = makeStyles(theme => ({
@@ -142,7 +142,7 @@ const deleteOneJobSetFromSelected = async (jobSet, dispatch) => {
   const { id } = jobSet;
   dispatch(deleteJobSetBegin(id));
   try {
-    await deleteJobSetsApiAsync(id, jobSet.eTag);
+    await deleteJobSetApiAsync(id, jobSet.eTag);
     dispatch(deleteJobSetSucceed(id, false));
     return true;
   }
@@ -425,7 +425,7 @@ const RowDeleteButtonContainer = ({
           isDeleting = true;
           dispatch(deleteJobSetBegin(id));
           try {
-            await deleteJobSetsApiAsync(id, jobSetHeader.eTag);
+            await deleteJobSetApiAsync(id, jobSetHeader.eTag);
             isDeleting = false;
             dispatch(deleteJobSetSucceed(id, true));
             reloadCallback();
@@ -613,7 +613,7 @@ const JobSetRow = React.memo(({
 });
 
 const JobSetRowWithRouter = (props) => {
-  const { history: { push }, match: _match, location: _location } = useReactRouter();
+  const { history: { push } } = useReactRouter();
   const { jobSetHeader: { id } } = props;
   const [viewJobSetCallback, editJobSetCallback, openInNewTabCallback] = useMemo(
     () => {

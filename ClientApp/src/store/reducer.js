@@ -8,8 +8,14 @@ import {
   deleteJobSetBegin,
   deleteJobSetSucceed,
   deleteJobSetFailed,
-  clearDeletingJobSets
+  clearDeletingJobSets,
+
+  getJobSetBegin,
+  getJobSetSucceed,
+  getJobSetFailed
 } from './actionTypes';
+import updateObject from '../functions/updateObject';
+import updateKeyInObject from '../functions/updateKeyInObject';
 
 const getJobSetIsLoadingInitialState = false;
 const getJobSetIsLoading = createReducer(
@@ -40,16 +46,38 @@ const jobSetInitialState = {
   isAutoTimeOptions: undefined,
   timeOptions: undefined,
   eTag: undefined,
+  isLoading: false,
+  loadFailedMessage: null,
+  isUpdating: false,
+  updateFailedMessage: null,
 };
 const jobSet = createReducer(
   jobSetInitialState,
   {
-    [getJobSetsSucceed]: (_state, _action, jobSetFromAction) => ({
+    [getJobSetsSucceed]: (state, _action, jobSetFromAction) => ({
+      ...state,
       id: jobSetFromAction.id,
       title: jobSetFromAction.title,
       description: jobSetFromAction.description,
       eTag: jobSetFromAction.eTag,
-    })
+    }),
+    [getJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isLoading: true, loadingFailedMessage: null }),
+    [getJobSetSucceed]: (state, action) => updateObject(
+      state,
+      {
+        id: action.id,
+        isLoading: false,
+        title: action.jobSet.title,
+        description: action.jobSet.description,
+        content: action.jobSet.content,
+        jobColors: action.jobSet.jobColors,
+        isAutoTimeOptions: action.jobSet.isAutoTimeOptions,
+        timeOptions: action.jobSet.timeOptions,
+        eTag: action.jobSet.eTag,
+        loadFailedMessage: null
+      }
+    ),
+    [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
   }
 );
 
@@ -62,7 +90,10 @@ const jobSets = createReducer(
         newState[js.id] = jobSet(undefined, action, js);
         return newState;
       }, {});
-    }
+    },
+    [getJobSetBegin]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
+    [getJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
+    [getJobSetFailed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
   }
 );
 
