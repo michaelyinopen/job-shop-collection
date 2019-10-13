@@ -34,3 +34,20 @@ export const deleteJobSetFailed = (id, clear) => ({
 export const clearDeletingJobSets = () => ({
   type: fromActionTypes.clearDeletingJobSets,
 });
+
+export const getJobSetBegin = id => ({
+  type: fromActionTypes.getJobSetBegin,
+  id
+});
+
+export const getJobSetSucceed = (id, jobSet) => ({
+  type: fromActionTypes.getJobSetSucceed,
+  id,
+  jobSet
+});
+
+export const getJobSetFailed = (id, failedMessage) => ({
+  type: fromActionTypes.getJobSetFailed,
+  id,
+  failedMessage
+});

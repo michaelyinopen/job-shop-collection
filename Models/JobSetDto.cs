@@ -15,10 +15,10 @@ namespace JobShopCollection.Models
         public string? Description { get; set; }
 
         [JsonIgnore]
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
 
         [JsonProperty]
-        public string ETag => EtagHelper.GetETag(RowVersion);
+        public string? ETag => EtagHelper.GetETag(RowVersion);
     }
 
     public class JobSetHeadersDto
@@ -48,6 +48,9 @@ namespace JobShopCollection.Models
 
         [JsonIgnore]
         public byte[]? RowVersion { get; set; }
+
+        [JsonProperty]
+        public string? ETag => EtagHelper.GetETag(RowVersion);
     }
 
     public class NewJobSetDto

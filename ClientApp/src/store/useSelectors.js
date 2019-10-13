@@ -92,3 +92,21 @@ export const useSelectedJobSets = idArray => {
   );
   return selectedJobSets;
 };
+
+export const useJobSet = id => {
+  const state = useContext(JobShopCollectionStateContext);
+  return state.jobSets[id];
+};
+
+// returns true when there is no jobSet in redux store
+export const useIsLoadingJobSet = id => {
+  const state = useContext(JobShopCollectionStateContext);
+  const jobSet = state.jobSets[id];
+  return jobSet ? jobSet.isLoading : true;
+};
+
+export const useLoadJobSetFailedMessage = id => {
+  const state = useContext(JobShopCollectionStateContext);
+  const jobSet = state.jobSets[id];
+  return jobSet ? jobSet.loadFailedMessage : undefined;
+};
