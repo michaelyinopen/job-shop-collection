@@ -81,8 +81,10 @@ const useStyles = makeStyles(theme => ({
   progressOnButton: {
     position: 'absolute',
     zIndex: 1,
-    top: theme.spacing(0.5),
-    left: theme.spacing(0.5),
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    display: 'flex'
   },
   tableTitle: { // move
     marginRight: theme.spacing(3),
@@ -133,7 +135,7 @@ const ToolbarDeleteButton = React.memo(({
       <IconButton onClick={onDelete}>
         <DeleteIcon />
       </IconButton>
-      {isDeleting ? <CircularProgress className={classes.progressOnButton} /> : null}
+      {isDeleting ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
     </div>
   );
 });
@@ -239,7 +241,7 @@ const JobSetTitle = ({
         <IconButton onClick={reloadCallback}>
           <RefreshIcon />
         </IconButton>
-        {isLoading ? <CircularProgress className={classes.progressOnButton} /> : null}
+        {isLoading ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
       </div>
       <Typography color="error">
         {failedMessage}
@@ -396,7 +398,7 @@ const RowDeleteButton = React.memo(({
       >
         {deleteFailed ? <ReportProblemIcon /> : deleteSucceed ? <CheckIcon /> : <DeleteIcon />}
       </IconButton>
-      {isDeleting ? <CircularProgress className={classes.progressOnButton} /> : null}
+      {isDeleting ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
     </div>
   );
 });
