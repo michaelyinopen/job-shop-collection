@@ -1,26 +1,67 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import Fab from '@material-ui/core/Fab';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import * as fromRoutePaths from '../routePaths';
 
-export class Home extends Component {
-  static displayName = Home.name;
-
-  render () {
-    return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
-    );
+const useStyles = makeStyles(theme => ({
+  container: {
+    backgroundColor: theme.palette.background.default,
+    paddingTop: theme.spacing(1),
+    height: "100%"
+  },
+  examplesLink: {
+    margin: theme.spacing(2),
   }
+}));
+
+const ExamplesLink = React.forwardRef((props, ref) => (
+  <Link innerRef={ref} to={fromRoutePaths.jobSets} {...props} />
+));
+
+const Home = () => {
+  const classes = useStyles();
+  return (
+    <Container className={classes.container}>
+      <h1>Job Shop Collection</h1>
+      <p>
+        Welcome to Job Shop Collection where you can find examples of the The Job Shop Scheduling Problem.<br />
+        <Fab
+          component={ExamplesLink}
+          variant="extended"
+          size="medium"
+          color="primary"
+          className={classes.examplesLink}
+        >
+          View the examples now
+        </Fab>
+      </p>
+      <h3>About The Job Shop Scheduling Problem</h3>
+      <p>
+        The Job Shop Problem is a scheduling problem, in which multiple jobs are processed on several machines.
+        Each job consists of a sequence of tasks, which must be performed in a given order, and each task must be processed on a specific machine.
+      </p>
+      <p>
+        The solution of the problem is a schedule, which describes clearly how the tasks are scheduled on the machines. This schedule provides visibility and control over the production process and ultimately boost production efficiency.
+      </p>
+      <p>
+        References
+      <ul>
+          <li><a href='https://en.wikipedia.org/wiki/Job_shop_scheduling'>Wikipedia</a></li>
+          <li><a href='https://developers.google.com/optimization/scheduling/job_shop'>Google OR-Tools</a></li>
+        </ul>
+      </p>
+      <h3>This application is built with</h3>
+      <ul>
+        <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
+        <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for server-side code</li>
+        <li><a href='https://material-ui.com/'>Material-ui</a> for layout and styling</li>
+        <li><a href='https://azure.microsoft.com/'>Azure</a> for hosting Web App and database</li>
+      </ul>
+    </Container>
+  );
 }
+
+export default Home;

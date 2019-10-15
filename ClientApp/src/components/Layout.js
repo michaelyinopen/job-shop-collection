@@ -44,7 +44,7 @@ const Layout = props => {
     <div className={classes.root}>
       <AppBar position="relative">
         <Toolbar>
-          <Link to="/" className={classes.title}>
+          <Link to={fromRoutePaths.home} className={classes.title}>
             <Typography variant="h5">
               Job Shop Collection
             </Typography>
