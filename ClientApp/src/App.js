@@ -8,6 +8,7 @@ import * as fromRoutePaths from './routePaths';
 import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
 import JobSet from './components/JobSet';
+import ComingSoon from './components/ComingSoon';
 
 export default class App extends Component {
   static displayName = App.name;
