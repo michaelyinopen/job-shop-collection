@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace JobShopCollection
 {
@@ -60,7 +62,23 @@ namespace JobShopCollection
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            app.UseSpaStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    if (ctx.Context.Request.Path.StartsWithSegments("/static"))
+                    {
+                        int cachePeriod = 604800; // a year
+                        ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cachePeriod}");
+                    }
+                    else
+                    {
+                        int cachePeriod = 0;
+                        // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
+                        ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cachePeriod}");
+                    }
+                }
+            });
 
             app.Map("/api", apiApp =>
             {
@@ -77,6 +95,14 @@ namespace JobShopCollection
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
+                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
+                {
+                    OnPrepareResponse = ctx => {
+                        int cachePeriod = 0;
+                        // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                        ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cachePeriod}");
+                    }
+                };
 
                 if (env.IsDevelopment())
                 {
