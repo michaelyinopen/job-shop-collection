@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 import Layout from './components/Layout';
-import { Home } from './components/Home';
+import Home from './components/Home';
 import About from './components/About';
 import * as fromRoutePaths from './routePaths';
 import JobShopCollection from './components/JobShopCollection';
