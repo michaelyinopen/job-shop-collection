@@ -572,7 +572,7 @@ const JobSetRow = React.memo(({
         {jobSetHeader.id}
       </TableCell>
       <TableCell align="left">
-        <Typography>
+        <Typography noWrap>
           {jobSetHeader.title}
         </Typography>
       </TableCell>
