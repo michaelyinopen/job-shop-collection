@@ -6,7 +6,7 @@ import About from './components/About';
 import * as fromRoutePaths from './routePaths';
 import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
-import JobSetEditor from './components/JobSetEditor';
+import ComingSoon from './components/ComingSoon';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -19,8 +19,7 @@ export default class App extends Component {
             <Route exact path={fromRoutePaths.home} component={Home} />
             <Route exact path={fromRoutePaths.about} component={About} />
             <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
-            <Route path={fromRoutePaths.jobSet} component={JobSets} />
-            <Route path={fromRoutePaths.jobSetEditor} component={JobSetEditor} />
+            <Route exact path={fromRoutePaths.jobSet} component={ComingSoon} />
           </Switch>
         </JobShopCollection>
       </Layout>
