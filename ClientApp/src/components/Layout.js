@@ -25,7 +25,8 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "auto"
   },
   container: {
-    flex: "1 1 auto"
+    flex: "1 1 auto",
+    position: "relative"
   }
 }));
 
