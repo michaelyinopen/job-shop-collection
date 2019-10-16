@@ -7,7 +7,7 @@ import { Fab, Tooltip, Container } from '@material-ui/core';
 import { Code } from '@material-ui/icons';
 import Title from './Title';
 import Description from './Description';
-// import Machines from './Machines';
+import Machines from './Machines';
 // import Jobs from './Jobs';
 // import TimeOptions from './TimeOptions';
 // import JsonEditor from './JsonEditor';
@@ -16,7 +16,12 @@ import 'react-splitter-layout/lib/index.css';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.default,
+    height: '100%',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
     position: "relative"
   }
 }));
@@ -56,8 +61,8 @@ const JobSetEditor = ({
         */}
         <Title />
         <Description />
-        {/* <Machines />
-        <Jobs />
+        <Machines />
+        {/*<Jobs />
         <TimeOptions /> */}
       </Container>
       {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
@@ -65,24 +70,8 @@ const JobSetEditor = ({
   );
 };
 
-// const JobSetEditorContainer = () => {
-//   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
-//   const openJsonEditorCallback = useCallback(
-//     () => setIsJsonEditorOpen(true),
-//     []
-//   );
-//   const closeJsonEditorCallback = useCallback(
-//     () => setIsJsonEditorOpen(false),
-//     []
-//   );
-//   return (
-
-//   );
-// };
-
 const JobSetEditorWithContext = ({
   pageTitle,
-  edit,
   title,
   description,
   jobSet = {},
