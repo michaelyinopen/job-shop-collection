@@ -17,6 +17,11 @@ const About = () => {
       <h1>About</h1>
       Michael Yin implemented this application to demonstrate what he learned.
       <h2> Releases </h2>
+      <h3> 1.0.0-alpha.3 (16 Oct 2019)</h3>
+      <ul>
+        <li>View Job Set</li>
+        <li>Disable delete</li>
+      </ul>
       <h3> 1.0.0-alpha.2 (15 Oct 2019)</h3>
       <ul>
         <li>Front page explaining the job shop problem</li>

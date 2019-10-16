@@ -37,11 +37,11 @@ const JobSetEditor = ({
   return (
     <SplitterLayout primaryIndex={1}>
       <Container component="form" className={classes.container}>
-        <h1>{pageTitle}</h1>
+        <h1>{pageTitle} (readonly)</h1>
+        {/*
         <Tooltip
           title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
-        >
-          <div style={{
+        ><div style={{
             position: "absolute",
             top: "16px",
             right: "16px",
@@ -51,8 +51,9 @@ const JobSetEditor = ({
               <Code />
             </Fab>
           </div>
-          {/* add error*/}
+         //add error
         </Tooltip>
+        */}
         <Title />
         <Description />
         {/* <Machines />
