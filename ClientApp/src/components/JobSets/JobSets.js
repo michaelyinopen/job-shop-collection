@@ -98,8 +98,11 @@ const useStyles = makeStyles(theme => ({
         ? 'rgba(0, 0, 0, 0.07)' // grey[200]
         : 'rgba(255, 255, 255, 0.14)',
   },
+  titleCell: {
+    maxWidth: '230px',
+  },
   descriptionCell: {
-    width: '700px',
+    maxWidth: '700px',
   },
   actionsFlexbox: {
     display: 'flex',
@@ -125,14 +128,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //#region title / toolbar
+// todo: reverse disabled the delete
 const ToolbarDeleteButton = React.memo(({
   onDelete,
   isDeleting,
 }) => {
   const classes = useStyles();
   return (
-    <div className={clsx(classes.withProgressWrapper, classes.toolbarDeleteButton)}>
-      <IconButton onClick={onDelete}>
+    <div className={clsx(classes.withProgressWrapper, classes.toolbarDeleteButton)} onClick={preventDefaultPropagation}>
+      <IconButton onClick={onDelete} disabled>
         <DeleteIcon />
       </IconButton>
       {isDeleting ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
@@ -377,6 +381,7 @@ const JobSetTableHead = ({
 //#endregion HeadRow
 
 //#region row
+// todo: reverse disabled the delete
 const RowDeleteButton = React.memo(({
   dense,
   onDelete,
@@ -386,12 +391,13 @@ const RowDeleteButton = React.memo(({
 }) => {
   const classes = useStyles();
   return (
-    <div className={classes.withProgressWrapper}>
+    <div className={classes.withProgressWrapper}  onClick={preventDefaultPropagation}>
       <IconButton
         className={clsx({
           [classes.buttonSuccess]: deleteSucceed,
           [classes.buttonFailed]: deleteFailed
         })}
+        disabled
         onClick={onDelete}
         onContextMenu={preventDefaultPropagation}
         size={dense ? 'small' : 'medium'}
@@ -479,6 +485,7 @@ const RowMoreActionsMenu = ({
       keepMounted
       open={open}
       onClose={handleClose}
+      onClick={preventDefaultPropagation}
     >
       <MenuItem onClick={viewJobSetCallback} onContextMenu={preventDefaultPropagation}>
         <ListItemIcon>
@@ -574,7 +581,11 @@ const JobSetRow = React.memo(({
         {jobSetHeader.id}
       </TableCell>
       <TableCell align="left">
-        {jobSetHeader.title}
+        <div className={classes.titleCell}>
+          <Typography noWrap>
+            {jobSetHeader.title}
+          </Typography>
+        </div>
       </TableCell>
       <TableCell align="left">
         <div className={classes.descriptionCell}>

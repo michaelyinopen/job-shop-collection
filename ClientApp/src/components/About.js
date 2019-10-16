@@ -16,6 +16,16 @@ const About = () => {
     <Container className={classes.container}>
       <h1>About</h1>
       Michael Yin implemented this application to demonstrate what he learned.
+      <h2> Releases </h2>
+      <h3> 1.0.0-alpha.2 (15 Oct 2019)</h3>
+      <ul>
+        <li>Front page explaining the job shop problem</li>
+        <li>About page added Release</li>
+        <li>Added sample data to database</li>
+        <li>Remove non-functional parts</li>
+      </ul>
+      <h3> 1.0.0-alpha.1 (12 Oct 2019)</h3>
+      Published app and database to azure.
     </Container>
   )
 };
