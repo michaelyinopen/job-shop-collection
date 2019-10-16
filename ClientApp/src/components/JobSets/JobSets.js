@@ -1,5 +1,4 @@
 import React, { useMemo, useContext, useEffect, useCallback, useState } from 'react';
-import queryString from 'query-string';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -60,6 +59,7 @@ import usePage, { actionCreators as pageActionCreators } from './usePage';
 const useStyles = makeStyles(theme => ({
   container: {
     backgroundColor: theme.palette.background.default,
+    height: '100%',
     paddingTop: theme.spacing(1)
   },
   root: {
@@ -583,14 +583,14 @@ const JobSetRow = React.memo(({
       <TableCell component="th" id={labelId} scope="row" padding="none">
         {jobSetHeader.id}
       </TableCell>
-      <TableCell align="left">
+      <TableCell align="left" padding="none">
         <div className={classes.titleCell}>
           <Typography noWrap>
             {jobSetHeader.title}
           </Typography>
         </div>
       </TableCell>
-      <TableCell align="left">
+      <TableCell align="left" padding="none">
         <div className={classes.descriptionCell}>
           <Typography noWrap>
             {jobSetHeader.description}
@@ -711,7 +711,7 @@ const JobSets = React.memo(({
                 />
               ))}
             {emptyRows > 0 && (
-              <TableRow style={{ height: (dense ? 37 : 53) * emptyRows }}>
+              <TableRow style={{ height: (dense ? 31 : 49) * emptyRows }}>
                 <TableCell colSpan={5} />
               </TableRow>
             )}
