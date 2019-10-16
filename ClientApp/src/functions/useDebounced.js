@@ -24,7 +24,8 @@ const defaultOptions = {
   pendingStateChange: true
 };
 
-const useDebounced = (func, wait = 16, options = {}) => {
+const emptyOptions = {};
+const useDebounced = (func, wait = 16, options = emptyOptions) => {
   const effectiveOptions = useMemo(
     () => ({
       ...defaultOptions,

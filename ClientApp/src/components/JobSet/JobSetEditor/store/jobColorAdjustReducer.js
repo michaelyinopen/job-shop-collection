@@ -1,14 +1,15 @@
 import arrayEqual from '../../../../functions/arrayEqual';
 import getNewColor from './jobColor';
 
-export const adjustJobColors = (state, jobColors = []) => {
+export const adjustJobColors = (state, jobColorsArg) => {
+  const jobColors = jobColorsArg ? jobColorsArg : [];
   const { jobs, jobColors: jobColorsFromState } = state;
-  const predefinedJobColors = [...jobColors, ...Object.values(jobColorsFromState)].filter(jc => jobs.hasOwnProperty(jc.id)); // exclude orphan jobColors
+  const predefinedJobColors = [...jobColors, ...(Object.values(jobColorsFromState))].filter(jc => jobs.hasOwnProperty(jc.id)); // exclude orphan jobColors
   let newJobColors = {};
   for (const key of Object.keys(jobs)) {
     const id = +key;
     const predefinedJobColor = predefinedJobColors.find(jc => jc.id === id);
-    const excludeColors = () => [...Object.values(newJobColors), predefinedJobColors].map(jc => jc.color);
+    const excludeColors = () => [...(Object.values(newJobColors)), predefinedJobColors].map(jc => jc.color);
     const [color, textColor] = predefinedJobColor ? [predefinedJobColor.color, predefinedJobColor.textColor] : getNewColor(excludeColors());
     newJobColors[id] = {
       id,

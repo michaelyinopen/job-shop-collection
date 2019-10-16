@@ -2,9 +2,11 @@ import React, { useReducer, useState, useCallback } from 'react';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 import JobSetEditorStateContext from './JobSetEditorStateContext';
 import reducer, { init as jobSetEditorInit } from './store/reducer';
-import { Fab, Tooltip } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Fab, Tooltip, Container } from '@material-ui/core';
 import { Code } from '@material-ui/icons';
 import Title from './Title';
+import Description from './Description';
 // import Machines from './Machines';
 // import Jobs from './Jobs';
 // import TimeOptions from './TimeOptions';
@@ -12,9 +14,17 @@ import Title from './Title';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
+const useStyles = makeStyles(theme => ({
+  container: {
+    padding: theme.spacing(1),
+    position: "relative"
+  }
+}));
+
 const JobSetEditor = ({
   pageTitle
 }) => {
+  const classes = useStyles();
   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
   const openJsonEditorCallback = useCallback(
     () => setIsJsonEditorOpen(true),
@@ -25,8 +35,8 @@ const JobSetEditor = ({
     []
   );
   return (
-    <SplitterLayout primaryIndex={1} >
-      <form>
+    <SplitterLayout primaryIndex={1}>
+      <Container component="form" className={classes.container}>
         <h1>{pageTitle}</h1>
         <Tooltip
           title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
@@ -44,10 +54,11 @@ const JobSetEditor = ({
           {/* add error*/}
         </Tooltip>
         <Title />
+        <Description />
         {/* <Machines />
         <Jobs />
         <TimeOptions /> */}
-      </form>
+      </Container>
       {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
     </SplitterLayout >
   );
@@ -64,7 +75,7 @@ const JobSetEditor = ({
 //     []
 //   );
 //   return (
-    
+
 //   );
 // };
 
@@ -95,7 +106,7 @@ const JobSetEditorWithContext = ({
   return (
     <JobSetEditorDispatchContext.Provider value={dispatch}>
       <JobSetEditorStateContext.Provider value={state}>
-        <JobSetEditor pageTitle={pageTitle}/>
+        <JobSetEditor pageTitle={pageTitle} />
       </JobSetEditorStateContext.Provider>
     </JobSetEditorDispatchContext.Provider>
   );
