@@ -31,7 +31,10 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import preventDefaultPropagation from '../../functions/preventDefaultPropagation';
-import { jobSet as jobSetPath } from '../../routePaths';
+import {
+  jobSet as jobSetPath,
+  jobSetEdit as jobSetEditPath
+} from '../../routePaths';
 import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
 import {
   getJobSetsBegin,
@@ -391,7 +394,7 @@ const RowDeleteButton = React.memo(({
 }) => {
   const classes = useStyles();
   return (
-    <div className={classes.withProgressWrapper}  onClick={preventDefaultPropagation}>
+    <div className={classes.withProgressWrapper} onClick={preventDefaultPropagation}>
       <IconButton
         className={clsx({
           [classes.buttonSuccess]: deleteSucceed,
@@ -640,9 +643,7 @@ const JobSetRowWithRouter = (props) => {
         e.stopPropagation();
         push(path);
       };
-      let editQueryString = queryString.stringify({ edit: true });
-      editQueryString = editQueryString ? '?' + editQueryString : '';
-      const editPath = path + editQueryString;
+      const editPath = generatePath(jobSetEditPath, { id });
       const editCallback = e => {
         e.stopPropagation();
         e.preventDefault();

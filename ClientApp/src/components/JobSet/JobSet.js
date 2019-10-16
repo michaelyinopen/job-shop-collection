@@ -49,7 +49,6 @@ const JobSet = ({
     return <div>Loading Failed. {loadFailedMessage}</div>;
   }
 
-  return <div>succeed</div>;
   return (
     <JobSetEditor
       pageTitle={pageTitle}
