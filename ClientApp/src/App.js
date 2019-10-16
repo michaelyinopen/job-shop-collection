@@ -27,6 +27,7 @@ export default class App extends Component {
                 edit={Boolean(queryString.parse(location.search)["edit"])}
               />
             )} />
+            <Route exact path={fromRoutePaths.jobSetEdit} component={ComingSoon} />
           </Switch>
         </JobShopCollection>
       </Layout>
