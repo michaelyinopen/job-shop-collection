@@ -2,7 +2,7 @@ import React from 'react';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import { Tooltip } from '@material-ui/core';
 import { useProcedureOfJobIds } from './store/useSelectors';
-//import Procedure from './Procedure';
+import Procedure from './Procedure';
 import CreateProcedure from './CreateProcedure';
 
 const useStyles = makeStyles(theme => ({
@@ -41,7 +41,7 @@ const Procedures = React.memo(({
         <Tooltip title={`${count} Procedures in Job ${jobId}`}><span>{countMessage}</span></Tooltip>
       </h4>
       <ol className={classes.list}>
-        {/* {procedureIds.map(id => <li key={id}><Procedure id={id} /></li>)}*/}
+        {procedureIds.map(id => <li key={id}><Procedure id={id} /></li>)}
         <li key="createProcedure"><CreateProcedure jobId={jobId} /></li>
       </ol>
     </section>

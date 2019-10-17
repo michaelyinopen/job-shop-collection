@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { Route, Switch } from 'react-router';
 import queryString from 'query-string';
 import Layout from './components/Layout';
@@ -15,22 +17,24 @@ export default class App extends Component {
 
   render() {
     return (
-      <Layout>
-        <JobShopCollection>
-          <Switch>
-            <Route exact path={fromRoutePaths.home} component={Home} />
-            <Route exact path={fromRoutePaths.about} component={About} />
-            <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
-            <Route exact path={fromRoutePaths.jobSet} render={({ match, location }) => (
-              <JobSet
-                id={+match.params.id}
-                edit={Boolean(queryString.parse(location.search)["edit"])}
-              />
-            )} />
-            <Route exact path={fromRoutePaths.jobSetEdit} component={ComingSoon} />
-          </Switch>
-        </JobShopCollection>
-      </Layout>
+      <DndProvider backend={HTML5Backend}>
+        <Layout>
+          <JobShopCollection>
+            <Switch>
+              <Route exact path={fromRoutePaths.home} component={Home} />
+              <Route exact path={fromRoutePaths.about} component={About} />
+              <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
+              <Route exact path={fromRoutePaths.jobSet} render={({ match, location }) => (
+                <JobSet
+                  id={+match.params.id}
+                  edit={Boolean(queryString.parse(location.search)["edit"])}
+                />
+              )} />
+              <Route exact path={fromRoutePaths.jobSetEdit} component={ComingSoon} />
+            </Switch>
+          </JobShopCollection>
+        </Layout>
+      </DndProvider>
     );
   }
 }
