@@ -6,7 +6,7 @@ export const adjustJobColors = (state, jobColorsArg) => {
   const { jobs, jobColors: jobColorsFromState } = state;
   const predefinedJobColors = [...jobColors, ...(Object.values(jobColorsFromState))].filter(jc => jobs.hasOwnProperty(jc.id)); // exclude orphan jobColors
   let newJobColors = {};
-  for (const key of Object.keys(jobs)) {
+  for (const key of Object.keys(jobs)) { // eslint-disable-line no-unused-vars
     const id = +key;
     const predefinedJobColor = predefinedJobColors.find(jc => jc.id === id);
     const excludeColors = () => [...(Object.values(newJobColors)), predefinedJobColors].map(jc => jc.color);

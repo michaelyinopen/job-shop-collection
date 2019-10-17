@@ -8,7 +8,7 @@ import { Code } from '@material-ui/icons';
 import Title from './Title';
 import Description from './Description';
 import Machines from './Machines';
-// import Jobs from './Jobs';
+import Jobs from './Jobs';
 // import TimeOptions from './TimeOptions';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
@@ -62,8 +62,8 @@ const JobSetEditor = ({
         <Title />
         <Description />
         <Machines />
-        {/*<Jobs />
-        <TimeOptions /> */}
+        <Jobs />
+        {/*<TimeOptions /> */}
       </Container>
       {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
     </SplitterLayout >
