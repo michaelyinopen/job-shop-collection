@@ -196,7 +196,7 @@ const procedures = createReducer(
     [createProcedure]: (state, action) => {
       const { jobId } = action;
       const id = getNextOfMax(Object.keys(state));
-      const proceduresOfJobSequences = state.filter(p => p.jobId === jobId).map(p => p.sequence);
+      const proceduresOfJobSequences = Object.values(state).filter(p => p.jobId === jobId).map(p => p.sequence);
       const nextSequence = getNextOfMax(proceduresOfJobSequences);
       return {
         ...state,

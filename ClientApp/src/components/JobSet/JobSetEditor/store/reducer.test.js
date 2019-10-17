@@ -4,6 +4,7 @@ import {
   addMachine,
   removeMachine,
   deleteJob,
+  createProcedure,
   moveProcedure,
   deleteProcedure,
   changeJobColor,
@@ -317,6 +318,20 @@ test("deleteJob action", () => {
     jobColors: {
       [2]: { "id": 2, color: '#ffe119', textColor: '#000000' },
       [3]: { "id": 3, color: '#4363d8', textColor: '#ffffff' },
+    }
+  });
+});
+
+test("createProcedure action", () => {
+  const state = { ...initialState };
+  const jobId = 1;
+  const createProcedureAction = createProcedure(jobId);
+  const resultState = reducer(state, createProcedureAction);
+  expect(resultState).toEqual({
+    ...initialState,
+    procedures: {
+      ...initialState.procedures,
+      [11]: { "id": 11, "jobId": jobId, "machineId": undefined, "sequence": 4, "processingMilliseconds": undefined }
     }
   });
 });
