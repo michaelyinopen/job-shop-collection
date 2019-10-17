@@ -124,7 +124,7 @@ const JobOptionsButton = ({
         </article>
       );
     },
-    [classes, colorOptionMemo, backgroundColor, foregroundColor]
+    [id, classes, colorOptionMemo, backgroundColor, foregroundColor]
   );
 
   const popperMemo = useMemo(

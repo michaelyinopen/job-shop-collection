@@ -26,13 +26,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FormEditor = ({
-  classes,
-  pageTitle,
-  isJsonEditorOpen,
-  openJsonEditorCallback
+const JobSetEditor = ({
+  pageTitle
 }) => {
-  return (
+  const classes = useStyles();
+  const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
+  const openJsonEditorCallback = useCallback(
+    () => setIsJsonEditorOpen(true),
+    []
+  );
+  const closeJsonEditorCallback = useCallback(
+    () => setIsJsonEditorOpen(false),
+    []
+  );
+  const form = (
     <Container component="form" className={classes.container}>
       <h1>{pageTitle} (readonly)</h1>
       {/*
@@ -58,29 +65,6 @@ const FormEditor = ({
       {/*<TimeOptions /> */}
     </Container>
   );
-}
-
-const JobSetEditor = ({
-  pageTitle
-}) => {
-  const classes = useStyles();
-  const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
-  const openJsonEditorCallback = useCallback(
-    () => setIsJsonEditorOpen(true),
-    []
-  );
-  const closeJsonEditorCallback = useCallback(
-    () => setIsJsonEditorOpen(false),
-    []
-  );
-  const form = (
-    <FormEditor
-      classes={classes}
-      pageTitle={pageTitle}
-      isJsonEditorOpen={isJsonEditorOpen}
-      openJsonEditorCallback={openJsonEditorCallback}
-    />
-  )
   if (isJsonEditorOpen) {
     return (
       <SplitterLayout primaryIndex={1}>
