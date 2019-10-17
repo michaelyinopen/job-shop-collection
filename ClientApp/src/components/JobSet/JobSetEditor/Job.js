@@ -4,7 +4,7 @@ import { Card } from '@material-ui/core';
 import { useJobColor } from './store/useSelectors';
 import DeleteJobButton from './DeleteJobButton';
 import JobOptionsButton from './JobOptionsButton';
-//import Procedures from './Procedures';
+import Procedures from './Procedures';
 import { job as jobStyle } from './sharedStyles';
 
 const useStyles = makeStyles(theme => ({
@@ -56,7 +56,7 @@ const Job = React.memo(({
           <DeleteJobButton id={id} />
         </aside>
       </div>
-      {/* <Procedures jobId={id} /> */}
+      <Procedures jobId={id} />
     </Card>
   );
 });
