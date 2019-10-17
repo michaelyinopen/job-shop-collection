@@ -17,14 +17,48 @@ import 'react-splitter-layout/lib/index.css';
 const useStyles = makeStyles(theme => ({
   container: {
     backgroundColor: theme.palette.background.default,
-    height: '100%',
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(4),
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
+    minHeight: "100%",
     position: "relative"
   }
 }));
+
+const FormEditor = ({
+  classes,
+  pageTitle,
+  isJsonEditorOpen,
+  openJsonEditorCallback
+}) => {
+  return (
+    <Container component="form" className={classes.container}>
+      <h1>{pageTitle} (readonly)</h1>
+      {/*
+    <Tooltip
+      title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
+    ><div style={{
+        position: "absolute",
+        top: "16px",
+        right: "16px",
+        margin: "16px"
+      }}>
+        <Fab disabled={isJsonEditorOpen} onClick={openJsonEditorCallback}>
+          <Code />
+        </Fab>
+      </div>
+     //add error
+    </Tooltip>
+    */}
+      <Title />
+      <Description />
+      <Machines />
+      <Jobs />
+      {/*<TimeOptions /> */}
+    </Container>
+  );
+}
 
 const JobSetEditor = ({
   pageTitle
@@ -39,35 +73,23 @@ const JobSetEditor = ({
     () => setIsJsonEditorOpen(false),
     []
   );
-  return (
-    <SplitterLayout primaryIndex={1}>
-      <Container component="form" className={classes.container}>
-        <h1>{pageTitle} (readonly)</h1>
-        {/*
-        <Tooltip
-          title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
-        ><div style={{
-            position: "absolute",
-            top: "16px",
-            right: "16px",
-            margin: "16px"
-          }}>
-            <Fab disabled={isJsonEditorOpen} onClick={openJsonEditorCallback}>
-              <Code />
-            </Fab>
-          </div>
-         //add error
-        </Tooltip>
-        */}
-        <Title />
-        <Description />
-        <Machines />
-        <Jobs />
-        {/*<TimeOptions /> */}
-      </Container>
-      {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
-    </SplitterLayout >
-  );
+  const form = (
+    <FormEditor
+      classes={classes}
+      pageTitle={pageTitle}
+      isJsonEditorOpen={isJsonEditorOpen}
+      openJsonEditorCallback={openJsonEditorCallback}
+    />
+  )
+  if (isJsonEditorOpen) {
+    return (
+      <SplitterLayout primaryIndex={1}>
+        {form}
+        {isJsonEditorOpen ? null/*<JsonEditor closeJsonEditorCallback={closeJsonEditorCallback} />*/ : null}
+      </SplitterLayout >
+    );
+  }
+  return form;
 };
 
 const JobSetEditorWithContext = ({
