@@ -10,7 +10,8 @@ export const adjustJobColors = (state, jobColorsArg) => {
     const id = +key;
     const predefinedJobColor = predefinedJobColors.find(jc => jc.id === id);
     const excludeColors = () => [...(Object.values(newJobColors)), predefinedJobColors].map(jc => jc.color);
-    const [color, textColor] = predefinedJobColor ? [predefinedJobColor.color, predefinedJobColor.textColor] : getNewColor(excludeColors());
+    const previousColor = () => predefinedJobColors[predefinedJobColors.length - 1] ? predefinedJobColors[predefinedJobColors.length - 1].color : undefined;
+    const [color, textColor] = predefinedJobColor ? [predefinedJobColor.color, predefinedJobColor.textColor] : getNewColor(excludeColors(), previousColor());
     newJobColors[id] = {
       id,
       color,

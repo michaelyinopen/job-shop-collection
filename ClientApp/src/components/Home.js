@@ -47,11 +47,11 @@ const Home = () => {
       </p>
       <p>
         References
-      <ul>
-          <li><a href='https://en.wikipedia.org/wiki/Job_shop_scheduling'>Wikipedia</a></li>
-          <li><a href='https://developers.google.com/optimization/scheduling/job_shop'>Google OR-Tools</a></li>
-        </ul>
       </p>
+      <ul>
+        <li><a href='https://en.wikipedia.org/wiki/Job_shop_scheduling'>Wikipedia</a></li>
+        <li><a href='https://developers.google.com/optimization/scheduling/job_shop'>Google OR-Tools</a></li>
+      </ul>
       <h3>This application is built with</h3>
       <ul>
         <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
