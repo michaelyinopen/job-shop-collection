@@ -20,11 +20,11 @@ const usePopperHandlers = ({ wait = popperWait } = {}) => {
     e => handlePopperOpenThrottled(e.currentTarget),
     [handlePopperOpenThrottled]
   );
-  useEffect(() => { return () => handlePopperOpenThrottled.cancel(); }, []);
+  useEffect(() => { return () => handlePopperOpenThrottled.cancel(); }, [handlePopperOpenThrottled]);
   const handlePopperClose = useCallback(() => {
     if (handlePopperOpenThrottled.cancel) { handlePopperOpenThrottled.cancel(); }
     setAnchorElement(null);
-  }, [setAnchorElement]);
+  }, [setAnchorElement, handlePopperOpenThrottled]);
   const open = !disableOpen && Boolean(anchorElement);
 
   const forcePopperClose = useCallback(() => {
@@ -33,10 +33,10 @@ const usePopperHandlers = ({ wait = popperWait } = {}) => {
     setDisableOpen(true);
     const timer = setTimeout(() => setDisableOpen(false), forcePopperCloseWait);
     setDisableOpenTimer(timer);
-  }, [setDisableOpen]);
+  }, [setDisableOpen, handlePopperOpenThrottled]);
   useEffect(() => {
     return () => clearTimeout(disableOpenTimer);
-  }, [])
+  }, [disableOpenTimer])
 
   return [anchorElement, open, handlePopperOpen, handlePopperClose, forcePopperClose];
 };
