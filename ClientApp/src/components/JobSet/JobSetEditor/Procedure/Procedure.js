@@ -1,19 +1,74 @@
 import React, { useContext, useCallback, useMemo, useRef } from 'react';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { updateProcedure, moveProcedure } from './store/actionCreators';
-import { useProcedure, useMachines, useGetProcedureSequence, useJobColor } from './store/useSelectors';
-import useProcedureDragDrop from './dragDrop/useProcedureDragDrop';
+import { makeStyles } from '@material-ui/core/styles';
 import { TextField, Tooltip, MenuItem, InputAdornment, IconButton } from '@material-ui/core';
 import { OpenWith } from '@material-ui/icons';
 import TimeField from 'react-simple-timefield';
-import msToFormattedTime from './functions/msToFormattedTime';
-import formattedTimeToMs from './functions/formattedTimeToMs';
-import DeleteProcedureButton from './DeleteProcedureButton';
+import msToFormattedTime from '../../../../functions/msToFormattedTime';
+import formattedTimeToMs from '../../../../functions/formattedTimeToMs';
+import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
+import DeleteProcedureButton from '../DeleteProcedureButton';
+import { updateProcedure, moveProcedure } from '../store/actionCreators';
+import { useProcedure, useMachines, useGetProcedureSequence, useJobColor } from '../store/useSelectors';
+import useProcedureDragDrop from './useProcedureDragDrop';
+import { procedure as procedureStyle } from '../sharedStyles';
 
-import classNames from 'classnames/bind';
-import jobSetEditorStyles from '../css/JobSetEditor.module.css';
+const useStyles = makeStyles(theme => ({
+  procedure: procedureStyle(theme),
+  machineLabel: {
+    verticalAlign: "top",
+    paddingRight: 0,
+    paddingLeft: theme.spacing(2),
+    color: "black",
+    backgroundColor: "white",
+    minWidth: 0
+  },
+  machineLabelTextField: {
+    width: theme.spacing(24)
+  },
+  machineLabelSeparator: {
+    position: "relative",
+    width: theme.spacing(4),
+    alignSelf: "stretch",
+    overflow: "hidden",
+    marginRight: theme.spacing(1),
+    '&:after': {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      display: "block",
+      width: 0,
+      height: 0,
+      borderBottom: `${theme.spacing(9)}px solid transparent`,
+      borderLeft: `${theme.spacing(4)}px solid white`,
+    }
+  },
+  timeFieldWrapper: {
+    minWidth: 0,
+    marginRight: theme.spacing(1.5),
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    boxShadow: "0 0 8px 8px rgba(255, 255, 255, 0.2)",
+    flexShrink: 1
+  },
+  sequenceLabel: {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "center",
+    marginTop: "auto",
+    marginRight: 0,
+    marginBottom: "auto",
+    marginLeft: theme.spacing(2),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    color: "black",
+    background: "white",
+    borderRadius: theme.spacing(1.5),
+    boxSizing: "border-box",
+    boxShadow: theme.shadows[1]
+  },
+  separator: { flexGrow: 1 }
+}));
 
-const cx = classNames.bind(jobSetEditorStyles);
 const Procedure = React.memo(({
   procedureRef,
   handleRef,
@@ -27,13 +82,14 @@ const Procedure = React.memo(({
   opacity,
   backgroundColor
 }) => {
+  const classes = useStyles();
   return (
     <div
       ref={procedureRef}
-      className={cx("job-set-editor__procedure")}
+      className={classes.procedure}
       style={{ opacity, backgroundColor }}
     >
-      <div className={cx("job-set-editor__machine-label")}>
+      <div className={classes.machineLabel}>
         <TextField
           label="Machine"
           value={machineId}
@@ -43,7 +99,7 @@ const Procedure = React.memo(({
           onChange={onMachineSelectChangeCallback}
           required
           error={!machineId}
-          style={{ width: "12em" }}
+          className={classes.machineLabelTextField}
           SelectProps={{
             SelectDisplayProps: {
               style: { height: "1.1875em" }
@@ -53,8 +109,8 @@ const Procedure = React.memo(({
           {machineOptions}
         </TextField>
       </div>
-      <div className={cx("job-set-editor__machine-label-separator")} />
-      <div className={cx("job-set-editor__time-field")}>
+      <div className={classes.machineLabelSeparator} />
+      <div className={classes.timeFieldWrapper}>
         <TimeField
           showSeconds
           value={formattedTime}
@@ -74,10 +130,10 @@ const Procedure = React.memo(({
           }
         />
       </div>
-      <div className={cx("job-set-editor__sequence-label")}>
+      <div className={classes.sequenceLabel}>
         {sequence}
       </ div>
-      <div style={{ flexGrow: 1 }} />
+      <div className={classes.separator} />
       <div ref={handleRef}>
         <Tooltip title="Move" placement="right-end">
           <IconButton style={{ cursor: 'move' }}>

@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
   addIcon: { marginRight: theme.spacing(0.5) },
 }));
+
 const CreateProcedure = React.memo(({
   createProcedureCallback
 }) => {

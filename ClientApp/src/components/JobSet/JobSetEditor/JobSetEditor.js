@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
     minHeight: "100%",
+    minWidth: 720,
     position: "relative"
   }
 }));

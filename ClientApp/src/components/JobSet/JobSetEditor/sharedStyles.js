@@ -27,7 +27,8 @@ export const procedure = theme => ({
   boxSizing: "border-box",
   display: "flex",
   alignItems: "center",
-  overflow: "hidden"
+  overflow: "hidden",
+  flexShrink: 0
 })
 
 const sharedStyles = theme => ({
