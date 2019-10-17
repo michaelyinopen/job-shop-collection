@@ -20,8 +20,20 @@ export const job = theme => ({
   boxSizing: "border-box",
 });
 
+export const procedure = theme => ({
+  boxShadow: theme.shadows[3],
+  marginBottom: "2px",
+  borderRadius: "4px",
+  boxSizing: "border-box",
+  display: "flex",
+  alignItems: "center",
+  overflow: "hidden"
+})
+
 const sharedStyles = theme => ({
   machine: machine(theme),
+  job: job(theme),
+  procedure: procedure(theme)
 });
 
 export default sharedStyles;

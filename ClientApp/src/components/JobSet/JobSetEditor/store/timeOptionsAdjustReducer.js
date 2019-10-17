@@ -3,7 +3,7 @@ import updateObject from "../../../../functions/updateObject";
 import memoizeOne from 'memoize-one';
 
 const memoizeGetProcessingTimeSum = memoizeOne(
-  procedures => Object.values(procedures).reduce((prev, currProcess) => prev + currProcess.processingMilliseconds, 0)
+  procedures => Object.values(procedures).reduce((prev, currProcess) => prev + (currProcess.processingMilliseconds ? currProcess.processingMilliseconds : 0), 0)
 );
 
 const memoizeSumOfMinTwoProcessingTime = memoizeOne(
