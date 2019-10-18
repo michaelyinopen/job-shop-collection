@@ -1,5 +1,10 @@
 import * as fromActionTypes from './actionTypes';
 
+export const setReadOnly = isReadOnly => ({
+  type: fromActionTypes.setReadOnly,
+  isReadOnly: Boolean(isReadOnly)
+});
+
 export const setTitle = title => ({
   type: fromActionTypes.setTitle,
   title

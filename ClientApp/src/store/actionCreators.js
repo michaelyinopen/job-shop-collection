@@ -43,7 +43,13 @@ export const getJobSetBegin = id => ({
 export const getJobSetSucceed = (id, jobSet) => ({
   type: fromActionTypes.getJobSetSucceed,
   id,
-  jobSet
+  title: jobSet.title,
+  description: jobSet.description,
+  content: JSON.parse(jobSet.content),
+  jobColors: jobSet.jobColors,
+  isAutoTimeOptions: jobSet.isAutoTimeOptions,
+  timeOptions: jobSet.timeOptions,
+  eTag: jobSet.eTag,
 });
 
 export const getJobSetFailed = (id, failedMessage) => ({

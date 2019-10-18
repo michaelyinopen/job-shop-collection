@@ -10,6 +10,8 @@ import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjust
 import getNewColor from './jobColor';
 import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
 import {
+  setReadOnly,
+
   setTitle,
   setDescription,
   setJobSet,
@@ -36,6 +38,16 @@ import {
 
   changeJobColor
 } from './actionTypes';
+
+//#region readonly 
+const readOnlyInitialState = false;
+const readOnly = createReducer(
+  readOnlyInitialState,
+  {
+    [setReadOnly]: (_state, action) => action.isReadOnly
+  }
+);
+//#endregion readonly 
 
 //#region title description
 const titleInitialState = null;
@@ -418,6 +430,7 @@ const setJobSetReducer = (state, action) => {
 };
 
 export const init = ({
+  readOnly = readOnlyInitialState,
   title = titleInitialState,
   description = descriptionInitialState,
   machines: machinesArg,
@@ -432,6 +445,7 @@ export const init = ({
   const clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
 
   let state = {
+    readOnly,
     title,
     description,
     machines: mappedMachines,
@@ -449,6 +463,7 @@ export const init = ({
 const reducer = (state, action) => reduceReducers(
   setJobSetReducer,
   combineReducers({
+    readOnly,
     title,
     description,
     machines,

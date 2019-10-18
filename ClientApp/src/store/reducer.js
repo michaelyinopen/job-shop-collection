@@ -67,13 +67,13 @@ const jobSet = createReducer(
       {
         id: action.id,
         isLoading: false,
-        title: action.jobSet.title,
-        description: action.jobSet.description,
-        content: action.jobSet.content,
-        jobColors: action.jobSet.jobColors,
-        isAutoTimeOptions: action.jobSet.isAutoTimeOptions,
-        timeOptions: action.jobSet.timeOptions,
-        eTag: action.jobSet.eTag,
+        title: action.title,
+        description: action.description,
+        content: action.content,
+        jobColors: action.jobColors,
+        isAutoTimeOptions: action.isAutoTimeOptions,
+        timeOptions: action.timeOptions,
+        eTag: action.eTag,
         loadFailedMessage: null
       }
     ),

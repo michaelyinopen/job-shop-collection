@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
-import { useDescription } from './store/useSelectors';
+import { useDescription, useReadOnly } from './store/useSelectors';
 import { setDescription } from './store/actionCreators';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 
@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme => ({
 
 const Description = React.memo(({
   value,
-  onChange
+  readOnly,
+  onChange,
 }) => {
   const classes = useStyles();
   return (
@@ -31,15 +32,14 @@ const Description = React.memo(({
       multiline
       fullWidth
       className={classes.field}
-      InputProps={{
-        readOnly: true,
-      }}
+      InputProps={readOnly ? { readOnly: true } : {}}
     />
   );
 });
 
 const DescriptionContainer = () => {
   const description = useDescription();
+  const readOnly = useReadOnly();
   const dispatch = useContext(JobSetEditorDispatchContext);
   const setDescriptionCallback = useCallback(
     valueArg => {
@@ -51,6 +51,7 @@ const DescriptionContainer = () => {
   return (
     <Description
       value={descriptionValue}
+      readOnly={readOnly}
       onChange={descriptionChangedCallback}
     />
   );
