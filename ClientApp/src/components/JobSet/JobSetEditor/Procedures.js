@@ -1,7 +1,7 @@
 import React from 'react';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import { Box, Tooltip } from '@material-ui/core';
-import { useProcedureOfJobIds } from './store/useSelectors';
+import { useProcedureOfJobIds, useReadOnly } from './store/useSelectors';
 import Procedure from './Procedure';
 import CreateProcedure from './CreateProcedure';
 
@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 const Procedures = React.memo(({
   jobId,
   procedureIds,
+  readOnly,
   count
 }) => {
   const classes = useStyles();
@@ -43,7 +44,7 @@ const Procedures = React.memo(({
       {count === 0 ? <Box fontStyle="italic" color="text.hint"> No procedures in job {jobId}</Box> : null}
       <ol className={classes.list}>
         {procedureIds.map(id => <li key={id}><Procedure id={id} /></li>)}
-        <li key="createProcedure"><CreateProcedure jobId={jobId} /></li>
+        {!readOnly ? <li key="createProcedure"><CreateProcedure jobId={jobId} /></li> : null}
       </ol>
     </section>
   );
@@ -53,10 +54,12 @@ const ProceduresContainer = ({
   jobId
 }) => {
   const procedureIds = useProcedureOfJobIds(jobId);
+  const readOnly = useReadOnly();
   const count = procedureIds.length;
   return (
     <Procedures
       jobId={jobId}
+      readOnly={readOnly}
       procedureIds={procedureIds}
       count={count}
     />

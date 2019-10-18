@@ -5,7 +5,7 @@ import { Tooltip, IconButton } from '@material-ui/core';
 import JobButton from './JobButton';
 import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
 import { changeJobColor } from '../store/actionCreators';
-import { useJobColor } from '../store/useSelectors';
+import { useJobColor, useReadOnly } from '../store/useSelectors';
 import usePopperHandlers from './usePopperHandlers';
 import CustomPopper from './CustomPopper';
 
@@ -41,6 +41,7 @@ const useStyles = makeStyles(theme => ({
 
 const ColorOption = ({
   classes,
+  readOnly,
   backgroundColor,
   foregroundColor,
   changeJobColor
@@ -56,16 +57,18 @@ const ColorOption = ({
           style={{ backgroundColor: backgroundColor, color: foregroundColor, fontFamily: "monospace, monospace" }}
         >
           background: {backgroundColor}<br />
-        foreground: {foregroundColor}
-      </div>
-      <Tooltip title="Change color">
-        <IconButton
-          onClick={changeJobColor}
-          className={classes.changeJobColorButton}
-        >
-          <Autorenew />
-        </IconButton>
-      </Tooltip>
+          foreground: {foregroundColor}
+        </div>
+        {!readOnly ? (
+          <Tooltip title="Change color">
+            <IconButton
+              onClick={changeJobColor}
+              className={classes.changeJobColorButton}
+            >
+              <Autorenew />
+            </IconButton>
+          </Tooltip>
+        ) : null}
       </div>
     </React.Fragment >
   );
@@ -75,6 +78,7 @@ const JobOptionsButton = ({
   id
 }) => {
   const classes = useStyles();
+  const readOnly = useReadOnly();
   const [backgroundColor, foregroundColor] = useJobColor(id);
   const dispatch = useContext(JobSetEditorDispatchContext);
   const changeJobColorCallback = useCallback(
@@ -98,6 +102,7 @@ const JobOptionsButton = ({
     () => (
       <ColorOption
         classes={classes}
+        readOnly={readOnly}
         backgroundColor={backgroundColor}
         foregroundColor={foregroundColor}
         changeJobColor={changeJobColorCallback}

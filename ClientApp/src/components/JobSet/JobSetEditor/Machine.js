@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Card, TextField } from '@material-ui/core';
 import RemoveMachineButton from './RemoveMachineButton';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { useMachine } from './store/useSelectors';
+import { useMachine, useReadOnly } from './store/useSelectors';
 import { updateMachineTitle, updateMachineDescription } from './store/actionCreators';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
@@ -27,6 +27,7 @@ const Machine = React.memo(({
   id,
   description,
   title,
+  readOnly,
   onDescriptionChangeCallback,
   onTitleChangeCallback
 }) => {
@@ -42,6 +43,7 @@ const Machine = React.memo(({
         variant="filled"
         margin="dense"
         className={classes.title}
+        inputProps={readOnly ? { readOnly: true } : {}}
       />
       <TextField
         label="Description"
@@ -52,9 +54,11 @@ const Machine = React.memo(({
         multiline
         fullWidth
         className={classes.description}
+        disabled={(!description || description.length === 0) && readOnly}
+        inputProps={readOnly ? { readOnly: true } : {}}
       />
       <div className={classes.separator} />
-      <RemoveMachineButton id={id} />
+      {!readOnly ? <RemoveMachineButton id={id} /> : null}
     </Card>
   );
 });
@@ -63,6 +67,7 @@ const MachineContainer = ({
   id
 }) => {
   const machine = useMachine(id);
+  const readOnly = useReadOnly();
 
   const dispatch = useContext(JobSetEditorDispatchContext);
   const dispatchUpdateMachineTitle = useCallback(
@@ -92,6 +97,7 @@ const MachineContainer = ({
       id={id}
       description={description}
       title={title}
+      readOnly={readOnly}
       onDescriptionChangeCallback={onDescriptionChangeCallback}
       onTitleChangeCallback={onTitleChangeCallback}
     />
