@@ -29,7 +29,7 @@ const Title = React.memo(({
       variant="filled"
       margin="dense"
       className={classes.field}
-      InputProps={readOnly ? { readOnly: true } : {}}
+      inputProps={readOnly ? { readOnly: true } : {}}
     />
   );
 });

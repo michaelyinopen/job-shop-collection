@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Tooltip } from '@material-ui/core';
+import { Box, Tooltip } from '@material-ui/core';
 import { useJobIds } from './store/useSelectors';
 import Job from './Job';
 import CreateJob from './CreateJob';
@@ -29,6 +29,7 @@ const Jobs = React.memo(({
         Jobs
       <Tooltip title={`${count} Jobs`}><span>{countMessage}</span></Tooltip>
       </h2>
+      {count === 0 ? <Box fontStyle="italic" color="text.hint"> No jobs</Box> : null}
       <ol className={classes.list}>
         {jobIds.map(id => <li key={id}><Job id={id} /></li>)}
         <li key="createJob"><CreateJob /></li>

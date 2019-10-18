@@ -1,6 +1,6 @@
 import React from 'react';
 import { lighten, makeStyles } from '@material-ui/core/styles';
-import { Tooltip } from '@material-ui/core';
+import { Box, Tooltip } from '@material-ui/core';
 import { useProcedureOfJobIds } from './store/useSelectors';
 import Procedure from './Procedure';
 import CreateProcedure from './CreateProcedure';
@@ -40,6 +40,7 @@ const Procedures = React.memo(({
         Job {jobId} Procedures
         <Tooltip title={`${count} Procedures in Job ${jobId}`}><span>{countMessage}</span></Tooltip>
       </h4>
+      {count === 0 ? <Box fontStyle="italic" color="text.hint"> No procedures in job {jobId}</Box> : null}
       <ol className={classes.list}>
         {procedureIds.map(id => <li key={id}><Procedure id={id} /></li>)}
         <li key="createProcedure"><CreateProcedure jobId={jobId} /></li>
