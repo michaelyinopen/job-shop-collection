@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Tooltip } from '@material-ui/core';
-import { useJobIds } from './store/useSelectors';
+import { useJobIds, useReadOnly } from './store/useSelectors';
 import Job from './Job';
 import CreateJob from './CreateJob';
 
@@ -18,11 +18,12 @@ const useStyles = makeStyles(theme => ({
 
 const Jobs = React.memo(({
   jobIds,
+  readOnly,
   count
 }) => {
   const classes = useStyles();
   const countMessage = count === 0 ? "" : ` (${count})`;
-  
+
   return (
     <section>
       <h2>
@@ -32,7 +33,7 @@ const Jobs = React.memo(({
       {count === 0 ? <Box fontStyle="italic" color="text.hint"> No jobs</Box> : null}
       <ol className={classes.list}>
         {jobIds.map(id => <li key={id}><Job id={id} /></li>)}
-        <li key="createJob"><CreateJob /></li>
+        {!readOnly ? <li key="createJob"><CreateJob /></li> : null}
       </ol>
     </section>
   );
@@ -40,10 +41,12 @@ const Jobs = React.memo(({
 
 const JobsContainer = () => {
   const jobIds = useJobIds();
+  const readOnly = useReadOnly();
   const count = jobIds.length;
   return (
     <Jobs
       jobIds={jobIds}
+      readOnly={readOnly}
       count={count}
     />
   );

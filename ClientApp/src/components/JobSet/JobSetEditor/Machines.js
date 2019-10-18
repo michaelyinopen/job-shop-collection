@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Tooltip, Box } from '@material-ui/core';
-import { useMachineIds } from './store/useSelectors';
+import { useMachineIds, useReadOnly } from './store/useSelectors';
 import AddMachine from './AddMachine';
 import Machine from './Machine';
 
@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
 
 const Machines = React.memo(({
   machineIds,
+  readOnly,
   count
 }) => {
   const classes = useStyles();
@@ -31,7 +32,7 @@ const Machines = React.memo(({
       {count === 0 ? <Box fontStyle="italic" color="text.hint"> No machines</Box> : null}
       <ol className={classes.list}>
         {machineIds.map(id => <li key={id}><Machine id={id} /></li>)}
-        <li key="addMachine"><AddMachine /></li>
+        {!readOnly ? <li key="addMachine"><AddMachine /></li>: null}
       </ol>
     </section >
   );
@@ -39,10 +40,12 @@ const Machines = React.memo(({
 
 const MachinesContainer = () => {
   const machineIds = useMachineIds();
+  const readOnly = useReadOnly();
   const count = machineIds.length;
   return (
     <Machines
       machineIds={machineIds}
+      readOnly={readOnly}
       count={count}
     />
   );

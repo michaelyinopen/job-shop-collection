@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card } from '@material-ui/core';
-import { useJobColor } from './store/useSelectors';
+import { useJobColor, useReadOnly } from './store/useSelectors';
 import DeleteJobButton from './DeleteJobButton';
 import JobOptionsButton from './JobOptionsButton';
 import Procedures from './Procedures';
@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 const Job = React.memo(({
   id,
+  readOnly,
   backgroundColor,
   foregroundColor
 }) => {
@@ -53,7 +54,7 @@ const Job = React.memo(({
         <div className={classes.separator} />
         <aside className={classes.headerRowActions}>
           <JobOptionsButton id={id} />
-          <DeleteJobButton id={id} />
+          {!readOnly ? (<DeleteJobButton id={id} />) : null}
         </aside>
       </div>
       <Procedures jobId={id} />
@@ -65,9 +66,11 @@ const JobContainer = ({
   id
 }) => {
   const [backgroundColor, foregroundColor] = useJobColor(id);
+  const readOnly = useReadOnly();
   return (
     <Job
       id={id}
+      readOnly={readOnly}
       backgroundColor={backgroundColor}
       foregroundColor={foregroundColor}
     />

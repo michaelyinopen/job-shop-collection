@@ -8,7 +8,7 @@ import formattedTimeToMs from '../../../../functions/formattedTimeToMs';
 import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
 import DeleteProcedureButton from '../DeleteProcedureButton';
 import { updateProcedure, moveProcedure } from '../store/actionCreators';
-import { useProcedure, useMachines, useGetProcedureSequence, useJobColor } from '../store/useSelectors';
+import { useProcedure, useMachines, useGetProcedureSequence, useJobColor, useReadOnly } from '../store/useSelectors';
 import useProcedureDragDrop from './useProcedureDragDrop';
 import { procedure as procedureStyle } from '../sharedStyles';
 
@@ -73,6 +73,7 @@ const Procedure = React.memo(({
   procedureRef,
   handleRef,
   id,
+  readOnly,
   machineId,
   machineOptions,
   onMachineSelectChangeCallback,
@@ -105,6 +106,7 @@ const Procedure = React.memo(({
               style: { height: "1.1875em" }
             }
           }}
+          inputProps={readOnly ? { readOnly: true } : {}}
         >
           {machineOptions}
         </TextField>
@@ -125,6 +127,7 @@ const Procedure = React.memo(({
               error={!formattedTime || formattedTime === "00:00:00"}
               inputProps={{
                 endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
+                readOnly: readOnly ? true : undefined
               }}
             />
           }
@@ -134,14 +137,15 @@ const Procedure = React.memo(({
         {sequence}
       </ div>
       <div className={classes.separator} />
-      <div ref={handleRef}>
-        <Tooltip title="Move" placement="right-end">
-          <IconButton style={{ cursor: 'move' }}>
-            <OpenWith />
-          </IconButton>
-        </Tooltip>
-      </div>
-      <DeleteProcedureButton id={id} />
+      {!readOnly ?
+        <div ref={handleRef}>
+          <Tooltip title="Move" placement="right-end">
+            <IconButton style={{ cursor: 'move' }}>
+              <OpenWith />
+            </IconButton>
+          </Tooltip>
+        </div> : null}
+      {!readOnly ? <DeleteProcedureButton id={id} /> : null}
     </div>
   );
 });
@@ -149,6 +153,7 @@ const Procedure = React.memo(({
 const ProcedureContainer = ({
   id
 }) => {
+  const readOnly = useReadOnly();
   const procedure = useProcedure(id);
   const dispatch = useContext(JobSetEditorDispatchContext);
 
@@ -157,7 +162,7 @@ const ProcedureContainer = ({
     () => {
       return machines.map(m => (
         <MenuItem key={m.id} value={m.id}>
-          <Tooltip title={m.description} placement="right">
+          <Tooltip title={m.description ? m.description : ""} placement="right">
             <div style={{ width: "100%" }}>{m.title}</div>
           </Tooltip>
         </MenuItem>
@@ -200,6 +205,7 @@ const ProcedureContainer = ({
       procedureRef={ref}
       handleRef={handleRef}
       id={id}
+      readOnly={readOnly}
       machineId={procedure.machineId}
       machineOptions={machineOptions}
       onMachineSelectChangeCallback={onMachineSelectChangeCallback}
