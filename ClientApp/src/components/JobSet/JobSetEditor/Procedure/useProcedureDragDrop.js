@@ -19,16 +19,6 @@ const useProcedureDragDrop = (
       isDragging: monitor.isDragging(),
     })
   })
-  useEffect(
-    () => {
-      return () => {
-        if (throttledHoverCallback && throttledHoverCallback.cancel) {
-          throttledHoverCallback.cancel();
-        }
-      }
-    },
-    [ref, getProcedureSequence, sequence]
-  );
   const throttledHoverCallback = useCallback(
     throttle(
       item => {
@@ -48,6 +38,16 @@ const useProcedureDragDrop = (
       { leading: true, trailing: true }
     ),
     [ref, getProcedureSequence, sequence]
+  );
+  useEffect(
+    () => {
+      return () => {
+        if (throttledHoverCallback && throttledHoverCallback.cancel) {
+          throttledHoverCallback.cancel();
+        }
+      }
+    },
+    [ref, getProcedureSequence, sequence, throttledHoverCallback]
   );
   const [, drop] = useDrop({
     accept: itemTypes.PROCEDURE,
