@@ -172,7 +172,7 @@ const ProcedureContainer = ({
 
   const formattedTime = !procedure.processingMilliseconds ? undefined : msToFormattedTime(procedure.processingMilliseconds);
   const onTimeChangeCallback = useCallback(
-    value => dispatch(updateProcedure(id, { ...procedure, processingMilliseconds: formattedTimeToMs(value) })),
+    (_event, value) => dispatch(updateProcedure(id, { ...procedure, processingMilliseconds: formattedTimeToMs(value) })),
     [dispatch, id, procedure]
   );
 
@@ -181,7 +181,7 @@ const ProcedureContainer = ({
   const getProcedureSequence = useGetProcedureSequence();
   const moveProcedureCallback = useCallback(
     (id, targetSequence) => dispatch(moveProcedure(id, targetSequence)), // note id is input parameter, not bound
-    [dispatch, moveProcedure]
+    [dispatch]
   );
 
   const [isDragging] = useProcedureDragDrop(

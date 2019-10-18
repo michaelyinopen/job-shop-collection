@@ -9,7 +9,7 @@ import Title from './Title';
 import Description from './Description';
 import Machines from './Machines';
 import Jobs from './Jobs';
-// import TimeOptions from './TimeOptions';
+import TimeOptions from './TimeOptions';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -63,7 +63,7 @@ const JobSetEditor = ({
       <Description />
       <Machines />
       <Jobs />
-      {/*<TimeOptions /> */}
+      <TimeOptions />
     </Container>
   );
   if (isJsonEditorOpen) {
