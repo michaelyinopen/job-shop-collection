@@ -1,3 +1,5 @@
+export const setReadOnly = "SET_READ_ONLY";
+
 export const setTitle = "SET_TITLE";
 export const setDescription = "SET_DESCRIPTION";
 

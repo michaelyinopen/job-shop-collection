@@ -1,5 +1,6 @@
 import reducer, { init } from './reducer';
 import {
+  setReadOnly,
   setJobSet,
   addMachine,
   removeMachine,
@@ -13,6 +14,7 @@ import {
 } from './actionCreators';
 
 const initialState = {
+  readOnly: false,
   title: null,
   description: null,
   machines:
@@ -160,6 +162,7 @@ test("init function with all defaults", () => {
   const resultState = init({});
 
   expect(resultState).toEqual({
+    readOnly: false,
     title: null,
     description: null,
     machines: {},
@@ -175,6 +178,29 @@ test("init function with all defaults", () => {
       maxViewDuration: 0
     },
     jobColors: {}
+  });
+});
+
+test("setReadOnly true", () => {
+  const state = { ...initialState };
+  const setReadOnlyTrueAction = setReadOnly(true);
+  const resultState = reducer(state, setReadOnlyTrueAction);
+  expect(resultState).toEqual({
+    ...initialState,
+    readOnly: true
+  });
+});
+
+test("setReadOnly false", () => {
+  const state = {
+    ...initialState,
+    readOnly: true
+  };
+  const setReadOnlyFalseAction = setReadOnly(false);
+  const resultState = reducer(state, setReadOnlyFalseAction);
+  expect(resultState).toEqual({
+    ...initialState,
+    readOnly: false
   });
 });
 
@@ -237,6 +263,7 @@ test("removeMachine action unsets procedures", () => {
   const removeMachineAction = removeMachine(1);
   const resultState = reducer(state, removeMachineAction);
   expect(resultState).toEqual({
+    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -285,6 +312,7 @@ test("deleteJob action", () => {
   const deleteJobAction = deleteJob(1);
   const resultState = reducer(state, deleteJobAction);
   expect(resultState).toEqual({
+    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -443,6 +471,7 @@ test("deleteProcedure action", () => {
   const deleteProcedureAction = deleteProcedure(1);
   const resultState = reducer(state, deleteProcedureAction);
   expect(resultState).toEqual({
+    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -675,7 +704,7 @@ test("changing isAutoTimeOptions to true will re-calculate", () => {
 
   const setIsAutoTimeOptionsAction = setIsAutoTimeOptions(true);
   const resultState = reducer(intermediateState, setIsAutoTimeOptionsAction);
-  
+
   expect(resultState).toEqual(initialState);
 });
 

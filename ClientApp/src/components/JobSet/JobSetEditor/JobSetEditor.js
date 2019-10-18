@@ -13,6 +13,9 @@ import TimeOptions from './TimeOptions';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
+import {
+  useTitle, useReadOnly
+} from './store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -28,9 +31,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const JobSetEditor = ({
-  pageTitle
+  id
 }) => {
   const classes = useStyles();
+  const readOnly = useReadOnly();
+  const pageTitle = `Job Set #${id}` + (readOnly ? " (read-only)" : " (editing)");
+
   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
   const openJsonEditorCallback = useCallback(
     () => setIsJsonEditorOpen(true),
@@ -42,7 +48,7 @@ const JobSetEditor = ({
   );
   const form = (
     <Container component="form" className={classes.container}>
-      <h1>{pageTitle} (readonly)</h1>
+      <h1>{pageTitle}</h1>
       {/*
     <Tooltip
       title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
@@ -78,7 +84,8 @@ const JobSetEditor = ({
 };
 
 const JobSetEditorWithContext = ({
-  pageTitle,
+  id,
+  readOnly,
   title,
   description,
   jobSet = {},
@@ -90,6 +97,7 @@ const JobSetEditorWithContext = ({
   const [state, dispatch] = useReducer(
     reducer,
     {
+      readOnly,
       title,
       description,
       machines,
@@ -103,7 +111,7 @@ const JobSetEditorWithContext = ({
   return (
     <JobSetEditorDispatchContext.Provider value={dispatch}>
       <JobSetEditorStateContext.Provider value={state}>
-        <JobSetEditor pageTitle={pageTitle} />
+        <JobSetEditor id={id}/>
       </JobSetEditorStateContext.Provider>
     </JobSetEditorDispatchContext.Provider>
   );

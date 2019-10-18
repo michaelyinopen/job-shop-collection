@@ -17,8 +17,6 @@ const JobSet = ({
   id,
   edit
 }) => {
-  const pageTitle = `${edit ? "Edit " : ""} Job Set #${id}`;
-
   const dispatch = useContext(JobShopCollectionDispatchContext);
   const getJobSetAsync = useMemo(
     () => async () => {
@@ -51,7 +49,8 @@ const JobSet = ({
 
   return (
     <JobSetEditor
-      pageTitle={pageTitle}
+      readOnly
+      id={id}
       edit={edit}
       title={jobSet.title}
       description={jobSet.description}

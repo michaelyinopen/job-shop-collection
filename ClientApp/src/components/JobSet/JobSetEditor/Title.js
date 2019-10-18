@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
-import { useTitle } from './store/useSelectors';
+import { useTitle, useReadOnly } from './store/useSelectors';
 import { setTitle } from './store/actionCreators';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 
@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 
 const Title = React.memo(({
   value,
+  readOnly,
   onChange
 }) => {
   const classes = useStyles();
@@ -28,15 +29,14 @@ const Title = React.memo(({
       variant="filled"
       margin="dense"
       className={classes.field}
-      InputProps={{
-        readOnly: true,
-      }}
+      InputProps={readOnly ? { readOnly: true } : {}}
     />
   );
 });
 
 const TitleContainer = () => {
   const title = useTitle();
+  const readOnly = useReadOnly();
   const dispatch = useContext(JobSetEditorDispatchContext);
   const setTitleCallback = useCallback(
     valueArg => {
@@ -48,6 +48,7 @@ const TitleContainer = () => {
   return (
     <Title
       value={titleValue}
+      readOnly={readOnly}
       onChange={titleChangedCallback}
     />
   );
