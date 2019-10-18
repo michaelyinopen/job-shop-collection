@@ -18,7 +18,8 @@ import {
   useViewStartTimeFromRef,
   useViewEndTimeFromRef,
   useMinViewDuration,
-  useMaxViewDuration
+  useMaxViewDuration,
+  useReadOnly
 } from './store/useSelectors';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 import {
@@ -34,10 +35,11 @@ const marginLeftStyle = { marginLeft: "16px" };
 
 const AutomaticTimeOptions = React.memo(({
   value,
+  readOnly,
   onChange,
 }) => {
   return (
-    <FormControl component="fieldset" style={marginLeftStyle}>
+    <FormControl component="fieldset" style={marginLeftStyle} {...(readOnly ? { disabled: true } : {})}>
       <FormLabel component="legend">Automatic Time Options</FormLabel>
       <RadioGroup
         value={value}
@@ -55,6 +57,7 @@ const TimeInputField = React.memo(({
   label,
   value,
   onChange,
+  readOnly,
   disabled
 }) => {
   return (
@@ -73,8 +76,9 @@ const TimeInputField = React.memo(({
             margin="dense"
             variant="outlined"
             disabled={disabled}
-            InputProps={{
+            inputProps={{
               endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
+              readOnly: readOnly ? true : undefined
             }}
           />
         }
@@ -84,6 +88,7 @@ const TimeInputField = React.memo(({
 });
 
 const TimeOptions = React.memo(({
+  readOnly,
   isAutoTimeOptions,
   maxTimeFromRef,
   viewStartTimeFromRef,
@@ -104,6 +109,7 @@ const TimeOptions = React.memo(({
       </h2>
       <AutomaticTimeOptions
         value={String(isAutoTimeOptions)}
+        readOnly={readOnly}
         onChange={dispatchSetIsAutoTimeOptions}
       />
       <br />
@@ -111,6 +117,7 @@ const TimeOptions = React.memo(({
         label="Maximum Time"
         value={msToFormattedTime(maxTimeFromRef)}
         onChange={dispatchSetMaxTimeFromRef}
+        readOnly={readOnly}
         disabled={isAutoTimeOptions}
       />
       <br />
@@ -118,6 +125,7 @@ const TimeOptions = React.memo(({
         label="View Start Time"
         value={msToFormattedTime(viewStartTimeFromRef)}
         onChange={dispatchSetViewStartTimeFromRef}
+        readOnly={readOnly}
         disabled={isAutoTimeOptions}
       />
       <br />
@@ -125,6 +133,7 @@ const TimeOptions = React.memo(({
         label="View End Time"
         value={msToFormattedTime(viewEndTimeFromRef)}
         onChange={dispatchSetViewEndTimeFromRef}
+        readOnly={readOnly}
         disabled={isAutoTimeOptions}
       />
       <br />
@@ -132,6 +141,7 @@ const TimeOptions = React.memo(({
         label="Minimun View Duration"
         value={msToFormattedTime(minViewDuration)}
         onChange={dispatchSetMinViewDuration}
+        readOnly={readOnly}
         disabled={isAutoTimeOptions}
       />
       <br />
@@ -139,6 +149,7 @@ const TimeOptions = React.memo(({
         label="Maximun View Duration"
         value={msToFormattedTime(maxViewDuration)}
         onChange={dispatchSetMaxViewDuration}
+        readOnly={readOnly}
         disabled={isAutoTimeOptions}
       />
     </section >
@@ -146,6 +157,7 @@ const TimeOptions = React.memo(({
 });
 
 const TimeOptionsContainer = () => {
+  const readOnly = useReadOnly();
   const isAutoTimeOptions = useIsAutoTimeOptions();
   const maxTimeFromRef = useMaxTimeFromRef();
   const viewStartTimeFromRef = useViewStartTimeFromRef();
@@ -182,6 +194,7 @@ const TimeOptionsContainer = () => {
 
   return (
     <TimeOptions
+      readOnly={readOnly}
       isAutoTimeOptions={isAutoTimeOptions}
       maxTimeFromRef={maxTimeFromRef}
       viewStartTimeFromRef={viewStartTimeFromRef}

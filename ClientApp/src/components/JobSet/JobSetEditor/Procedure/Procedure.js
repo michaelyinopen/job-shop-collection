@@ -123,7 +123,7 @@ const Procedure = React.memo(({
               variant="outlined"
               required
               error={!formattedTime || formattedTime === "00:00:00"}
-              InputProps={{
+              inputProps={{
                 endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
               }}
             />

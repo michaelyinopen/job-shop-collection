@@ -32,7 +32,7 @@ const Description = React.memo(({
       multiline
       fullWidth
       className={classes.field}
-      InputProps={readOnly ? { readOnly: true } : {}}
+      inputProps={readOnly ? { readOnly: true } : {}}
     />
   );
 });

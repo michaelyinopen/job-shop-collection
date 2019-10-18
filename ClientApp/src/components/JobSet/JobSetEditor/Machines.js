@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, Box } from '@material-ui/core';
 import { useMachineIds } from './store/useSelectors';
 import AddMachine from './AddMachine';
 import Machine from './Machine';
@@ -28,6 +28,7 @@ const Machines = React.memo(({
         Machines
         <Tooltip title={`${count} Machines`}><span>{countMessage}</span></Tooltip>
       </h2>
+      {count === 0 ? <Box fontStyle="italic" color="text.hint"> No machines</Box> : null}
       <ol className={classes.list}>
         {machineIds.map(id => <li key={id}><Machine id={id} /></li>)}
         <li key="addMachine"><AddMachine /></li>
