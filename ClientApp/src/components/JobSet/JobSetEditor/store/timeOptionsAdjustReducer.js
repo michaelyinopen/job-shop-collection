@@ -102,9 +102,10 @@ export const adjustTimeOptions = state => {
 }
 
 const isAdjustTimeOptionsRequired = (state, stateBeforeAnyReducers) => {
-  const isAutoChangedToTrueFn = () => stateBeforeAnyReducers.isAutoTimeOptions && state.isAutoTimeOptions !== stateBeforeAnyReducers.isAutoTimeOptions;
-  const isAutoAndProceduresChangedFn = () => stateBeforeAnyReducers.isAutoTimeOptions && state.procedures !== stateBeforeAnyReducers.procedures;
-  return isAutoChangedToTrueFn() || isAutoAndProceduresChangedFn();
+  const isAutoChangedToTrueFn = () => state.isAutoTimeOptions && state.isAutoTimeOptions !== stateBeforeAnyReducers.isAutoTimeOptions;
+  const isAutoAndProceduresChangedFn = () => state.isAutoTimeOptions && state.procedures !== stateBeforeAnyReducers.procedures;
+  const timeOptionsChanged = () => state.timeOptions !== stateBeforeAnyReducers.timeOptions;
+  return isAutoChangedToTrueFn() || isAutoAndProceduresChangedFn() || timeOptionsChanged();
 }
 
 const timeOptionsAdjustReducer = (state, _action, stateBeforeAnyReducers) => {
