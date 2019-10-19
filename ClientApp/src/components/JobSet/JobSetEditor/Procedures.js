@@ -25,6 +25,9 @@ const useStyles = makeStyles(theme => ({
     marginInlineEnd: 0,
     paddingInlineStart: 0,
   },
+  countMessage: {
+    color: theme.palette.text.hint
+  }
 }));
 
 const Procedures = React.memo(({
@@ -39,7 +42,7 @@ const Procedures = React.memo(({
     <section className={classes.root}>
       <h4 className={classes.header}>
         Job {jobId} Procedures
-        <Tooltip title={`${count} Procedures in Job ${jobId}`}><span>{countMessage}</span></Tooltip>
+        <Tooltip title={`${count} Procedures in Job ${jobId}`}><span className={classes.countMessage}>{countMessage}</span></Tooltip>
       </h4>
       {count === 0 ? <Box fontStyle="italic" color="text.hint"> No procedures in job {jobId}</Box> : null}
       <ol className={classes.list}>

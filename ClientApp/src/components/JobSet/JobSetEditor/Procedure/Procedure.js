@@ -51,9 +51,6 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 1
   },
   sequenceLabel: {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "center",
     marginTop: "auto",
     marginRight: 0,
     marginBottom: "auto",
@@ -64,7 +61,8 @@ const useStyles = makeStyles(theme => ({
     background: "white",
     borderRadius: theme.spacing(1.5),
     boxSizing: "border-box",
-    boxShadow: theme.shadows[1]
+    boxShadow: theme.shadows[1],
+    textAlign: "center"
   },
   separator: { flexGrow: 1 }
 }));

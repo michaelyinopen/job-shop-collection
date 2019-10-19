@@ -13,6 +13,9 @@ const useStyles = makeStyles(theme => ({
     marginInlineStart: 0,
     marginInlineEnd: 0,
     paddingInlineStart: 0,
+  },
+  countMessage: {
+    color: theme.palette.text.hint
   }
 }));
 
@@ -28,7 +31,7 @@ const Jobs = React.memo(({
     <section>
       <h2>
         Jobs
-      <Tooltip title={`${count} Jobs`}><span>{countMessage}</span></Tooltip>
+      <Tooltip title={`${count} Jobs`}><span className={classes.countMessage}>{countMessage}</span></Tooltip>
       </h2>
       {count === 0 ? <Box fontStyle="italic" color="text.hint"> No jobs</Box> : null}
       <ol className={classes.list}>
