@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Route, Switch } from 'react-router';
-import queryString from 'query-string';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import * as fromRoutePaths from './routePaths';
@@ -10,7 +9,7 @@ import About from './components/About';
 import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
 import JobSet from './components/JobSet';
-import ComingSoon from './components/ComingSoon';
+import PageNotFound from './components/PageNotFound';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -24,13 +23,13 @@ export default class App extends Component {
               <Route exact path={fromRoutePaths.home} component={Home} />
               <Route exact path={fromRoutePaths.about} component={About} />
               <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
-              <Route exact path={fromRoutePaths.jobSet} render={({ match, location }) => (
+              <Route exact path={fromRoutePaths.jobSet} render={({ match }) => (
                 <JobSet
                   id={+match.params.id}
-                  edit={Boolean(queryString.parse(location.search)["edit"])}
+                  edit={Boolean(match.params.edit)}
                 />
               )} />
-              <Route exact path={fromRoutePaths.jobSetEdit} component={ComingSoon} />
+              <Route component={PageNotFound} />
             </Switch>
           </JobShopCollection>
         </Layout>

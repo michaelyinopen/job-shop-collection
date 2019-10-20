@@ -30,10 +30,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import preventDefaultPropagation from '../../functions/preventDefaultPropagation';
-import {
-  jobSet as jobSetPath,
-  jobSetEdit as jobSetEditPath
-} from '../../routePaths';
+import { jobSet as jobSetPath } from '../../routePaths';
 import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
 import {
   getJobSetsBegin,
@@ -643,7 +640,7 @@ const JobSetRowWithRouter = (props) => {
         e.stopPropagation();
         push(path);
       };
-      const editPath = generatePath(jobSetEditPath, { id });
+      const editPath = generatePath(jobSetPath, { id, edit: "edit" });
       const editCallback = e => {
         e.stopPropagation();
         e.preventDefault();

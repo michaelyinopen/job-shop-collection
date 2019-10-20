@@ -49,7 +49,6 @@ const JobSet = ({
 
   return (
     <JobSetEditor
-      readOnly
       id={id}
       edit={edit}
       title={jobSet.title}

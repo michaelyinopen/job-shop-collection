@@ -108,7 +108,7 @@ const JobOptionsButton = ({
         changeJobColor={changeJobColorCallback}
       />
     ),
-    [classes, backgroundColor, foregroundColor, changeJobColorCallback]
+    [classes, readOnly, backgroundColor, foregroundColor, changeJobColorCallback]
   );
 
   const popperContent = useMemo(
