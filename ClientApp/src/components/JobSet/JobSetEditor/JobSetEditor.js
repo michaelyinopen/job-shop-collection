@@ -10,7 +10,9 @@ import {
   Fab,
   Tooltip,
   Container,
-  Paper
+  Paper,
+  Toolbar,
+  Divider
 } from '@material-ui/core';
 import { ToggleButton } from '@material-ui/lab';
 import StyledToggleButtonGroup, { toggleButtonGroupBorderStyle } from '../../StyledToggleButtonGroup';
@@ -26,7 +28,8 @@ import 'react-splitter-layout/lib/index.css';
 import { useReadOnly } from './store/useSelectors';
 import { setReadOnly } from './store/actionCreators';
 import { InlineIcon } from "@iconify/react";
-import pencilLock from '@iconify/icons-mdi/pencil-lock';
+import pencilLockOutline from '@iconify/icons-mdi/pencil-lock-outline';
+import jsonIcon from '@iconify/icons-mdi/json';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -40,7 +43,23 @@ const useStyles = makeStyles(theme => ({
     position: "relative"
   },
   icon: { fontSize: "1.5rem" },
-  toggleButtonGroupBorderStyle: toggleButtonGroupBorderStyle(theme)
+  toggleButtonGroupBorderStyle: toggleButtonGroupBorderStyle(theme),
+  titleRow: {
+    position: "sticky",
+    top: 0,
+    zIndex: theme.zIndex.appBar - 1,
+    backgroundColor: theme.palette.background.default,
+    boxSizing: "border-box",
+  },
+  toolbar: { // move
+    display: "flex",
+    boxSizing: "border-box",
+    boxShadow: "0px 6px 4px -6px rgba(0,0,0,0.75)",
+    "& > *": {
+      margin: "4px"
+    },
+  },
+  separator: { flexGrow: 1 },
 }));
 
 const JobSetEditor = ({
@@ -63,7 +82,7 @@ const JobSetEditor = ({
   const readonlyPath = generatePath(jobSetPath, { id });
   const editingPath = generatePath(jobSetPath, { id, edit: "edit" });
 
-  const handleReadOnlyChange = (event, readOnlyValue) => {
+  const handleReadOnlyChange = (_event, readOnlyValue) => {
     if (!readOnly && readOnlyValue) {
       push(readonlyPath)
     }
@@ -77,69 +96,35 @@ const JobSetEditor = ({
       component="form"
       className={classes.container}
     >
-      <h1>{pageTitle}</h1>
-
-      {/* <Tooltip
-        title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
-      >
-        <div style={{
-          position: "absolute",
-          top: "16px",
-          right: "16px",
-          margin: "16px"
-        }}>
-          <Fab disabled={isJsonEditorOpen} onClick={openJsonEditorCallback}>
-            <Code />
-          </Fab>
-        </div> 
-      </Tooltip>*/}
-      <div style={{
-        position: "absolute",
-        top: "16px",
-        right: "16px",
-        margin: "16px"
-      }}>
-        <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
-          <StyledToggleButtonGroup
-            value={readOnly}
-            exclusive
-            onChange={handleReadOnlyChange}
-            className={classes.toggleButtonGroupStyle}
+      <div className={classes.titleRow}>
+        <Toolbar className={classes.toolbar}>
+          <h1>{pageTitle}</h1>
+          <dic className={classes.separator} />
+          <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
+            <StyledToggleButtonGroup
+              value={readOnly}
+              exclusive
+              onChange={handleReadOnlyChange}
+              className={classes.toggleButtonGroupStyle}
+            >
+              <ToggleButton value={true}>
+                <InlineIcon icon={pencilLockOutline} className={classes.icon} />
+              </ToggleButton>
+              <ToggleButton value={false} {...(false ? { disabled: true } : {})} >
+                <Edit />
+              </ToggleButton>
+            </StyledToggleButtonGroup>
+          </Paper>
+          <Tooltip
+            title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
           >
-            <ToggleButton value={true}>
-              <InlineIcon icon={pencilLock} className={classes.icon} />
-            </ToggleButton>
-            <ToggleButton value={false} {...(false ? { disabled: true } : {})} >
-              <Edit />
-            </ToggleButton>
-          </StyledToggleButtonGroup>
-        </Paper>
+            <Fab disabled={isJsonEditorOpen} size="medium" onClick={openJsonEditorCallback}>
+              <InlineIcon icon={jsonIcon} className={classes.icon} />
+            </Fab>
+          </Tooltip>
+        </Toolbar>
+        <Divider variant="middle" />
       </div>
-      {/* {readOnly ? (
-        <div style={{
-          position: "absolute",
-          top: "16px",
-          right: "16px",
-          margin: "16px"
-        }}>
-          <Fab onClick={setEditingCallback}>
-            <Edit />
-          </Fab>
-        </div>
-      ) : null}
-      {!readOnly ? (
-        <div style={{
-          position: "absolute",
-          top: "16px",
-          right: "16px",
-          margin: "16px"
-        }}>
-          <Fab onClick={setReadOnlyCallback}>
-            <Edit />
-          </Fab>
-        </div>
-      ) : null} */}
-
       <Title />
       <Description />
       <Machines />
