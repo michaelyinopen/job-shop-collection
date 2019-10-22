@@ -1,3 +1,6 @@
+export const showSnackbar = "showSnackbar";
+export const closeSnackbar = "closeSnackbar";
+
 export const getJobSetsBegin = "getJobSetsBegin";
 export const getJobSetsSucceed = "getJobSetsSucceed";
 export const getJobSetsFailed = "getJobSetsFailed";

@@ -63,7 +63,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const JobSetEditor = ({
-  id
+  id,
+  deleteJobSetButton
 }) => {
   const classes = useStyles();
   const readOnly = useReadOnly();
@@ -99,7 +100,7 @@ const JobSetEditor = ({
       <div className={classes.titleRow}>
         <Toolbar className={classes.toolbar}>
           <h1>{pageTitle}</h1>
-          <dic className={classes.separator} />
+          <div className={classes.separator} />
           <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
             <StyledToggleButtonGroup
               value={readOnly}
@@ -115,13 +116,14 @@ const JobSetEditor = ({
               </ToggleButton>
             </StyledToggleButtonGroup>
           </Paper>
-          <Tooltip
+          {deleteJobSetButton}
+          {/* <Tooltip
             title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
           >
             <Fab disabled={isJsonEditorOpen} size="medium" onClick={openJsonEditorCallback}>
               <InlineIcon icon={jsonIcon} className={classes.icon} />
             </Fab>
-          </Tooltip>
+          </Tooltip> */}
         </Toolbar>
         <Divider variant="middle" />
       </div>
@@ -151,7 +153,8 @@ const JobSetEditorWithContext = ({
   jobSet = {},
   isAutoTimeOptions,
   timeOptions,
-  jobColors
+  jobColors,
+  deleteJobSetButton
 }) => {
   const { machines, jobs } = jobSet;
   const readOnly = !edit;
@@ -179,7 +182,10 @@ const JobSetEditorWithContext = ({
   return (
     <JobSetEditorDispatchContext.Provider value={dispatch}>
       <JobSetEditorStateContext.Provider value={state}>
-        <JobSetEditor id={id} />
+        <JobSetEditor
+          id={id}
+          deleteJobSetButton={deleteJobSetButton}
+        />
       </JobSetEditorStateContext.Provider>
     </JobSetEditorDispatchContext.Provider>
   );

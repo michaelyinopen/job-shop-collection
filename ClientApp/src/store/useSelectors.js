@@ -1,6 +1,12 @@
 import { useMemo, useContext } from 'react';
 import JobShopCollectionStateContext from '../components/JobShopCollectionStateContext';
 
+export const useSnackbar = () => {
+  const state = useContext(JobShopCollectionStateContext);
+  const { isOpen, message } = state.snackbar;
+  return [isOpen, message];
+};
+
 export const useJobSetIds = () => {
   const state = useContext(JobShopCollectionStateContext);
   const jobSetIds = useMemo(

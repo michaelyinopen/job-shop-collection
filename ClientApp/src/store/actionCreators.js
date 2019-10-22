@@ -1,5 +1,14 @@
 import * as fromActionTypes from './actionTypes';
 
+export const showSnackbar = message => ({
+  type: fromActionTypes.showSnackbar,
+  message
+});
+
+export const closeSnackbar = () => ({
+  type: fromActionTypes.closeSnackbar,
+});
+
 export const getJobSetsBegin = () => ({
   type: fromActionTypes.getJobSetsBegin
 });

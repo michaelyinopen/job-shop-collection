@@ -1,6 +1,9 @@
 import { combineReducers } from 'redux';
 import createReducer from '../functions/createReducer';
 import {
+  showSnackbar,
+  closeSnackbar,
+
   getJobSetsBegin,
   getJobSetsSucceed,
   getJobSetsFailed,
@@ -16,6 +19,18 @@ import {
 } from './actionTypes';
 import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
+
+const snackbarInitialState = {
+  isOpen: false,
+  message: undefined
+};
+const snackbar = createReducer(
+  snackbarInitialState,
+  {
+    [showSnackbar]: (_state, { message }) => ({ isOpen: true, message }),
+    [closeSnackbar]: (_state, _action) => ({ isOpen: false, message: undefined }),
+  }
+);
 
 const getJobSetIsLoadingInitialState = false;
 const getJobSetIsLoading = createReducer(
@@ -177,6 +192,7 @@ const deletingJobSets = createReducer(
 );
 
 export const initialState = {
+  snackbar: snackbarInitialState,
   getJobSetIsLoading: getJobSetIsLoadingInitialState,
   getJobSetFailedMessage: getJobSetFailedMessageInitialState,
   jobSets: jobSetsInitialState,
@@ -184,6 +200,7 @@ export const initialState = {
 };
 
 const reducer = combineReducers({
+  snackbar,
   getJobSetIsLoading,
   getJobSetFailedMessage,
   jobSets,

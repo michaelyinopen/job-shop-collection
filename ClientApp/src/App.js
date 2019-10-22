@@ -10,6 +10,7 @@ import JobShopCollection from './components/JobShopCollection';
 import JobSets from './components/JobSets';
 import JobSet from './components/JobSet';
 import PageNotFound from './components/PageNotFound';
+import AppSnackbar from './components/AppSnackbar';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -31,6 +32,7 @@ export default class App extends Component {
               )} />
               <Route component={PageNotFound} />
             </Switch>
+            <AppSnackbar />
           </JobShopCollection>
         </Layout>
       </DndProvider>
