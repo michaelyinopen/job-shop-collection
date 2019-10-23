@@ -25,7 +25,7 @@ const Description = React.memo(({
   return (
     <TextField
       label="Description"
-      value={value}
+      value={value ? value : undefined}
       onChange={onChange}
       variant="filled"
       margin="dense"

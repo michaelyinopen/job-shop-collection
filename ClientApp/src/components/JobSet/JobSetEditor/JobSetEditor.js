@@ -22,6 +22,7 @@ import Description from './Description';
 import Machines from './Machines';
 import Jobs from './Jobs';
 import TimeOptions from './TimeOptions';
+import DeleteJobSetButton from './DeleteJobSetButton';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -63,8 +64,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const JobSetEditor = ({
-  id,
-  deleteJobSetButton
+  id
 }) => {
   const classes = useStyles();
   const readOnly = useReadOnly();
@@ -116,7 +116,7 @@ const JobSetEditor = ({
               </ToggleButton>
             </StyledToggleButtonGroup>
           </Paper>
-          {deleteJobSetButton}
+          <DeleteJobSetButton id={id} />
           {/* <Tooltip
             title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
           >
