@@ -107,12 +107,18 @@ export const useJobSet = id => {
 // returns true when there is no jobSet in redux store
 export const useIsLoadingJobSet = id => {
   const state = useContext(JobShopCollectionStateContext);
+  if (!id) {
+    return false;
+  }
   const jobSet = state.jobSets[id];
   return jobSet ? jobSet.isLoading : true;
 };
 
 export const useLoadJobSetFailedMessage = id => {
   const state = useContext(JobShopCollectionStateContext);
+  if (!id) {
+    return undefined;
+  }
   const jobSet = state.jobSets[id];
   return jobSet ? jobSet.loadFailedMessage : undefined;
 };

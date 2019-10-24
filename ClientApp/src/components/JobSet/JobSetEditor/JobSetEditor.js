@@ -1,7 +1,10 @@
 import React, { useReducer, useState, useCallback, useEffect } from 'react';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
-import { jobSet as jobSetPath } from '../../../routePaths';
+import {
+  jobSet as jobSetPath,
+  newJobSet as newJobSetPath
+} from '../../../routePaths';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 import JobSetEditorStateContext from './JobSetEditorStateContext';
 import reducer, { init as jobSetEditorInit } from './store/reducer';
@@ -68,7 +71,7 @@ const JobSetEditor = ({
 }) => {
   const classes = useStyles();
   const readOnly = useReadOnly();
-  const pageTitle = `Job Set #${id}` + (readOnly ? " (read-only)" : " (editing)");
+  const pageTitle = id ? `Job Set #${id}` + (readOnly ? " (read-only)" : " (editing)") : "New Job Set";
 
   const [isJsonEditorOpen, setIsJsonEditorOpen] = useState(false);
   const openJsonEditorCallback = useCallback(
@@ -80,8 +83,8 @@ const JobSetEditor = ({
     []
   );
   const { history: { push } } = useReactRouter();
-  const readonlyPath = generatePath(jobSetPath, { id });
-  const editingPath = generatePath(jobSetPath, { id, edit: "edit" });
+  const readonlyPath = id ? generatePath(jobSetPath, { id }) : newJobSetPath;
+  const editingPath = id ? generatePath(jobSetPath, { id, edit: "edit" }) : newJobSetPath;
 
   const handleReadOnlyChange = (_event, readOnlyValue) => {
     if (!readOnly && readOnlyValue) {
@@ -101,22 +104,24 @@ const JobSetEditor = ({
         <Toolbar className={classes.toolbar}>
           <h1>{pageTitle}</h1>
           <div className={classes.separator} />
-          <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
-            <StyledToggleButtonGroup
-              value={readOnly}
-              exclusive
-              onChange={handleReadOnlyChange}
-              className={classes.toggleButtonGroupStyle}
-            >
-              <ToggleButton value={true}>
-                <InlineIcon icon={pencilLockOutline} className={classes.icon} />
-              </ToggleButton>
-              <ToggleButton value={false} {...(false ? { disabled: true } : {})} >
-                <Edit />
-              </ToggleButton>
-            </StyledToggleButtonGroup>
-          </Paper>
-          <DeleteJobSetButton id={id} />
+          {id ? (
+            <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
+              <StyledToggleButtonGroup
+                value={readOnly}
+                exclusive
+                onChange={handleReadOnlyChange}
+                className={classes.toggleButtonGroupStyle}
+              >
+                <ToggleButton value={false} {...(false ? { disabled: true } : {})} >
+                  <Edit />
+                </ToggleButton>
+                <ToggleButton value={true}>
+                  <InlineIcon icon={pencilLockOutline} className={classes.icon} />
+                </ToggleButton>
+              </StyledToggleButtonGroup>
+            </Paper>
+          ) : null}
+          {id ? <DeleteJobSetButton id={id} /> : null}
           {/* <Tooltip
             title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
           >
@@ -157,7 +162,7 @@ const JobSetEditorWithContext = ({
   deleteJobSetButton
 }) => {
   const { machines, jobs } = jobSet;
-  const readOnly = !edit;
+  const readOnly = id && !edit; //when id is defined and not edit 
   const [state, dispatch] = useReducer(
     reducer,
     {

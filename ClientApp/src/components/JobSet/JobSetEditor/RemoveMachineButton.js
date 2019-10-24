@@ -38,8 +38,8 @@ const RemoveMachineDialogChildren = ({
   );
 
   const proceduresOfMachine = useProceduresOfMachine(id);
-  const sortedProceduresOfMachine = [...proceduresOfMachine].sort((a, b)=>{
-    return a.jobId - b.jobId  ||  a.sequence - b.sequence;
+  const sortedProceduresOfMachine = [...proceduresOfMachine].sort((a, b) => {
+    return a.jobId - b.jobId || a.sequence - b.sequence;
   });
 
   const machineTitle = machine.title ? `machine ${machine.title}` : "this machine";
@@ -61,7 +61,7 @@ const RemoveMachineDialogChildren = ({
                 <React.Fragment>
                   <ListItem>
                     <ListItemText
-                      primary={`Job ${p.jobId}; sequence ${p.sequence}; time: ${prettyMs(p.processingMilliseconds)}`}
+                      primary={`Job ${p.jobId}; sequence ${p.sequence}; time: ${prettyMs(p.processingMilliseconds ? p.processingMilliseconds : 0)}`}
                     />
                   </ListItem>
                   {index < sortedProceduresOfMachine.length - 1 ? <Divider component="li" /> : null}

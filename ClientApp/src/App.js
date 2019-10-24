@@ -24,6 +24,7 @@ export default class App extends Component {
               <Route exact path={fromRoutePaths.home} component={Home} />
               <Route exact path={fromRoutePaths.about} component={About} />
               <Route exact path={fromRoutePaths.jobSets} component={JobSets} />
+              <Route exact path={fromRoutePaths.newJobSet} component={JobSet} />
               <Route exact path={fromRoutePaths.jobSet} render={({ match }) => (
                 <JobSet
                   id={+match.params.id}

@@ -1,8 +1,10 @@
 import React, { useMemo, useContext, useEffect, useCallback, useState } from 'react';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
+import { Link } from 'react-router-dom';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -23,6 +25,7 @@ import Paper from '@material-ui/core/Paper';
 import { green, red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ForwardIcon from '@material-ui/icons/Forward';
@@ -30,7 +33,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import preventDefaultPropagation from '../../functions/preventDefaultPropagation';
-import { jobSet as jobSetPath } from '../../routePaths';
+import { jobSet as jobSetPath, newJobSet as newJobSetPath } from '../../routePaths';
 import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
 import {
   getJobSetsBegin,
@@ -89,6 +92,13 @@ const useStyles = makeStyles(theme => ({
   tableTitle: { // move
     marginRight: theme.spacing(3),
   },
+  createJobSetButton: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(0.5),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  createJobSetIcon: { marginRight: theme.spacing(0.5) },
   table: {
     minWidth: 650,
   },
@@ -228,6 +238,10 @@ const JobSetSelectedToolbar = ({
   );
 };
 
+const NewJobSetLink = React.forwardRef((props, ref) => (
+  <Link innerRef={ref} to={newJobSetPath} {...props} />
+));
+
 const JobSetTitle = ({
   classes,
   isLoading,
@@ -250,6 +264,15 @@ const JobSetTitle = ({
       <Typography color="error">
         {failedMessage}
       </Typography>
+      <Button
+        component={NewJobSetLink}
+        variant="contained"
+        color="primary"
+        className={classes.createJobSetButton}
+      >
+        <AddIcon className={classes.createJobSetIcon} />
+        Create New
+      </Button>
     </React.Fragment>
   );
 };

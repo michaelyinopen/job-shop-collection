@@ -13,6 +13,7 @@ import {
   useLoadJobSetFailedMessage,
 } from '../../store/useSelectors';
 
+// when used as new jobset, id will be undefined
 const JobSet = ({
   id,
   edit
@@ -33,9 +34,11 @@ const JobSet = ({
   );
   useEffect(
     () => {
-      getJobSetAsync();
+      if (id) {
+        getJobSetAsync();
+      }
     },
-    [getJobSetAsync]
+    [id, getJobSetAsync]
   );
   const isLoading = useIsLoadingJobSet(id);
   const loadFailedMessage = useLoadJobSetFailedMessage(id);
@@ -51,12 +54,12 @@ const JobSet = ({
     <JobSetEditor
       id={id}
       edit={edit}
-      title={jobSet.title}
-      description={jobSet.description}
-      jobSet={jobSet.content}
-      isAutoTimeOptions={jobSet.isAutoTimeOptions}
-      timeOptions={jobSet.timeOptions}
-      jobColors={jobSet.jobColors}
+      title={jobSet ? jobSet.title : undefined}
+      description={jobSet ? jobSet.description : undefined}
+      jobSet={jobSet ? jobSet.content : undefined}
+      isAutoTimeOptions={jobSet ? jobSet.isAutoTimeOptions : undefined}
+      timeOptions={jobSet ? jobSet.timeOptions : undefined}
+      jobColors={jobSet ? jobSet.jobColors : undefined}
     />
   );
 };
