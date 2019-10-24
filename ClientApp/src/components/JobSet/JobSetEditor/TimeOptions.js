@@ -76,7 +76,7 @@ const TimeInputField = React.memo(({
             margin="dense"
             variant="outlined"
             disabled={disabled}
-            inputProps={{
+            InputProps={{
               endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
               readOnly: readOnly ? true : undefined
             }}
