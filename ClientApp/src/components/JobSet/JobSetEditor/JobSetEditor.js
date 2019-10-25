@@ -26,6 +26,7 @@ import Machines from './Machines';
 import Jobs from './Jobs';
 import TimeOptions from './TimeOptions';
 import DeleteJobSetButton from './DeleteJobSetButton';
+import SaveJobSetButton from './SaveJobSetButton';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -104,6 +105,7 @@ const JobSetEditor = ({
         <Toolbar className={classes.toolbar}>
           <h1>{pageTitle}</h1>
           <div className={classes.separator} />
+          {!readOnly ? <SaveJobSetButton id={id} /> : null}
           {id ? (
             <Paper elevation={0} className={classes.toggleButtonGroupBorderStyle}>
               <StyledToggleButtonGroup

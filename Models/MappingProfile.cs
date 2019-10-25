@@ -12,7 +12,7 @@ namespace JobShopCollection.Models
         {
             CreateMap<JobSet, JobSetHeaderDto>();
             CreateMap<JobSet, JobSetDto>();
-            CreateMap<JobSet, NewJobSetDto>();
+            CreateMap<NewJobSetDto, JobSet>();
             CreateMap<UpdateJobSetDto, JobSet>();
         }
     }

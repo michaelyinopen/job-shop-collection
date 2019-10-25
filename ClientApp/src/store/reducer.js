@@ -15,7 +15,9 @@ import {
 
   getJobSetBegin,
   getJobSetSucceed,
-  getJobSetFailed
+  getJobSetFailed,
+
+  savedJobSet,
 } from './actionTypes';
 import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
@@ -93,6 +95,21 @@ const jobSet = createReducer(
       }
     ),
     [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
+    [savedJobSet]: (state, action) => updateObject(
+      state,
+      {
+        id: action.id,
+        isLoading: false,
+        title: action.title,
+        description: action.description,
+        content: action.content,
+        jobColors: action.jobColors,
+        isAutoTimeOptions: action.isAutoTimeOptions,
+        timeOptions: action.timeOptions,
+        eTag: action.eTag,
+        loadFailedMessage: null
+      }
+    ),
   }
 );
 
@@ -109,6 +126,7 @@ const jobSets = createReducer(
     [getJobSetBegin]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetFailed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
+    [savedJobSet]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
   }
 );
 

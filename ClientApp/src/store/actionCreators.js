@@ -66,3 +66,15 @@ export const getJobSetFailed = (id, failedMessage) => ({
   id,
   failedMessage
 });
+
+export const savedJobSet = (id, jobSet) => ({
+  type: fromActionTypes.savedJobSet,
+  id,
+  title: jobSet.title,
+  description: jobSet.description,
+  content: JSON.parse(jobSet.content),
+  jobColors: jobSet.jobColors,
+  isAutoTimeOptions: jobSet.isAutoTimeOptions,
+  timeOptions: jobSet.timeOptions,
+  eTag: jobSet.eTag,
+});

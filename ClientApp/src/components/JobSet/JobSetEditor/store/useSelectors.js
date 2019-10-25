@@ -170,3 +170,56 @@ export const useIsJobSetEqualFn = () => {
   );
   return isJobSetEqualFn;
 };
+
+export const useJobSetForCreation = () => {
+  const state = useContext(JobSetEditorStateContext);
+  const jobSetForCreation = useMemo(
+    () => {
+      const machines = Object.values(state.machines);
+      const procedures = Object.values(state.procedures);
+      const jobs = Object.values(state.jobs)
+        .map(j => ({ ...j, procedures: procedures.filter(p => p.jobId === j.id) }));
+      const content = JSON.stringify({
+        machines,
+        jobs
+      });
+      return {
+        title: state.title,
+        description: state.description,
+        content,
+        jobColors: JSON.stringify(Object.values(state.jobColors)),
+        isAutoTimeOptions: state.isAutoTimeOptions,
+        timeOptions: JSON.stringify(state.timeOptions)
+      };
+    },
+    [state]
+  );
+  return jobSetForCreation;
+};
+
+export const useJobSetForUpdateFunction = () => {
+  const state = useContext(JobSetEditorStateContext);
+  const jobSetForUpdateFunction = useMemo(
+    () => id => {
+      const machines = Object.values(state.machines);
+      const procedures = Object.values(state.prcedures);
+      const jobs = Object.values(state.jobs)
+        .map(j => ({ ...j, procedures: procedures.filter(p => p.jobId === j.id) }));
+      const content = JSON.stringify({
+        machines,
+        jobs
+      });
+      return {
+        id,
+        title: state.title,
+        description: state.description,
+        content,
+        jobColors: Object.values(state.jobColors),
+        isAutoTimeOptions: state.isAutoTimeOptions,
+        timeOptions: state.timeOptions
+      };
+    },
+    [state]
+  );
+  return jobSetForUpdateFunction;
+};

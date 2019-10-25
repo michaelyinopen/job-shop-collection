@@ -99,7 +99,7 @@ namespace JobShopCollection.Controllers
             JobShopCollectionDbContext.JobSet.Add(jobSet);
             await JobShopCollectionDbContext.SaveChangesAsync();
 
-            var result = Mapper.Map<JobSet>(jobSet);
+            var result = Mapper.Map<JobSetDto>(jobSet);
             string? eTag = jobSet.GetETag();
             if (eTag != null)
             {
