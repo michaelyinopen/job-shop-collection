@@ -26,6 +26,8 @@ const Title = React.memo(({
       label="Title"
       value={value ? value : undefined}
       onChange={onChange}
+      required
+      error={!value || value.length === 0}
       variant="filled"
       margin="dense"
       className={classes.field}

@@ -10,13 +10,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
   Tooltip,
-  IconButton,
   CircularProgress
 } from '@material-ui/core';
 import { Save as SaveIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   withProgressWrapper: {
+    margin: theme.spacing(1),
     position: 'relative',
   },
   progressOnButton: {
@@ -27,24 +27,30 @@ const useStyles = makeStyles(theme => ({
     transform: "translate(-50%, -50%)",
     display: 'flex'
   },
+  saveIcon: { marginRight: theme.spacing(0.5) },
 }));
 
 const SaveJobSetButton = ({
-  tooltip,
+  label,
   onClick,
   isProgress,
 }) => {
   const classes = useStyles();
   return (
     <div>
-      <Tooltip title={tooltip} placement="bottom-end">
+      <Tooltip title={label} placement="bottom-end">
         <div className={classes.withProgressWrapper}>
-          <IconButton
+          <Button
+            variant="contained"
+            color="primary"
             onClick={onClick}
+            className={classes.saveButton}
+            disabled={isProgress}
           >
-            <SaveIcon />
-          </IconButton>
-          {isProgress ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
+            <SaveIcon className={classes.saveIcon} />
+            {label}
+          </Button>
+          {isProgress ? <div className={classes.progressOnButton}><CircularProgress size={24} /></div> : null}
         </div>
       </Tooltip>
     </div >
@@ -99,6 +105,13 @@ const SaveJobSetButtonContainer = ({
             isUpdating: false,
             updateFailedMessage: action.failedMessage,
           };
+        default:
+          return {
+            isCreating: false,
+            createFailedMessage: undefined,
+            isUpdating: false,
+            updateFailedMessage: undefined,
+          }
       }
     },
     {
@@ -128,6 +141,7 @@ const SaveJobSetButtonContainer = ({
             saveDispatch({ type: 'createSucceed' });
             const id = createResult.id;
             dispatch(savedJobSet(id, createResult));
+            dispatch(savedJobSet(id, createResult));
             const generatedJobSetPath = generatePath(jobSetPath, { id, edit: 'edit' });
             push(generatedJobSetPath);
           }
@@ -142,19 +156,18 @@ const SaveJobSetButtonContainer = ({
       return callback;
     },
     [
-      id,
       jobSetForCreation,
       saveDispatch,
       dispatch,
       push
     ]
   );
-  const tooltip = id ? "Save" : "Create";
+  const label = id ? "Save" : "Create";
   const onClick = id ? () => { } : onCreate;
   const isProgress = id ? saveState.isUpdating : saveState.isCreating;
   return (
     <SaveJobSetButton
-      tooltip={tooltip}
+      label={label}
       onClick={onClick}
       isProgress={isProgress}
     />
