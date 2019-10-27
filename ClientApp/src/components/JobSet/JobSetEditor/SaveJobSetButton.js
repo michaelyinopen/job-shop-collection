@@ -2,7 +2,7 @@ import React, { useMemo, useReducer, useContext, useEffect } from 'react';
 import { createJobSetApiAsync } from '../../../api/jobSetsApi';
 import { useJobSetForCreation } from './store/useSelectors';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
-import { savedJobSet } from '../../../store/actionCreators';
+import { savedJobSet, showSnackbar } from '../../../store/actionCreators';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
 import { jobSet as jobSetPath } from '../../../routePaths';
@@ -137,10 +137,11 @@ const SaveJobSetButtonContainer = ({
     () => {
       if (saveState.createdId) {
         const generatedJobSetPath = generatePath(jobSetPath, { id: saveState.createdId, edit: 'edit' });
+        dispatch(showSnackbar(`Created Job Set ${saveState.createdId}`));
         push(generatedJobSetPath);
       }
     },
-    [saveState.createdId, push]
+    [saveState.createdId, push, dispatch]
   );
   const onCreate = useMemo(
     () => {
