@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Card, Button } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { addMachine } from './store/actionCreators';
+import { addMachine } from '../store/actionCreators';
 import { machine as machineStyle } from './sharedStyles';
 
 const useStyles = makeStyles(theme => ({

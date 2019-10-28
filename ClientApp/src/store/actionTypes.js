@@ -13,5 +13,3 @@ export const clearDeletingJobSets = "clearDeletingJobSets";
 export const getJobSetBegin = "getJobSetBegin";
 export const getJobSetSucceed = "getJobSetSucceed";
 export const getJobSetFailed = "getJobSetFailed";
-
-export const savedJobSet = "savedJobSet";

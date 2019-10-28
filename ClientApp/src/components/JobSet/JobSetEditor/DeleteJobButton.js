@@ -1,6 +1,6 @@
 import React, { useContext, useCallback, useState } from 'react';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { deleteJob } from './store/actionCreators';
+import { deleteJob } from '../store/actionCreators';
 import {
   Button,
   Tooltip,

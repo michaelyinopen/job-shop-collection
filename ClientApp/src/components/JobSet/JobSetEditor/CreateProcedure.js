@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { createProcedure } from './store/actionCreators';
+import { createProcedure } from '../store/actionCreators';
 import { procedure as procedureStyle } from './sharedStyles';
 
 const useStyles = makeStyles(theme => ({

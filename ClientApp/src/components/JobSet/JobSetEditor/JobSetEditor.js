@@ -7,7 +7,7 @@ import {
 } from '../../../routePaths';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 import JobSetEditorStateContext from './JobSetEditorStateContext';
-import reducer, { init as jobSetEditorInit } from './store/reducer';
+import reducer, { init as jobSetEditorInit } from '../store/reducer';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Fab,
@@ -30,8 +30,8 @@ import SaveJobSetButton from './SaveJobSetButton';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-import { useReadOnly } from './store/useSelectors';
-import { setReadOnly } from './store/actionCreators';
+import { useReadOnly } from '../store/useSelectors';
+import { setReadOnly } from '../store/actionCreators';
 import { InlineIcon } from "@iconify/react";
 import pencilLockOutline from '@iconify/icons-mdi/pencil-lock-outline';
 import jsonIcon from '@iconify/icons-mdi/json';

@@ -7,8 +7,8 @@ import msToFormattedTime from '../../../../functions/msToFormattedTime';
 import formattedTimeToMs from '../../../../functions/formattedTimeToMs';
 import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
 import DeleteProcedureButton from '../DeleteProcedureButton';
-import { updateProcedure, moveProcedure } from '../store/actionCreators';
-import { useProcedure, useMachines, useGetProcedureSequence, useJobColor, useReadOnly } from '../store/useSelectors';
+import { updateProcedure, moveProcedure } from '../../store/actionCreators';
+import { useProcedure, useMachines, useGetProcedureSequence, useJobColor, useReadOnly } from '../../store/useSelectors';
 import useProcedureDragDrop from './useProcedureDragDrop';
 import { procedure as procedureStyle } from '../sharedStyles';
 

@@ -4,8 +4,8 @@ import { MoreHoriz, Autorenew } from '@material-ui/icons';
 import { Tooltip, IconButton } from '@material-ui/core';
 import JobButton from './JobButton';
 import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
-import { changeJobColor } from '../store/actionCreators';
-import { useJobColor, useReadOnly } from '../store/useSelectors';
+import { changeJobColor } from '../../store/actionCreators';
+import { useJobColor, useReadOnly } from '../../store/useSelectors';
 import usePopperHandlers from './usePopperHandlers';
 import CustomPopper from './CustomPopper';
 

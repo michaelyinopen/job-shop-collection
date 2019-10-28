@@ -19,6 +19,11 @@ import {
 
   savedJobSet,
 } from './actionTypes';
+import {
+  setCurrentJobSetIdActionType,
+  jobSetEditorReducer,
+  jobSetEditorInit,
+} from '../components/JobSet';
 import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
 
@@ -209,12 +214,22 @@ const deletingJobSets = createReducer(
   }
 );
 
+const currentJobSetIdInitialState = null;
+const currentJobSetId = createReducer(
+  currentJobSetIdInitialState,
+  {
+    [setCurrentJobSetIdActionType]: (_state, _action) => action.id,
+  }
+);
+
 export const initialState = {
   snackbar: snackbarInitialState,
   getJobSetIsLoading: getJobSetIsLoadingInitialState,
   getJobSetFailedMessage: getJobSetFailedMessageInitialState,
   jobSets: jobSetsInitialState,
   deletingJobSets: deletingJobSetsInitialState,
+  currentJobSetId: currentJobSetIdInitialState,
+  jobSetEditor: jobSetEditorInit(),
 };
 
 const reducer = combineReducers({
@@ -222,7 +237,9 @@ const reducer = combineReducers({
   getJobSetIsLoading,
   getJobSetFailedMessage,
   jobSets,
-  deletingJobSets
+  deletingJobSets,
+  currentJobSetId,
+  jobSetEditor: jobSetEditorReducer,
 });
 
 export default reducer;

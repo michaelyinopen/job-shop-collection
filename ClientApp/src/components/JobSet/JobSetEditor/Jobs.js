@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Tooltip } from '@material-ui/core';
-import { useJobIds, useReadOnly } from './store/useSelectors';
+import { useJobIds, useReadOnly } from '../store/useSelectors';
 import Job from './Job';
 import CreateJob from './CreateJob';
 

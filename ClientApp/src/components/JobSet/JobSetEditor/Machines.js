@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Tooltip, Box } from '@material-ui/core';
-import { useMachineIds, useReadOnly } from './store/useSelectors';
+import { useMachineIds, useReadOnly } from '../store/useSelectors';
 import AddMachine from './AddMachine';
 import Machine from './Machine';
 

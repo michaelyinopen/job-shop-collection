@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
-import { useTitle, useReadOnly } from './store/useSelectors';
-import { setTitle } from './store/actionCreators';
+import { useTitle, useReadOnly } from '../store/useSelectors';
+import { setTitle } from '../store/actionCreators';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 
 const useStyles = makeStyles(theme => ({

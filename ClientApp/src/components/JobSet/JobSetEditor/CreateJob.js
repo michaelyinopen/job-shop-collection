@@ -1,7 +1,7 @@
 import React, { useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { createJob } from './store/actionCreators';
+import { createJob } from '../store/actionCreators';
 import { Card, Button } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { job as jobStyle } from './sharedStyles';

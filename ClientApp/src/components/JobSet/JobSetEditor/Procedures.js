@@ -1,7 +1,7 @@
 import React from 'react';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import { Box, Tooltip } from '@material-ui/core';
-import { useProcedureOfJobIds, useReadOnly } from './store/useSelectors';
+import { useProcedureOfJobIds, useReadOnly } from '../store/useSelectors';
 import Procedure from './Procedure';
 import CreateProcedure from './CreateProcedure';
 

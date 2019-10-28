@@ -1,8 +1,8 @@
 import React, { useContext, useCallback, useState } from 'react';
 import prettyMs from 'pretty-ms';
-import { useMachine, useProceduresOfMachine } from './store/useSelectors';
+import { useMachine, useProceduresOfMachine } from '../store/useSelectors';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import { removeMachine } from './store/actionCreators';
+import { removeMachine } from '../store/actionCreators';
 import {
   Button,
   Tooltip,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card } from '@material-ui/core';
-import { useJobColor, useReadOnly } from './store/useSelectors';
+import { useJobColor, useReadOnly } from '../store/useSelectors';
 import DeleteJobButton from './DeleteJobButton';
 import JobOptionsButton from './JobOptionsButton';
 import Procedures from './Procedures';

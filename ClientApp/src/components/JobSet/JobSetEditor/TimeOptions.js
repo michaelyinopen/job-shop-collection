@@ -20,7 +20,7 @@ import {
   useMinViewDuration,
   useMaxViewDuration,
   useReadOnly
-} from './store/useSelectors';
+} from '../store/useSelectors';
 import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
 import {
   setIsAutoTimeOptions,
@@ -29,7 +29,7 @@ import {
   setViewEndTimeFromRef,
   setMinViewDuration,
   setMaxViewDuration
-} from './store/actionCreators';
+} from '../store/actionCreators';
 
 const marginLeftStyle = { marginLeft: "16px" };
 

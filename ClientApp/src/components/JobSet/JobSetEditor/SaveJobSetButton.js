@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer, useContext, useEffect } from 'react';
 import { createJobSetApiAsync } from '../../../api/jobSetsApi';
-import { useJobSetForCreation } from './store/useSelectors';
+import { useJobSetForCreation } from '../store/useSelectors';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { savedJobSet, showSnackbar } from '../../../store/actionCreators';
 import { generatePath } from 'react-router';
