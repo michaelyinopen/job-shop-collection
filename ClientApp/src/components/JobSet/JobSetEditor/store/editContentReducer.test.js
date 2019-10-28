@@ -1,6 +1,5 @@
-import reducer, { init } from './reducer';
+import editContentReducer, { editContentInit } from './editContentReducer';
 import {
-  setReadOnly,
   setJobSet,
   addMachine,
   removeMachine,
@@ -14,7 +13,6 @@ import {
 } from './actionCreators';
 
 const initialState = {
-  readOnly: false,
   title: null,
   description: null,
   machines:
@@ -98,7 +96,7 @@ test("init function produces initial state", () => {
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -143,7 +141,7 @@ test("init function with default timeOptions and jobColors", () => {
     },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs
   });
@@ -154,15 +152,14 @@ test("init function with default timeOptions and jobColors", () => {
 test("reducer does not change state with enpty action", () => {
   const state = { ...initialState };
   const emptyAction = { type: '' };
-  const newState = reducer(state, emptyAction);
+  const newState = editContentReducer(state, emptyAction);
   expect(newState).toBe(state);
 });
 
 test("init function with all defaults", () => {
-  const resultState = init({});
+  const resultState = editContentInit({});
 
   expect(resultState).toEqual({
-    readOnly: false,
     title: null,
     description: null,
     machines: {},
@@ -181,31 +178,8 @@ test("init function with all defaults", () => {
   });
 });
 
-test("setReadOnly true", () => {
-  const state = { ...initialState };
-  const setReadOnlyTrueAction = setReadOnly(true);
-  const resultState = reducer(state, setReadOnlyTrueAction);
-  expect(resultState).toEqual({
-    ...initialState,
-    readOnly: true
-  });
-});
-
-test("setReadOnly false", () => {
-  const state = {
-    ...initialState,
-    readOnly: true
-  };
-  const setReadOnlyFalseAction = setReadOnly(false);
-  const resultState = reducer(state, setReadOnlyFalseAction);
-  expect(resultState).toEqual({
-    ...initialState,
-    readOnly: false
-  });
-});
-
 test("setJobSet action", () => {
-  let state = init({});
+  let state = editContentInit({});
   const setJobSetAction = setJobSet({
     machines: [
       { "id": 1, title: "M1", description: "Machine 1" },
@@ -241,14 +215,14 @@ test("setJobSet action", () => {
       }
     ]
   });
-  state = reducer(state, setJobSetAction);
+  state = editContentReducer(state, setJobSetAction);
   expect(state).toEqual(initialState);
 });
 
 test("addMachine action", () => {
   const state = { ...initialState };
   const addMachineAction = addMachine();
-  const resultState = reducer(state, addMachineAction);
+  const resultState = editContentReducer(state, addMachineAction);
   expect(resultState).toEqual({
     ...initialState,
     machines: {
@@ -261,9 +235,8 @@ test("addMachine action", () => {
 test("removeMachine action unsets procedures", () => {
   const state = { ...initialState };
   const removeMachineAction = removeMachine(1);
-  const resultState = reducer(state, removeMachineAction);
+  const resultState = editContentReducer(state, removeMachineAction);
   expect(resultState).toEqual({
-    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -310,9 +283,8 @@ test("deleteJob action", () => {
   // deletes procedures
   const state = { ...initialState };
   const deleteJobAction = deleteJob(1);
-  const resultState = reducer(state, deleteJobAction);
+  const resultState = editContentReducer(state, deleteJobAction);
   expect(resultState).toEqual({
-    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -355,7 +327,7 @@ test("createProcedure action", () => {
   const state = { ...initialState };
   const jobId = 1;
   const createProcedureAction = createProcedure(jobId);
-  const resultState = reducer(state, createProcedureAction);
+  const resultState = editContentReducer(state, createProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -368,7 +340,7 @@ test("createProcedure action", () => {
 test("moveProcedure action moves from the beginning to second", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(4, 2);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -382,7 +354,7 @@ test("moveProcedure action moves from the beginning to second", () => {
 test("moveProcedure action moves from the second to the beginning", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(5, 1);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -396,7 +368,7 @@ test("moveProcedure action moves from the second to the beginning", () => {
 test("moveProcedure action moves to the end", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(6, 4);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -410,7 +382,7 @@ test("moveProcedure action moves to the end", () => {
 test("moveProcedure action moves from the end", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(7, 3);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -424,7 +396,7 @@ test("moveProcedure action moves from the end", () => {
 test("moveProcedure action moves in the middle", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(5, 3);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -438,7 +410,7 @@ test("moveProcedure action moves in the middle", () => {
 test("moveProcedure action works when skiping order", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(5, 4);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -453,7 +425,7 @@ test("moveProcedure action works when skiping order", () => {
 test("moveProcedure action works when skiping order reverse", () => {
   const state = { ...initialState };
   const moveProcedureAction = moveProcedure(7, 2);
-  const resultState = reducer(state, moveProcedureAction);
+  const resultState = editContentReducer(state, moveProcedureAction);
   expect(resultState).toEqual({
     ...initialState,
     procedures: {
@@ -469,9 +441,8 @@ test("deleteProcedure action", () => {
   // re-orders other procedures 
   const state = { ...initialState };
   const deleteProcedureAction = deleteProcedure(1);
-  const resultState = reducer(state, deleteProcedureAction);
+  const resultState = editContentReducer(state, deleteProcedureAction);
   expect(resultState).toEqual({
-    readOnly: false,
     title: null,
     description: null,
     machines:
@@ -563,7 +534,7 @@ test("init function with auto time options overrides provided", () => {
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -623,7 +594,7 @@ test("init function with manual time options uses provided options", () => {
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -694,7 +665,7 @@ test("changing isAutoTimeOptions to true will re-calculate", () => {
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const intermediateState = init({
+  const intermediateState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -703,7 +674,7 @@ test("changing isAutoTimeOptions to true will re-calculate", () => {
   });
 
   const setIsAutoTimeOptionsAction = setIsAutoTimeOptions(true);
-  const resultState = reducer(intermediateState, setIsAutoTimeOptionsAction);
+  const resultState = editContentReducer(intermediateState, setIsAutoTimeOptionsAction);
 
   expect(resultState).toEqual(initialState);
 });
@@ -756,7 +727,7 @@ test("init function with manual time options fills undefined time options", () =
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -823,7 +794,7 @@ test("init function with manual time options uses provided options to fill undef
     { id: 3, color: '#4363d8', textColor: '#ffffff' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -848,7 +819,7 @@ test("init function with manual time options uses provided options to fill undef
 test("changeJobColor action", () => {
   const state = { ...initialState };
   const changeJobColorAction = changeJobColor(1);
-  const resultState = reducer(state, changeJobColorAction);
+  const resultState = editContentReducer(state, changeJobColorAction);
   expect(resultState).toEqual({
     ...initialState,
     jobColors: {
@@ -861,8 +832,8 @@ test("changeJobColor action", () => {
 test("changeJobColor action 2", () => {
   const state = { ...initialState };
   const changeJobColorAction = changeJobColor(1);
-  const intermediateState = reducer(state, changeJobColorAction);
-  const resultState = reducer(intermediateState, changeJobColorAction);
+  const intermediateState = editContentReducer(state, changeJobColorAction);
+  const resultState = editContentReducer(intermediateState, changeJobColorAction);
   expect(resultState).toEqual({
     ...initialState,
     jobColors: {
@@ -908,7 +879,7 @@ test("init function fills empty job color", () => {
   ];
   const isAutoTimeOptions = true;
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions
@@ -956,7 +927,7 @@ test("init function uses provided job colors and fills missing", () => {
     { id: 3, color: '#eeeeee', textColor: '#111111' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -1011,7 +982,7 @@ test("init function skips provided job colors that does not have job", () => {
     { id: 3, color: '#eeeeee', textColor: '#111111' },
   ];
 
-  const resultState = init({
+  const resultState = editContentInit({
     machines,
     jobs,
     isAutoTimeOptions,
@@ -1030,7 +1001,7 @@ test("init function skips provided job colors that does not have job", () => {
 test("adding job will have a corresponding job color", () => {
   const state = { ...initialState };
   const createJobAction = createJob();
-  const resultState = reducer(state, createJobAction);
+  const resultState = editContentReducer(state, createJobAction);
   expect(resultState).toMatchObject({
     jobColors: expect.objectContaining({
       [4]: { id: 4, color: '#f58231', textColor: '#000000' }
@@ -1041,7 +1012,7 @@ test("adding job will have a corresponding job color", () => {
 test("removing job will remove the corresponding job color", () => {
   const state = { ...initialState };
   const deleteJobAction = deleteJob(1);
-  const resultState = reducer(state, deleteJobAction);
+  const resultState = editContentReducer(state, deleteJobAction);
   expect(resultState).toMatchObject({
     jobColors: expect.not.objectContaining({
       [1]: expect.anything()

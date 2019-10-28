@@ -27,3 +27,11 @@ export const setMaxViewDuration = "SET_MAX_VIEW_DURATION";
 
 export const changeJobColor = "CHANGE_JOB_COLOR";
 
+export const beginCreateJobSet = "beginCreateJobSet";
+export const createJobSetSucceed = "createJobSetSucceed";
+export const createJobSetFailed = "createJobSetFailed";
+
+export const beginUpdateJobSet = "beginUpdateJobSet";
+export const updateJobSetSucceed = "updateJobSetSucceed";
+export const updateJobSetFailed = "updateJobSetFailed";
+

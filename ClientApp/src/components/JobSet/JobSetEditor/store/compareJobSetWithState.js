@@ -3,7 +3,7 @@ import {
   initMachines,
   initJobs,
   initProcedures
-} from './reducer';
+} from './editContentReducer';
 
 // returns [
 //   isEqual:           bool,
