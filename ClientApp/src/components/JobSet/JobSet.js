@@ -6,12 +6,14 @@ import {
   getJobSetBegin,
   getJobSetSucceed,
   getJobSetFailed,
+  setCurrnetJobSet,
 } from '../../store/actionCreators';
 import {
   useJobSet,
   useIsLoadingJobSet,
   useLoadJobSetFailedMessage,
 } from '../../store/useSelectors';
+import { setReadOnly } from './store/actionCreators';
 
 // when used as new jobset, id will be undefined
 const JobSet = ({
@@ -35,10 +37,17 @@ const JobSet = ({
   useEffect(
     () => {
       if (id) {
+        dispatch(setCurrnetJobSet(id));
         getJobSetAsync();
       }
     },
     [id, getJobSetAsync]
+  );
+  useEffect(
+    () => {
+      dispatch(setReadOnly(!edit));
+    },
+    [edit]
   );
   const isLoading = useIsLoadingJobSet(id);
   const loadFailedMessage = useLoadJobSetFailedMessage(id);

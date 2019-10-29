@@ -44,6 +44,11 @@ export const clearDeletingJobSets = () => ({
   type: fromActionTypes.clearDeletingJobSets,
 });
 
+export const setCurrnetJobSet = id =>({
+  type: fromActionTypes.setCurrnetJobSet,
+  id
+});
+
 export const getJobSetBegin = id => ({
   type: fromActionTypes.getJobSetBegin,
   id
@@ -65,4 +70,44 @@ export const getJobSetFailed = (id, failedMessage) => ({
   type: fromActionTypes.getJobSetFailed,
   id,
   failedMessage
+});
+
+export const beginCreateJobSet = () => ({
+  type: fromActionTypes.beginCreateJobSet
+});
+
+export const createJobSetSucceed = (id, jobSet) => ({
+  type: fromActionTypes.createJobSetSucceed,
+  id,
+  title: jobSet.title,
+  description: jobSet.description,
+  content: JSON.parse(jobSet.content),
+  jobColors: jobSet.jobColors,
+  isAutoTimeOptions: jobSet.isAutoTimeOptions,
+  timeOptions: jobSet.timeOptions,
+  eTag: jobSet.eTag,
+});
+
+export const createJobSetFailed = () => ({
+  type: fromActionTypes.createJobSetFailed
+});
+
+export const beginUpdateJobSet = () => ({
+  type: fromActionTypes.beginUpdateJobSet
+});
+
+export const updateJobSetSucceed = (id, jobSet) => ({
+  type: fromActionTypes.updateJobSetSucceed,
+  id,
+  title: jobSet.title,
+  description: jobSet.description,
+  content: JSON.parse(jobSet.content),
+  jobColors: jobSet.jobColors,
+  isAutoTimeOptions: jobSet.isAutoTimeOptions,
+  timeOptions: jobSet.timeOptions,
+  eTag: jobSet.eTag,
+});
+
+export const updateJobSetFailed = () => ({
+  type: fromActionTypes.beginUpdateJobSet
 });

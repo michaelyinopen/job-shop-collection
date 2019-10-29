@@ -26,6 +26,8 @@ import {
 } from '../components/JobSet';
 import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
+import reduceReducers from 'reduce-reducers';
+import currentJobSetAdjustReducer from './currentJobSetAdjustReducer';
 
 const snackbarInitialState = {
   isOpen: false,
@@ -232,14 +234,17 @@ export const initialState = {
   jobSetEditor: jobSetEditorInit(),
 };
 
-const reducer = combineReducers({
-  snackbar,
-  getJobSetIsLoading,
-  getJobSetFailedMessage,
-  jobSets,
-  deletingJobSets,
-  currentJobSetId,
-  jobSetEditor: jobSetEditorReducer,
-});
+const reducer = reduceReducers([
+  combineReducers({
+    snackbar,
+    getJobSetIsLoading,
+    getJobSetFailedMessage,
+    jobSets,
+    deletingJobSets,
+    currentJobSetId,
+    jobSetEditor: jobSetEditorReducer,
+  }),
+  currentJobSetAdjustReducer
+]);
 
 export default reducer;
