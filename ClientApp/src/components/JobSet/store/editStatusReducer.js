@@ -11,7 +11,7 @@ import {
   updateJobSetFailed,
 } from '../../../store/actionTypes';
 
-const readOnlyInitialState = false;
+const readOnlyInitialState = true;
 const readOnly = createReducer(
   readOnlyInitialState,
   {

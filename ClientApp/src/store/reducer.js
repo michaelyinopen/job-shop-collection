@@ -41,9 +41,9 @@ const snackbar = createReducer(
   }
 );
 
-const getJobSetIsLoadingInitialState = false;
-const getJobSetIsLoading = createReducer(
-  getJobSetIsLoadingInitialState,
+const getJobSetsIsLoadingInitialState = false;
+const getJobSetsIsLoading = createReducer(
+  getJobSetsIsLoadingInitialState,
   {
     [getJobSetsBegin]: (_state, _action) => true,
     [getJobSetsSucceed]: (_state, _action) => false,
@@ -51,9 +51,9 @@ const getJobSetIsLoading = createReducer(
   }
 );
 
-const getJobSetFailedMessageInitialState = null;
-const getJobSetFailedMessage = createReducer(
-  getJobSetFailedMessageInitialState,
+const getJobSetsFailedMessageInitialState = null;
+const getJobSetsFailedMessage = createReducer(
+  getJobSetsFailedMessageInitialState,
   {
     [getJobSetsBegin]: (_state, _action) => null,
     [getJobSetsSucceed]: (_state, _action) => null,
@@ -83,7 +83,7 @@ const jobSet = createReducer(
       id: jobSetFromAction.id,
       title: jobSetFromAction.title,
       description: jobSetFromAction.description,
-      eTag: jobSetFromAction.eTag,
+      eTag: jobSetFromAction.eTag
     }),
     [getJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isLoading: true, loadingFailedMessage: null }),
     [getJobSetSucceed]: (state, action) => updateObject(
@@ -226,8 +226,8 @@ const currentJobSetId = createReducer(
 
 export const initialState = {
   snackbar: snackbarInitialState,
-  getJobSetIsLoading: getJobSetIsLoadingInitialState,
-  getJobSetFailedMessage: getJobSetFailedMessageInitialState,
+  getJobSetIsLoading: getJobSetsIsLoadingInitialState,
+  getJobSetFailedMessage: getJobSetsFailedMessageInitialState,
   jobSets: jobSetsInitialState,
   deletingJobSets: deletingJobSetsInitialState,
   currentJobSetId: currentJobSetIdInitialState,
@@ -237,8 +237,8 @@ export const initialState = {
 const reducer = reduceReducers([
   combineReducers({
     snackbar,
-    getJobSetIsLoading,
-    getJobSetFailedMessage,
+    getJobSetIsLoading: getJobSetsIsLoading,
+    getJobSetFailedMessage: getJobSetsFailedMessage,
     jobSets,
     deletingJobSets,
     currentJobSetId,

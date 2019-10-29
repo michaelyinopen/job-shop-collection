@@ -20,12 +20,12 @@ export const useJobSetIds = () => {
 
 export const useGetJobSetIsLoading = () => {
   const state = useContext(JobShopCollectionStateContext);
-  return state.getJobSetIsLoading;
+  return state.getJobSetsIsLoading;
 };
 
 export const useGetJobSetFailedMessage = () => {
   const state = useContext(JobShopCollectionStateContext);
-  return state.getJobSetFailedMessage;
+  return state.getJobSetsFailedMessage;
 };
 
 export const useJobSetHeaders = () => {
