@@ -186,7 +186,6 @@ describe("Start Create New JobSet", () => {
         },
         future: []
       },
-      savedContent: expectedEditNewJobSetEditorContentDescriptionState
     }
   };
   test("Edit New", () => {
