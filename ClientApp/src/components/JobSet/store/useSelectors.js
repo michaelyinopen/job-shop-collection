@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 import { differenceInMilliseconds } from 'date-fns/fp';
-import JobSetEditorStateContext from '../JobSetEditorStateContext';
+import JobSetEditorStateContext from '../JobSetEditor/JobSetEditorStateContext';
 import compareJobSetWithState from './compareJobSetWithState';
 
 export const useReadOnly = () => {

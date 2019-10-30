@@ -2,7 +2,7 @@ import React, { useMemo, useReducer, useContext, useEffect } from 'react';
 import { createJobSetApiAsync } from '../../../api/jobSetsApi';
 import { useJobSetForCreation } from '../store/useSelectors';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
-import { savedJobSet, showSnackbar } from '../../../store/actionCreators';
+import { showSnackbar } from '../../../store/actionCreators';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
 import { jobSet as jobSetPath } from '../../../routePaths';
@@ -159,7 +159,7 @@ const SaveJobSetButtonContainer = ({
             isCreating = false;
             const id = createResult.id;
             saveDispatch({ type: 'createSucceed', id });
-            dispatch(savedJobSet(id, createResult));
+            //dispatch(savedJobSet(id, createResult));
           }
           catch (e) {
             alert(`Failed to create Job Set.\nPlease try again.`);

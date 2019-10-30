@@ -1,23 +1,26 @@
 import {
-  setCurrentJobSetIdActionType,
-  jobSetEditorReducer,
-} from '../components/JobSet';
-import {
   getJobSetSucceed,
   createJobSetSucceed,
   updateJobSetSucceed,
+  setCurrentJobSetId
 } from './actionTypes';
-import { setCurrentJobSetIdActionType } from '../components/JobSet';
+import {
+  jobSetEditorReducer,
+} from '../components/JobSet';
 
 export const jobSetEditorUpdatingActions = [
   getJobSetSucceed,
   createJobSetSucceed,
   updateJobSetSucceed,
-  setCurrentJobSetIdActionType
+  setCurrentJobSetId
 ];
 
 const currentJobSetAdjustReducer = (state, action) => {
   if (!jobSetEditorUpdatingActions.includes(action.type)) {
+    return state;
+  }
+  const id = state.currentJobSetId;
+  if (!id) {
     return state;
   }
   const jobSet = state.jobSets[id];

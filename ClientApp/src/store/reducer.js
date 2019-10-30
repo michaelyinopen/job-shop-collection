@@ -16,11 +16,8 @@ import {
   getJobSetBegin,
   getJobSetSucceed,
   getJobSetFailed,
-
-  savedJobSet,
 } from './actionTypes';
 import {
-  setCurrentJobSetIdActionType,
   jobSetEditorReducer,
   jobSetEditorInit,
 } from '../components/JobSet';
@@ -28,6 +25,7 @@ import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
 import reduceReducers from 'reduce-reducers';
 import currentJobSetAdjustReducer from './currentJobSetAdjustReducer';
+import { setCurrentJobSetId } from './actionCreators';
 
 const snackbarInitialState = {
   isOpen: false,
@@ -102,21 +100,6 @@ const jobSet = createReducer(
       }
     ),
     [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
-    [savedJobSet]: (state, action) => updateObject(
-      state,
-      {
-        id: action.id,
-        isLoading: false,
-        title: action.title,
-        description: action.description,
-        content: action.content,
-        jobColors: action.jobColors,
-        isAutoTimeOptions: action.isAutoTimeOptions,
-        timeOptions: action.timeOptions,
-        eTag: action.eTag,
-        loadFailedMessage: null
-      }
-    ),
   }
 );
 
@@ -133,7 +116,6 @@ const jobSets = createReducer(
     [getJobSetBegin]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetFailed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
-    [savedJobSet]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
   }
 );
 
@@ -220,7 +202,7 @@ const currentJobSetIdInitialState = null;
 const currentJobSetId = createReducer(
   currentJobSetIdInitialState,
   {
-    [setCurrentJobSetIdActionType]: (_state, _action) => action.id,
+    [setCurrentJobSetId]: (_state, action) => action.id,
   }
 );
 

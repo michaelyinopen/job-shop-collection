@@ -1,6 +1,10 @@
 import { editContentInit } from "../components/JobSet/store/editContentReducer";
 import { getNewJobSetId } from "../functions/newJobSetId";
 
+import reducer from '../store/reducer';
+import { setCurrentJobSetId } from "../store/actionCreators";
+
+
 const editContentInitialState = editContentInit();
 
 describe("Create new JobSet", () => {
@@ -61,18 +65,22 @@ describe("Create new JobSet", () => {
     },
   };
   const newJobSetId = getNewJobSetId();
-  const jobSetToBeCreated = {
-    title: "Test Create New",
-    description: "A sample jobSet for testing creation of a new jobet",
-    content: '{"machines":[],"jobs":[]}',
-    jobColors: "[]",
+  const startCreateNewJobSetEditorContentState = {
+    title: null,
+    description: null,
+    machines: {},
+    jobs: {},
+    procedures: {},
+    jobColors: {},
     isAutoTimeOptions: true,
-    timeOptions: '{"referenceDate":"1970-01-01T00:00:00.000Z",' +
-      '"maxTime":"1970-01-01T00:00:00.000Z",' +
-      '"viewStartTime":"1970-01-01T00:00:00.000Z",' +
-      '"viewEndTime":"1970-01-01T00:00:00.000Z",' +
-      '"minViewDuration":0,' +
-      '"maxViewDuration":0}'
+    timeOptions: {
+      "referenceDate": new Date("1970-01-01T00:00:00.000Z"),
+      "maxTime": new Date("1970-01-01T00:00:00.000Z"),
+      "viewStartTime": new Date("1970-01-01T00:00:00.000Z"),
+      "viewEndTime": new Date("1970-01-01T00:00:00.000Z"),
+      "minViewDuration": 0,
+      "maxViewDuration": 0,
+    }
   };
   const expectedStateAfterStartCreateNew = {
     snackbar: {
@@ -124,13 +132,17 @@ describe("Create new JobSet", () => {
       },
       editContentHistory: {
         past: [],
-        present: editContentInitialState, // * modified 
+        present: startCreateNewJobSetEditorContentState, // * modified 
         future: []
       },
-      savedContent: editContentInitialState // * modified 
+      savedContent: startCreateNewJobSetEditorContentState // * modified 
     },
   };
   test("Start Create New", () => {
+    let state = initialState;
+    const setCurrentJobSetIdAction = setCurrentJobSetId(newJobSetId);
+    state  = reducer(state, setCurrentJobSetIdAction);
+    expect(state).toEqual(expectedStateAfterStartCreateNew);
   });
   const expectedStateAfterEditNew = {};
   test("Edit New", () => {

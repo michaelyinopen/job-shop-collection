@@ -12,7 +12,6 @@ import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
 import {
   setTitle,
   setDescription,
-  setJobSet,
 
   addMachine,
   updateMachineTitle,
@@ -395,49 +394,55 @@ const jobColors = createReducer(
   }
 );
 //#endregion jobColors
-const setJobSetReducer = (state, action, _previousState, jobSet) => {
-  if (!jobSetEditorUpdatingActions.includes(action.type)) {
-    return state;
-  }
-  return setJobSet(jobSet, state);
-};
 
-export const editContentInit =  (
+export const editContentInit = (
   {
     title = titleInitialState,
     description = descriptionInitialState,
-    machines: machinesArg,
-    jobs: jobsArg,
+    machines: machinesArg = [],
+    jobs: jobsArg = [],
     isAutoTimeOptions = isAutoTimeOptionsInitialState,
     timeOptions: timeOptionsArg,
     jobColors: jobColorsArg,
   } = {},
-  state
+  state = {}
 ) => {
+  const {
+    machines: machinesState = machinesInitialState,
+    jobs: jobsState = jobsInitialState,
+    procedures: proceduresState = proceduresInitialState,
+  } = state;
   const [isEqual, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
     {
       machines: machinesArg,
       jobs: jobsArg,
     },
-    state && state.machines ? state.machines : machinesInitialState,
-    state && state.jobs ? state.jobs : jobsInitialState,
-    state && state.procedures ? state.procedures : proceduresInitialState
+    machinesState,
+    jobsState,
+    proceduresState
   );
   const clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
 
-  let state = {
+  let newState = {
     title,
     description,
-    machines: isEqual ? state.machines : mappedMachines,
-    jobs: isEqual ? state.jobs : mappedJobs,
-    procedures: isEqual ? state.procedures : mappedProcedures,
+    machines: isEqual ? machinesState : mappedMachines,
+    jobs: isEqual ? jobsState : mappedJobs,
+    procedures: isEqual ? proceduresState : mappedProcedures,
     isAutoTimeOptions,
     timeOptions: clonedTimeOptions,
     jobColors: jobColorsInitialState
   };
-  state = adjustJobColors(state, jobColorsArg);
-  state = adjustTimeOptions(state);
-  return state;
+  newState = adjustJobColors(newState, jobColorsArg);
+  newState = adjustTimeOptions(newState);
+  return newState;
+};
+
+const setJobSetReducer = (state, action, _previousState, jobSet) => {
+  if (!jobSetEditorUpdatingActions.includes(action.type)) {
+    return state;
+  }
+  return editContentInit(jobSet, state);
 };
 
 const editContentReducer = (state, action, ...rest) => reduceReducers(

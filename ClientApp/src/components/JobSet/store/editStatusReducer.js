@@ -44,7 +44,7 @@ const createdId = createReducer(
   createdIdInitialState,
   {
     [beginCreateJobSet]: (_state, _action) => null,
-    [createJobSetSucceed]: (_state, _action) => action.id,
+    [createJobSetSucceed]: (_state, action) => action.id,
     [createJobSetFailed]: (_state, _action) => null,
   }
 );

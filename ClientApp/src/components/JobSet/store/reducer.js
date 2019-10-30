@@ -15,6 +15,8 @@ const savedContentAdjustReducer = (state, action) => {
   return updateObject(state, { savedContent });
 };
 
+const savedContent = state => state;
+
 const hitoryStepNameInitialState = "initial";
 const hitoryStepName = (_state, action) => {
   return action.type;

@@ -3,8 +3,6 @@ export const setReadOnly = "SET_READ_ONLY";
 export const setTitle = "SET_TITLE";
 export const setDescription = "SET_DESCRIPTION";
 
-export const setJobSet = "SET_JOB_SET";
-
 export const addMachine = "ADD_MACHINE";
 export const updateMachineTitle = "UPDATE_MACHINE_TITLE";
 export const updateMachineDescription = "UPDATE_MACHINE_DESCRIPTION";

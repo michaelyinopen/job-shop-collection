@@ -15,22 +15,6 @@ export const setDescription = description => ({
   description
 });
 
-// jobSet = {machines:[{id: 1, title: "M1", description: "Machine 1"}, {id: 2, title: "M2", description: "Machine 2"}],
-//           jobs:[
-//            {id: 1, procedures:[
-//               {id: 1, jobId: 1, machineId: 1, sequence: 1, processingMilliseconds:60000}
-//               {id: 2, jobId: 1, machineId: 2, sequence: 2, processingMilliseconds:120000}
-//            ]},
-//            {id: 2, procedures:[
-//               {id: 3, jobId: 2, machineId: 2, sequence: 1, processingMilliseconds:180000}
-//               {id: 4, jobId: 2, machineId: 1, sequence: 2, processingMilliseconds:60000}
-//            ]},
-//          ]}
-export const setJobSet = jobSet => ({
-  type: fromActionTypes.setJobSet,
-  jobSet
-});
-
 export const addMachine = () => ({
   type: fromActionTypes.addMachine
 });

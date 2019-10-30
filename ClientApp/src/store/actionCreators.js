@@ -44,8 +44,8 @@ export const clearDeletingJobSets = () => ({
   type: fromActionTypes.clearDeletingJobSets,
 });
 
-export const setCurrnetJobSet = id =>({
-  type: fromActionTypes.setCurrnetJobSet,
+export const setCurrentJobSetId = id =>({
+  type: fromActionTypes.setCurrentJobSetId,
   id
 });
 

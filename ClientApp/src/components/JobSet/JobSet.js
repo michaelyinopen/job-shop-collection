@@ -6,7 +6,7 @@ import {
   getJobSetBegin,
   getJobSetSucceed,
   getJobSetFailed,
-  setCurrnetJobSet,
+  setCurrentJobSetId,
 } from '../../store/actionCreators';
 import {
   useJobSet,
@@ -37,7 +37,7 @@ const JobSet = ({
   useEffect(
     () => {
       if (id) {
-        dispatch(setCurrnetJobSet(id));
+        dispatch(setCurrentJobSetId(id));
         getJobSetAsync();
       }
     },

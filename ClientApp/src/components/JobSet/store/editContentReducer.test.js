@@ -149,7 +149,7 @@ test("init function with default timeOptions and jobColors", () => {
   expect(resultState).toEqual(initialState);
 });
 
-test("reducer does not change state with enpty action", () => {
+test("reducer does not change state with empty action", () => {
   const state = { ...initialState };
   const emptyAction = { type: '' };
   const newState = editContentReducer(state, emptyAction);
@@ -157,7 +157,7 @@ test("reducer does not change state with enpty action", () => {
 });
 
 test("init function with all defaults", () => {
-  const resultState = editContentInit({});
+  const resultState = editContentInit();
 
   expect(resultState).toEqual({
     title: null,
