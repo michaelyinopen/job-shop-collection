@@ -8,7 +8,7 @@ import {
   jobSetEditorReducer,
 } from '../components/JobSet';
 
-export const jobSetEditorUpdatingActions = [
+export const jobSetEditorUpdatingActionsTypes = [
   getJobSetSucceed,
   createJobSetSucceed,
   updateJobSetSucceed,
@@ -16,7 +16,7 @@ export const jobSetEditorUpdatingActions = [
 ];
 
 const currentJobSetAdjustReducer = (state, action) => {
-  if (!jobSetEditorUpdatingActions.includes(action.type)) {
+  if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
     return state;
   }
   const id = state.currentJobSetId;

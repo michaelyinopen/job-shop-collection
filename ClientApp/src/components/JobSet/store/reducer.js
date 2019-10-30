@@ -2,13 +2,13 @@ import { combineReducers } from 'redux';
 import undoable from 'redux-undo';
 import editContentReducer, { editContentInit } from './editContentReducer';
 import editStatusReducer, { editStatusInit } from './editStatusReducer';
-import { jobSetEditorUpdatingActions } from '../../../store/currentJobSetAdjustReducer';
+import { jobSetEditorUpdatingActionsTypes } from '../../../store/currentJobSetAdjustReducer';
 import { setCurrentJobSetId } from '../../../store/actionTypes';
 import updateObject from '../../../functions/updateObject';
 import reduceReducers from 'reduce-reducers';
 
 const savedContentAdjustReducer = (state, action) => {
-  if (!jobSetEditorUpdatingActions.includes(action.type)) {
+  if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
     return state;
   }
   const savedContent = state.editContentHistory.present;

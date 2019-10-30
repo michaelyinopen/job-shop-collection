@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import reduceReducers from 'reduce-reducers';
+import { isEqual } from 'lodash';
 import { addMilliseconds } from 'date-fns/fp';
 import compareJobSetWithState from './compareJobSetWithState';
 import createReducer from '../../../functions/createReducer';
@@ -35,7 +36,7 @@ import {
 
   changeJobColor
 } from './actionTypes';
-import { jobSetEditorUpdatingActions } from '../../../store/currentJobSetAdjustReducer';
+import { jobSetEditorUpdatingActionsTypes } from '../../../store/currentJobSetAdjustReducer';
 
 //#region title description
 const titleInitialState = null;
@@ -411,8 +412,10 @@ export const editContentInit = (
     machines: machinesState = machinesInitialState,
     jobs: jobsState = jobsInitialState,
     procedures: proceduresState = proceduresInitialState,
+    timeOptions: timeOptionsState = timeOptionsInitialState,
+    jobColors: jobColorsState = jobColorsInitialState,
   } = state;
-  const [isEqual, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
+  const [isEqualContent, mappedMachines, mappedJobs, mappedProcedures] = compareJobSetWithState(
     {
       machines: machinesArg,
       jobs: jobsArg,
@@ -421,25 +424,28 @@ export const editContentInit = (
     jobsState,
     proceduresState
   );
-  const clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
+  let clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
+  if(isEqual(clonedTimeOptions, timeOptionsState)){
+    clonedTimeOptions = timeOptionsState
+  };
 
-  let newState = {
+  let newState = updateObject(state, {
     title,
     description,
-    machines: isEqual ? machinesState : mappedMachines,
-    jobs: isEqual ? jobsState : mappedJobs,
-    procedures: isEqual ? proceduresState : mappedProcedures,
+    machines: isEqualContent ? machinesState : mappedMachines,
+    jobs: isEqualContent ? jobsState : mappedJobs,
+    procedures: isEqualContent ? proceduresState : mappedProcedures,
     isAutoTimeOptions,
     timeOptions: clonedTimeOptions,
-    jobColors: jobColorsInitialState
-  };
+    jobColors: jobColorsState
+  });
   newState = adjustJobColors(newState, jobColorsArg);
   newState = adjustTimeOptions(newState);
   return newState;
 };
 
 const setJobSetReducer = (state, action, _previousState, jobSet) => {
-  if (!jobSetEditorUpdatingActions.includes(action.type)) {
+  if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
     return state;
   }
   return editContentInit(jobSet, state);

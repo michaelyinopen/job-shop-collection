@@ -1,4 +1,5 @@
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns/fp';
+import { isEqual } from 'lodash';
 import updateObject from "../../../functions/updateObject";
 import memoizeOne from 'memoize-one';
 
@@ -43,7 +44,7 @@ const autoTimeOptions = state => {
   const maxTime = addMilliseconds(processingTimeSum)(state.timeOptions.referenceDate);
   const sumOfMinTwoProcessingTime = memoizeSumOfMinTwoProcessingTime(state.procedures); // remove memoization
 
-  const timeOptions = updateObject(
+  let timeOptions = updateObject(
     state.timeOptions,
     {
       maxTime: maxTime,
@@ -53,6 +54,9 @@ const autoTimeOptions = state => {
       maxViewDuration: processingTimeSum
     }
   );
+  if (isEqual(timeOptions, state.timeOptions)) {
+    timeOptions = state.timeOptions;
+  }
   return updateObject(state, { timeOptions });
 }
 
