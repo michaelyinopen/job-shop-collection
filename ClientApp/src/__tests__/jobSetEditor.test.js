@@ -3,12 +3,16 @@ import { getNewJobSetId } from "../functions/newJobSetId";
 
 import reducer from '../store/reducer';
 import { setCurrentJobSetId } from "../store/actionCreators";
-import { setReadOnly } from '../components/JobSet/store/actionCreators';
+import {
+  setReadOnly,
+  setTitle,
+  setDescription,
+} from '../components/JobSet/store/actionCreators';
 
 
 const editContentInitialState = editContentInit();
 
-describe("Create new JobSet", () => {
+describe("Start Create New JobSet", () => {
   const initialState = {
     snackbar: {
       isOpen: false,
@@ -69,7 +73,7 @@ describe("Create new JobSet", () => {
     },
   };
   const newJobSetId = getNewJobSetId();
-  const startCreateNewJobSetEditorContentState = {
+  const expectedStartCreateNewJobSetEditorContentState = {
     title: null,
     description: null,
     machines: {},
@@ -86,7 +90,7 @@ describe("Create new JobSet", () => {
       "maxViewDuration": 0,
     }
   };
-  const expectedStateAfterStartCreateNew = {
+  const expectedStartCreateNewState = {
     snackbar: {
       isOpen: false,
       message: undefined
@@ -137,12 +141,12 @@ describe("Create new JobSet", () => {
       editContentHistory: { // * modified 
         past: [],
         present: {
-          editContent: startCreateNewJobSetEditorContentState,
-          historyStepName: "initial",
+          editContent: expectedStartCreateNewJobSetEditorContentState,
+          historyStepName: "setCurrentJobSetId",
         },
         future: []
       },
-      savedContent: startCreateNewJobSetEditorContentState // * modified 
+      savedContent: expectedStartCreateNewJobSetEditorContentState // * modified 
     },
   };
   test("Start Create New", () => {
@@ -151,13 +155,50 @@ describe("Create new JobSet", () => {
     state = reducer(state, setCurrentJobSetIdAction);
     const setEditAction = setReadOnly(false);
     state = reducer(state, setEditAction);
-    expect(state).toMatchObject(expectedStateAfterStartCreateNew);
+    expect(state).toMatchObject(expectedStartCreateNewState);
   });
-  const expectedStateAfterEditNew = {};
+  const expectedEditNewJobSetEditorContentTitleState = {
+    ...expectedStartCreateNewJobSetEditorContentState,
+    title: "Test Start Create new JobSet"
+  };
+  const expectedEditNewJobSetEditorContentDescriptionState = {
+    ...expectedEditNewJobSetEditorContentTitleState,
+    description: "A sample JobSet for testing the scenario Start Create new JobSet"
+  };
+  const expectedEditNewState = {
+    ...expectedStartCreateNewState,
+    jobSetEditor: {
+      ...expectedStartCreateNewState.jobSetEditor,
+      editContentHistory: {
+        past: [
+          {
+            editContent: expectedStartCreateNewJobSetEditorContentState,
+            historyStepName: "setCurrentJobSetId",
+          },
+          {
+            editContent: expectedEditNewJobSetEditorContentTitleState,
+            historyStepName: "SET_TITLE",
+          }
+        ],
+        present: {
+          editContent: expectedEditNewJobSetEditorContentDescriptionState,
+          historyStepName: "SET_DESCRIPTION",
+        },
+        future: []
+      },
+      savedContent: expectedEditNewJobSetEditorContentDescriptionState
+    }
+  };
   test("Edit New", () => {
-
+    let state = expectedStartCreateNewState;
+    const setTitleAction = setTitle("Test Start Create new JobSet");
+    state = reducer(state, setTitleAction);
+    const setDescriptionAction = setDescription("A sample JobSet for testing the scenario Start Create new JobSet");
+    state = reducer(state, setDescriptionAction);
+    expect(state).toMatchObject(expectedEditNewState);
   });
-  const expectedStateAfterCreateNew = {};
+  const expectedStateAfterCreateNew = {
+  };
   test("Create New", () => {
 
   });

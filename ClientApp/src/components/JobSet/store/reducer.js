@@ -18,18 +18,22 @@ const savedContentAdjustReducer = (state, action) => {
 const savedContentInitialState = null;
 const savedContent = (state = savedContentInitialState) => state;
 
-const distinctState = (_action, currentState, previousState) => {
+const distinctContent = (_action, currentContentState, previousContentState) => {
+  return currentContentState !== previousContentState;
+};
+
+const distinctState = (action, currentState, previousState) => {
   if (!currentState || !previousState) {
     return true;
   }
-  return currentState.editContent !== previousState.editContent;
+  return distinctContent(action, currentState.editContent, previousState.editContent);
 };
 
 const historyStepNameInitialState = "initial";
 const historyStepNameEnhancer = (reducer, init) => (state, action, ...rest) => {
   const previousState = state && state.editContent ? state.editContent : init;
   const currentState = reducer(previousState, action, ...rest);
-  if (distinctState(action, currentState, previousState)) {
+  if (distinctContent(action, currentState, previousState)) {
     return {
       editContent: currentState,
       historyStepName: action && action.type ? action.type : "action without type",
