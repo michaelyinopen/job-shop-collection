@@ -11,15 +11,16 @@ const savedContentAdjustReducer = (state, action) => {
   if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
     return state;
   }
-  const savedContent = state.editContentHistory.present;
+  const savedContent = state.editContentHistory.present.editContent;
   return updateObject(state, { savedContent });
 };
 
-const savedContent = state => state;
+const savedContentInitialState = null;
+const savedContent = (state = savedContentInitialState) => state;
 
-const hitoryStepNameInitialState = "initial";
-const hitoryStepName = (_state, action) => {
-  return action.type;
+const historyStepNameInitialState = "initial";
+const historyStepName = (_state, action) => {
+  return action && action.type ? action.type : "action without type";
 };
 
 const initEditContentHistory = contentPresent => ({
@@ -31,12 +32,12 @@ const initEditContentHistory = contentPresent => ({
 export const init = ({
   readOnly,
   jobSet,
-}) => {
+} = {}) => {
   const initialEditContent = editContentInit(jobSet);
   return {
     editStatus: editStatusInit(readOnly),
     editContentHistory: initEditContentHistory({
-      hitoryStepName: hitoryStepNameInitialState,
+      historyStepName: historyStepNameInitialState,
       editContent: initialEditContent
     }),
     savedContent: initialEditContent,
@@ -44,26 +45,29 @@ export const init = ({
 };
 
 const distinctState = (_action, currentState, previousState) => {
+  if (!currentState || !previousState) {
+    return true;
+  }
   return currentState.editContent !== previousState.editContent;
 };
 
-const reducer = (state, action, ...rest) => reduceReducers([
+const reducer = (state, action, ...rest) => reduceReducers(
   combineReducers({
     editStatus: editStatusReducer,
     editContentHistory: undoable(
       combineReducers({
-        hitoryStepName,
+        historyStepName,
         editContent: editContentReducer
       }),
       {
-        filter: distinctState(),
+        filter: distinctState,
         initTypes: [setCurrentJobSetId]
       }
     ),
     savedContent,
   }),
   savedContentAdjustReducer
-])(state, action, ...rest);
+)(state, action, ...rest);
 
 export const editStatusSelector = state => state.editStatus;
 export const editContentSelector = state => state.editContentHistory.editContent;// todo change

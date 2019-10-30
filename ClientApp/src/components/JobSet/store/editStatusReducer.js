@@ -69,11 +69,9 @@ const updateFailedMessage = createReducer(
   }
 );
 
-export const editStatusInit = ({
-  readOnly: readOnlyArg,
-}) => {
-  const readOnly = readOnlyArg ? readOnlyArg : readOnlyInitialState;
-
+export const editStatusInit = (
+  readOnly = readOnlyInitialState,
+) => {
   return {
     readOnly,
     isCreating: isCreatingInitialState,

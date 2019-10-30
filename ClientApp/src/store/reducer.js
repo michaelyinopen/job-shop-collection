@@ -25,7 +25,7 @@ import updateObject from '../functions/updateObject';
 import updateKeyInObject from '../functions/updateKeyInObject';
 import reduceReducers from 'reduce-reducers';
 import currentJobSetAdjustReducer from './currentJobSetAdjustReducer';
-import { setCurrentJobSetId } from './actionCreators';
+import { setCurrentJobSetId } from './actionTypes';
 
 const snackbarInitialState = {
   isOpen: false,
@@ -208,25 +208,25 @@ const currentJobSetId = createReducer(
 
 export const initialState = {
   snackbar: snackbarInitialState,
-  getJobSetIsLoading: getJobSetsIsLoadingInitialState,
-  getJobSetFailedMessage: getJobSetsFailedMessageInitialState,
+  getJobSetsIsLoading: getJobSetsIsLoadingInitialState,
+  getJobSetsFailedMessage: getJobSetsFailedMessageInitialState,
   jobSets: jobSetsInitialState,
   deletingJobSets: deletingJobSetsInitialState,
   currentJobSetId: currentJobSetIdInitialState,
   jobSetEditor: jobSetEditorInit(),
 };
 
-const reducer = reduceReducers([
+const reducer = reduceReducers(
   combineReducers({
     snackbar,
-    getJobSetIsLoading: getJobSetsIsLoading,
-    getJobSetFailedMessage: getJobSetsFailedMessage,
+    getJobSetsIsLoading,
+    getJobSetsFailedMessage,
     jobSets,
     deletingJobSets,
     currentJobSetId,
     jobSetEditor: jobSetEditorReducer,
   }),
   currentJobSetAdjustReducer
-]);
+);
 
 export default reducer;

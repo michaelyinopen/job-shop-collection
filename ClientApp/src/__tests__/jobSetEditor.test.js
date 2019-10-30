@@ -3,6 +3,7 @@ import { getNewJobSetId } from "../functions/newJobSetId";
 
 import reducer from '../store/reducer';
 import { setCurrentJobSetId } from "../store/actionCreators";
+import { setReadOnly } from '../components/JobSet/store/actionCreators';
 
 
 const editContentInitialState = editContentInit();
@@ -58,7 +59,10 @@ describe("Create new JobSet", () => {
       },
       editContentHistory: {
         past: [],
-        present: editContentInitialState,
+        present: {
+          historyStepName: "initial",
+          editContent: editContentInitialState
+        },
         future: []
       },
       savedContent: editContentInitialState
@@ -130,9 +134,12 @@ describe("Create new JobSet", () => {
         isUpdating: false,
         updateFailedMessage: null,
       },
-      editContentHistory: {
+      editContentHistory: { // * modified 
         past: [],
-        present: startCreateNewJobSetEditorContentState, // * modified 
+        present: {
+          editContent: startCreateNewJobSetEditorContentState,
+          historyStepName: "setCurrentJobSetId",
+        },
         future: []
       },
       savedContent: startCreateNewJobSetEditorContentState // * modified 
@@ -141,8 +148,10 @@ describe("Create new JobSet", () => {
   test("Start Create New", () => {
     let state = initialState;
     const setCurrentJobSetIdAction = setCurrentJobSetId(newJobSetId);
-    state  = reducer(state, setCurrentJobSetIdAction);
-    expect(state).toEqual(expectedStateAfterStartCreateNew);
+    state = reducer(state, setCurrentJobSetIdAction);
+    const setEditAction = setReadOnly(false);
+    state = reducer(state, setEditAction);
+    expect(state).toMatchObject(expectedStateAfterStartCreateNew);
   });
   const expectedStateAfterEditNew = {};
   test("Edit New", () => {
