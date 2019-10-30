@@ -18,9 +18,24 @@ const savedContentAdjustReducer = (state, action) => {
 const savedContentInitialState = null;
 const savedContent = (state = savedContentInitialState) => state;
 
+const distinctState = (_action, currentState, previousState) => {
+  if (!currentState || !previousState) {
+    return true;
+  }
+  return currentState.editContent !== previousState.editContent;
+};
+
 const historyStepNameInitialState = "initial";
-const historyStepName = (_state, action) => {
-  return action && action.type ? action.type : "action without type";
+const historyStepNameEnhancer = (reducer, init) => (state, action, ...rest) => {
+  const previousState = state && state.editContent ? state.editContent : init;
+  const currentState = reducer(previousState, action, ...rest);
+  if (distinctState(action, currentState, previousState)) {
+    return {
+      editContent: currentState,
+      historyStepName: action && action.type ? action.type : "action without type",
+    }
+  }
+  return state;
 };
 
 const initEditContentHistory = contentPresent => ({
@@ -44,21 +59,11 @@ export const init = ({
   };
 };
 
-const distinctState = (_action, currentState, previousState) => {
-  if (!currentState || !previousState) {
-    return true;
-  }
-  return currentState.editContent !== previousState.editContent;
-};
-
 const reducer = (state, action, ...rest) => reduceReducers(
   combineReducers({
     editStatus: editStatusReducer,
     editContentHistory: undoable(
-      combineReducers({
-        historyStepName,
-        editContent: editContentReducer
-      }),
+      historyStepNameEnhancer(editContentReducer, editContentInit()),
       {
         filter: distinctState,
         initTypes: [setCurrentJobSetId]
