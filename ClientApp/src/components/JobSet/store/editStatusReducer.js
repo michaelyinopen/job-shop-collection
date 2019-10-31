@@ -1,94 +1,63 @@
-import { combineReducers } from 'redux';
 import createReducer from '../../../functions/createReducer';
 import { setReadOnly } from './actionTypes';
 import {
-  beginCreateJobSet,
+  createJobSetBegin,
   createJobSetSucceed,
   createJobSetFailed,
-
-  beginUpdateJobSet,
-  updateJobSetSucceed,
-  updateJobSetFailed,
+  setCurrentJobSetId,
 } from '../../../store/actionTypes';
+import updateObject from '../../../functions/updateObject';
 
-const readOnlyInitialState = true;
-const readOnly = createReducer(
-  readOnlyInitialState,
-  {
-    [setReadOnly]: (_state, action) => action.isReadOnly
-  }
-);
-
-const isCreatingInitialState = false;
-const isCreating = createReducer(
-  isCreatingInitialState,
-  {
-    [beginCreateJobSet]: (_state, _action) => true,
-    [createJobSetSucceed]: (_state, _action) => false,
-    [createJobSetFailed]: (_state, _action) => false,
-  }
-);
-
-const createFailedMessageInitialState = null;
-const createFailedMessage = createReducer(
-  createFailedMessageInitialState,
-  {
-    [beginCreateJobSet]: (_state, _action) => null,
-    [createJobSetSucceed]: (_state, _action) => null,
-    [createJobSetFailed]: (_state, action) => action.failedMessage,
-  }
-);
-
-const createdIdInitialState = null;
-const createdId = createReducer(
-  createdIdInitialState,
-  {
-    [beginCreateJobSet]: (_state, _action) => null,
-    [createJobSetSucceed]: (_state, action) => action.id,
-    [createJobSetFailed]: (_state, _action) => null,
-  }
-);
-
-const isUpdatingInitialState = false;
-const isUpdating = createReducer(
-  isUpdatingInitialState,
-  {
-    [beginUpdateJobSet]: (_state, _action) => true,
-    [updateJobSetSucceed]: (_state, _action) => false,
-    [updateJobSetFailed]: (_state, _action) => false,
-  }
-);
-
-const updateFailedMessageInitialState = null;
-const updateFailedMessage = createReducer(
-  updateFailedMessageInitialState,
-  {
-    [beginUpdateJobSet]: (_state, _action) => null,
-    [updateJobSetSucceed]: (_state, _action) => null,
-    [updateJobSetFailed]: (_state, action) => action.failedMessage,
-  }
-);
-
-export const editStatusInit = (
-  readOnly = readOnlyInitialState,
-) => {
-  return {
-    readOnly,
-    isCreating: isCreatingInitialState,
-    createFailedMessage: createFailedMessageInitialState,
-    createdId: createdIdInitialState,
-    isUpdating: isUpdatingInitialState,
-    updateFailedMessage: updateFailedMessageInitialState
-  };
-};
-
-const editStatusReducer = combineReducers({
+export const editStatusInit = (readOnly = true) => ({
   readOnly,
-  isCreating,
-  createFailedMessage,
-  createdId,
-  isUpdating,
-  updateFailedMessage
+  isCreating: false,
+  creatingId: null,
+  createFailedMessage: null,
+  createdId: null,
 });
 
-export default editStatusReducer;
+const editStatus = createReducer(
+  editStatusInit(),
+  {
+    [setReadOnly]: (state, action) => updateObject(state, { readOnly: action.isReadOnly }),
+    [setCurrentJobSetId]: (state, { id }) => {
+      if (id === state.creatingId) {
+        return state;
+      }
+      return updateObject(state, {
+        isCreating: false,
+        creatingId: null,
+        createFailedMessage: null,
+        createdId: null,
+      });
+    },
+    [createJobSetBegin]: (state, { creatingId }) => updateObject(state, {
+      isCreating: true,
+      creatingId: creatingId,
+      createFailedMessage: null,
+      createdId: null,
+    }),
+    [createJobSetSucceed]: (state, { creatingId, id }) => {
+      if (creatingId !== state.creatingId) {
+        return state;
+      }
+      return updateObject(state, {
+        isCreating: false,
+        createFailedMessage: null,
+        createdId: id,
+      });
+    },
+    [createJobSetFailed]: (state, { creatingId, failedMessage }) => {
+      if (creatingId !== state.creatingId) {
+        return state;
+      }
+      return updateObject(state, {
+        isCreating: false,
+        createFailedMessage: failedMessage,
+        createdId: null,
+      });
+    },
+  }
+);
+
+export default editStatus;

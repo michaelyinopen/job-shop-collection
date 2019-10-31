@@ -17,10 +17,9 @@ test("initialState", () => {
       editStatus: {
         readOnly: true,
         isCreating: false,
+        creatingId: null,
         createFailedMessage: null,
-        createdId: null,
-        isUpdating: false,
-        updateFailedMessage: null,
+        createdId: null
       },
       editContentHistory: {
         past: [],

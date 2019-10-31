@@ -72,13 +72,15 @@ export const getJobSetFailed = (id, failedMessage) => ({
   failedMessage
 });
 
-export const beginCreateJobSet = () => ({
-  type: fromActionTypes.beginCreateJobSet
+export const createJobSetBegin = creatingId => ({
+  type: fromActionTypes.createJobSetBegin,
+  creatingId
 });
 
-export const createJobSetSucceed = (id, jobSet) => ({
+export const createJobSetSucceed = (creatingId, id, jobSet) => ({
   type: fromActionTypes.createJobSetSucceed,
   id,
+  creatingId,
   title: jobSet.title,
   description: jobSet.description,
   content: JSON.parse(jobSet.content),
@@ -88,12 +90,14 @@ export const createJobSetSucceed = (id, jobSet) => ({
   eTag: jobSet.eTag,
 });
 
-export const createJobSetFailed = () => ({
-  type: fromActionTypes.createJobSetFailed
+export const createJobSetFailed = (creatingId, failedMessage) => ({
+  type: fromActionTypes.createJobSetFailed,
+  creatingId,
+  failedMessage
 });
 
-export const beginUpdateJobSet = () => ({
-  type: fromActionTypes.beginUpdateJobSet
+export const updateJobSetBegin = () => ({
+  type: fromActionTypes.updateJobSetBegin
 });
 
 export const updateJobSetSucceed = (id, jobSet) => ({
@@ -108,6 +112,8 @@ export const updateJobSetSucceed = (id, jobSet) => ({
   eTag: jobSet.eTag,
 });
 
-export const updateJobSetFailed = () => ({
-  type: fromActionTypes.beginUpdateJobSet
+export const updateJobSetFailed = (id, failedMessage) => ({
+  type: fromActionTypes.updateJobSetFailed,
+  id,
+  failedMessage
 });

@@ -16,10 +16,10 @@ export const getJobSetBegin = "getJobSetBegin";
 export const getJobSetSucceed = "getJobSetSucceed";
 export const getJobSetFailed = "getJobSetFailed";
 
-export const beginCreateJobSet = "beginCreateJobSet";
+export const createJobSetBegin = "createJobSetBegin";
 export const createJobSetSucceed = "createJobSetSucceed";
 export const createJobSetFailed = "createJobSetFailed";
 
-export const beginUpdateJobSet = "beginUpdateJobSet";
+export const updateJobSetBegin = "updateJobSetBegin";
 export const updateJobSetSucceed = "updateJobSetSucceed";
 export const updateJobSetFailed = "updateJobSetFailed";
