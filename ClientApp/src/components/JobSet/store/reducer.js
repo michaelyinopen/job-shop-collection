@@ -7,8 +7,8 @@ import { setCurrentJobSetId } from '../../../store/actionTypes';
 import updateObject from '../../../functions/updateObject';
 import reduceReducers from 'reduce-reducers';
 
-const savedContentAdjustReducer = (state, action) => {
-  if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
+const savedContentAdjustReducer = (state, action, jobSet) => {
+  if (!jobSetEditorUpdatingActionsTypes.includes(action.type) || !jobSet) {
     return state;
   }
   const savedContent = state.editContentHistory.present.editContent;
@@ -33,7 +33,7 @@ const historyStepNameInitialState = "initial";
 const historyStepNameEnhancer = (reducer, init) => (state, action, ...rest) => {
   const previousState = state && state.editContent ? state.editContent : init;
   const currentState = reducer(previousState, action, ...rest);
-  if (distinctContent(action, currentState, previousState)) {
+  if (distinctContent(action, currentState, previousState) || action.type === setCurrentJobSetId) {
     return {
       editContent: currentState,
       historyStepName: action && action.type ? action.type : "action without type",
@@ -66,13 +66,13 @@ export const init = ({
 const reducer = (state, action, ...rest) => reduceReducers(
   combineReducers({
     editStatus: editStatusReducer,
-    editContentHistory: undoable(
+    editContentHistory: (state, action) => undoable(
       historyStepNameEnhancer(editContentReducer, editContentInit()),
       {
         filter: distinctState,
         initTypes: [setCurrentJobSetId]
       }
-    ),
+    )(state, action, ...rest), // bypass combineReducers to pass in ...rest
     savedContent,
   }),
   savedContentAdjustReducer

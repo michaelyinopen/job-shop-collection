@@ -44,7 +44,7 @@ export const clearDeletingJobSets = () => ({
   type: fromActionTypes.clearDeletingJobSets,
 });
 
-export const setCurrentJobSetId = id =>({
+export const setCurrentJobSetId = id => ({
   type: fromActionTypes.setCurrentJobSetId,
   id
 });
@@ -60,9 +60,9 @@ export const getJobSetSucceed = (id, jobSet) => ({
   title: jobSet.title,
   description: jobSet.description,
   content: JSON.parse(jobSet.content),
-  jobColors: jobSet.jobColors,
+  jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
-  timeOptions: jobSet.timeOptions,
+  timeOptions: JSON.parse(jobSet.timeOptions),
   eTag: jobSet.eTag,
 });
 
@@ -84,9 +84,9 @@ export const createJobSetSucceed = (creatingId, id, jobSet) => ({
   title: jobSet.title,
   description: jobSet.description,
   content: JSON.parse(jobSet.content),
-  jobColors: jobSet.jobColors,
+  jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
-  timeOptions: jobSet.timeOptions,
+  timeOptions: JSON.parse(jobSet.timeOptions),
   eTag: jobSet.eTag,
 });
 
@@ -106,9 +106,9 @@ export const updateJobSetSucceed = (id, jobSet) => ({
   title: jobSet.title,
   description: jobSet.description,
   content: JSON.parse(jobSet.content),
-  jobColors: jobSet.jobColors,
+  jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
-  timeOptions: jobSet.timeOptions,
+  timeOptions: JSON.parse(jobSet.timeOptions),
   eTag: jobSet.eTag,
 });
 

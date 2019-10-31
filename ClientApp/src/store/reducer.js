@@ -16,7 +16,9 @@ import {
   getJobSetBegin,
   getJobSetSucceed,
   getJobSetFailed,
-  
+
+  createJobSetSucceed,
+
   updateJobSetBegin,
   updateJobSetSucceed,
   updateJobSetFailed,
@@ -92,7 +94,6 @@ const jobSet = createReducer(
       state,
       {
         id: action.id,
-        isLoading: false,
         title: action.title,
         description: action.description,
         content: action.content,
@@ -100,16 +101,29 @@ const jobSet = createReducer(
         isAutoTimeOptions: action.isAutoTimeOptions,
         timeOptions: action.timeOptions,
         eTag: action.eTag,
+        isLoading: false,
         loadFailedMessage: null
       }
     ),
     [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
+    [createJobSetSucceed]: (state, action) => updateObject(
+      state,
+      {
+        id: action.id,
+        title: action.title,
+        description: action.description,
+        content: action.content,
+        jobColors: action.jobColors,
+        isAutoTimeOptions: action.isAutoTimeOptions,
+        timeOptions: action.timeOptions,
+        eTag: action.eTag,
+      }
+    ),
     [updateJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isUpdating: true, updateFailedMessage: null }),
     [updateJobSetSucceed]: (state, action) => updateObject(
       state,
       {
         id: action.id,
-        isLoading: false,
         title: action.title,
         description: action.description,
         content: action.content,
@@ -117,7 +131,8 @@ const jobSet = createReducer(
         isAutoTimeOptions: action.isAutoTimeOptions,
         timeOptions: action.timeOptions,
         eTag: action.eTag,
-        loadFailedMessage: null
+        isUpdating: false,
+        updateFailedMessage: null
       }
     ),
     [updateJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
@@ -137,6 +152,7 @@ const jobSets = createReducer(
     [getJobSetBegin]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [getJobSetFailed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
+    [createJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [updateJobSetBegin]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [updateJobSetSucceed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),
     [updateJobSetFailed]: (state, action) => updateKeyInObject(state, action.id, js => jobSet(js, action)),

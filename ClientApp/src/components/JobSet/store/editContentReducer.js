@@ -7,6 +7,7 @@ import createReducer from '../../../functions/createReducer';
 import updateObject from '../../../functions/updateObject';
 import updateKeyInObject from '../../../functions/updateKeyInObject';
 import getNextOfMax from '../../../functions/getNextOfMax';
+import toDate from '../../../functions/toDate';
 import timeOptionsAdjustReducer, { adjustTimeOptions } from './timeOptionsAdjustReducer'
 import getNewColor from './jobColor';
 import jobColorAdjustReducer, { adjustJobColors } from './jobColorAdjustReducer'
@@ -424,8 +425,15 @@ export const editContentInit = (
     jobsState,
     proceduresState
   );
-  let clonedTimeOptions = timeOptionsArg ? { referenceDate: referenceDateInitialState, ...timeOptionsArg } : timeOptionsInitialState;
-  if(isEqual(clonedTimeOptions, timeOptionsState)){
+  let clonedTimeOptions = timeOptionsArg ? {
+    referenceDate: timeOptionsArg.referenceDate ? toDate(timeOptionsArg.referenceDate) : referenceDateInitialState,
+    maxTime: toDate(timeOptionsArg.maxTime),
+    viewStartTime: toDate(timeOptionsArg.viewStartTime),
+    viewEndTime: toDate(timeOptionsArg.viewEndTime),
+    minViewDuration: timeOptionsArg.minViewDuration,
+    maxViewDuration: timeOptionsArg.maxViewDuration
+  } : timeOptionsInitialState;
+  if (isEqual(clonedTimeOptions, timeOptionsState)) {
     clonedTimeOptions = timeOptionsState
   };
 
@@ -445,7 +453,7 @@ export const editContentInit = (
 };
 
 const setJobSetReducer = (state, action, _previousState, jobSet) => {
-  if (!jobSetEditorUpdatingActionsTypes.includes(action.type)) {
+  if (!jobSetEditorUpdatingActionsTypes.includes(action.type) || !jobSet) {
     return state;
   }
   return editContentInit(jobSet, state);
