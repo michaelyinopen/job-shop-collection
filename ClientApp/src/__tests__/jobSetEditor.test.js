@@ -20,6 +20,8 @@ import {
   createJob,
   createProcedure,
   updateProcedure,
+  updateMachineTitle,
+  updateMachineDescription,
 } from '../components/JobSet/store/actionCreators';
 
 
@@ -643,5 +645,107 @@ describe("Edit Existing JobSetHeader", () => {
     );
     state = reducer(state, getJobSetSucceedAction);
     expect(state).toMatchObject(expectedGetJobSetSucceedState);
+  });
+  const expectedJobSetEditorContentEditedState = {
+    ...expectedJobSetEditorContentGottenState,
+    machines: {
+      [1]: { id: 1, title: "M1", description: "Machine 1" },
+      [2]: { id: 2, title: "M2", description: "Machine 2" },
+      [3]: { id: 3, title: "M3", description: "Machine 3" },
+    }
+  };
+  const expectedEditJobSetState = {
+    ...expectedGetJobSetSucceedState,
+    jobSetEditor: { // * modified
+      ...expectedGetJobSetSucceedState.jobSetEditor,
+      editContentHistory: {
+        past: [
+          {
+            historyStepName: "setCurrentJobSetId",
+            editContent: expectedJobSetEditorContentState
+          },
+          {
+            historyStepName: "getJobSetSucceed",
+            editContent: expectedJobSetEditorContentGottenState
+          },
+          {
+            historyStepName: "UPDATE_MACHINE_TITLE",
+            editContent: {
+              ...expectedJobSetEditorContentGottenState,
+              machines: {
+                [1]: { id: 1, title: "M1", description: undefined },
+                [2]: { id: 2, title: "Machine 2", description: undefined },
+                [3]: { id: 3, title: "Machine 3", description: undefined },
+              }
+            }
+          },
+          {
+            historyStepName: "UPDATE_MACHINE_DESCRIPTION",
+            editContent: {
+              ...expectedJobSetEditorContentGottenState,
+              machines: {
+                [1]: { id: 1, title: "M1", description: "Machine 1" },
+                [2]: { id: 2, title: "Machine 2", description: undefined },
+                [3]: { id: 3, title: "Machine 3", description: undefined },
+              }
+            }
+          },
+          {
+            historyStepName: "UPDATE_MACHINE_TITLE",
+            editContent: {
+              ...expectedJobSetEditorContentGottenState,
+              machines: {
+                [1]: { id: 1, title: "M1", description: "Machine 1" },
+                [2]: { id: 2, title: "M2", description: undefined },
+                [3]: { id: 3, title: "Machine 3", description: undefined },
+              }
+            }
+          },
+          {
+            historyStepName: "UPDATE_MACHINE_DESCRIPTION",
+            editContent: {
+              ...expectedJobSetEditorContentGottenState,
+              machines: {
+                [1]: { id: 1, title: "M1", description: "Machine 1" },
+                [2]: { id: 2, title: "M2", description: "Machine 2" },
+                [3]: { id: 3, title: "Machine 3", description: undefined },
+              }
+            }
+          },
+          {
+            historyStepName: "UPDATE_MACHINE_TITLE",
+            editContent: {
+              ...expectedJobSetEditorContentGottenState,
+              machines: {
+                [1]: { id: 1, title: "M1", description: "Machine 1" },
+                [2]: { id: 2, title: "M2", description: "Machine 2" },
+                [3]: { id: 3, title: "M3", description: undefined },
+              }
+            }
+          }
+        ],
+        present: {
+          historyStepName: "UPDATE_MACHINE_DESCRIPTION",
+          editContent: expectedJobSetEditorContentEditedState
+        },
+        future: []
+      },
+    }
+  };
+  test("Edit JobSet", () => {
+    let state = expectedGetJobSetSucceedState;
+    const updateMachineTitleAction1 = updateMachineTitle(1, "M1");
+    const updateMachineTitleAction2 = updateMachineTitle(2, "M2");
+    const updateMachineTitleAction3 = updateMachineTitle(3, "M3");
+    const updateMachineDescriptionAction1 = updateMachineDescription(1, "Machine 1");
+    const updateMachineDescriptionAction2 = updateMachineDescription(2, "Machine 2");
+    const updateMachineDescriptionAction3 = updateMachineDescription(3, "Machine 3");
+    state = reducer(state, updateMachineTitleAction1);
+    state = reducer(state, updateMachineDescriptionAction1);
+    state = reducer(state, updateMachineTitleAction2);
+    state = reducer(state, updateMachineDescriptionAction2);
+    state = reducer(state, updateMachineTitleAction3);
+    state = reducer(state, updateMachineDescriptionAction3);
+    expect(state).toMatchObject(expectedEditJobSetState);
   });
 });
