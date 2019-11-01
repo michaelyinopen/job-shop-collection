@@ -572,7 +572,7 @@ describe("Edit Existing JobSetHeader", () => {
     jobSets: {
       ...expectedGetJobSetBeginState.jobSets,
       [2]: {
-        ...expectedGetJobSetBeginState.jobSets[3],
+        ...expectedGetJobSetBeginState.jobSets[2],
         isLoading: false,
         title: "Second",
         description: "The second job set",
@@ -747,5 +747,115 @@ describe("Edit Existing JobSetHeader", () => {
     state = reducer(state, updateMachineTitleAction3);
     state = reducer(state, updateMachineDescriptionAction3);
     expect(state).toMatchObject(expectedEditJobSetState);
+  });
+  const expectedSaveEditedJobSetBeginState = {
+    ...expectedEditJobSetState,
+    jobSets: {
+      ...expectedEditJobSetState.jobSets,
+      [2]: {
+        ...expectedEditJobSetState.jobSets[2],
+        isUpdating: true // * modified
+      }
+    }
+  };
+  test("Save Edited JobSet Begin", () => {
+    let state = expectedEditJobSetState;
+    const updateJobSetBegintAction = updateJobSetBegin(2);
+    state = reducer(state, updateJobSetBegintAction);
+    expect(state).toMatchObject(expectedSaveEditedJobSetBeginState);
+  });
+  const expectedSaveEditedJobSetSucceedState = {
+    ...expectedSaveEditedJobSetBeginState,
+    jobSets: {
+      ...expectedSaveEditedJobSetBeginState.jobSets,
+      [2]: {
+        ...expectedGetJobSetBeginState.jobSets[3],
+        isUpdating: false,
+        title: "Second",
+        description: "The second job set",
+        content: {
+          "machines": [
+            { "id": 1, "title": "M1", "description": "Machine 1" },
+            { "id": 2, "title": "M2", "description": "Machine 2" },
+            { "id": 3, "title": "M3", "description": "Machine 3" }
+          ],
+          "jobs": [{
+            "id": 1, "procedures": [
+              { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 180000 },
+              { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 120000 },
+              { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 120000 }]
+          },
+          {
+            "id": 2, "procedures": [
+              { "id": 4, "jobId": 2, "machineId": 1, "sequence": 1, "processingMilliseconds": 120000 },
+              { "id": 5, "jobId": 2, "machineId": 3, "sequence": 2, "processingMilliseconds": 60000 },
+              { "id": 6, "jobId": 2, "machineId": 2, "sequence": 3, "processingMilliseconds": 240000 }]
+          },
+          {
+            "id": 3, "procedures": [
+              { "id": 7, "jobId": 3, "machineId": 2, "sequence": 1, "processingMilliseconds": 240000 },
+              { "id": 8, "jobId": 3, "machineId": 3, "sequence": 2, "processingMilliseconds": 180000 }]
+          }]
+        },
+        jobColors: [
+          { "id": 1, "color": "#3cb44b", "textColor": "#000000" },
+          { "id": 2, "color": "#ffe119", "textColor": "#000000" },
+          { "id": 3, "color": "#4363d8", "textColor": "#ffffff" }
+        ],
+        isAutoTimeOptions: true,
+        timeOptions: {
+          "referenceDate": "1970-01-01T00:00:00.000Z",
+          "maxTime": "1970-01-01T00:21:00.000Z",
+          "viewStartTime": "1970-01-01T00:00:00.000Z",
+          "viewEndTime": "1970-01-01T00:21:00.000Z",
+          "minViewDuration": 180000,
+          "maxViewDuration": 1260000
+        },
+        eTag: "AAAAAAABbzE=",
+      }
+    },
+    jobSetEditor: {
+      ...expectedSaveEditedJobSetBeginState.jobSetEditor,
+      savedContent: expectedJobSetEditorContentEditedState
+    }
+  };
+  test("Save Edited JobSet Succeed", () => {
+    let state = expectedSaveEditedJobSetBeginState;
+    const updateJobSetSucceedAction = updateJobSetSucceed(2, {
+      title: "Second",
+      description: "The second job set",
+      content: '{"machines":[' +
+        '{"id":1,"title":"M1","description":"Machine 1"},' +
+        '{"id":2,"title":"M2","description":"Machine 2"},' +
+        '{"id":3,"title":"M3","description":"Machine 3"}],' +
+        '"jobs":[{"id":1,"procedures":[' +
+        '{"id":1,"jobId":1,"machineId":1,"sequence":1,"processingMilliseconds":180000},' +
+        '{"id":2,"jobId":1,"machineId":2,"sequence":2,"processingMilliseconds":120000},' +
+        '{"id":3,"jobId":1,"machineId":3,"sequence":3,"processingMilliseconds":120000}]},' +
+        '{"id":2,"procedures":[' +
+        '{"id":4,"jobId":2,"machineId":1,"sequence":1,"processingMilliseconds":120000},' +
+        '{"id":5,"jobId":2,"machineId":3,"sequence":2,"processingMilliseconds":60000},' +
+        '{"id":6,"jobId":2,"machineId":2,"sequence":3,"processingMilliseconds":240000}]},' +
+        '{"id":3,"procedures":[' +
+        '{"id":7,"jobId":3,"machineId":2,"sequence":1,"processingMilliseconds":240000},' +
+        '{"id":8,"jobId":3,"machineId":3,"sequence":2,"processingMilliseconds":180000}]}]}',
+      jobColors: '[' +
+        '{"id":1,"color":"#3cb44b","textColor":"#000000"},' +
+        '{"id":2,"color":"#ffe119","textColor":"#000000"},' +
+        '{"id":3,"color":"#4363d8","textColor":"#ffffff"}' +
+        ']',
+      isAutoTimeOptions: true,
+      timeOptions: '{' +
+        '"referenceDate":"1970-01-01T00:00:00.000Z",' +
+        '"maxTime":"1970-01-01T00:21:00.000Z",' +
+        '"viewStartTime":"1970-01-01T00:00:00.000Z",' +
+        '"viewEndTime":"1970-01-01T00:21:00.000Z",' +
+        '"minViewDuration":180000,' +
+        '"maxViewDuration":1260000' +
+        '}',
+      eTag: "AAAAAAABbzE=",
+    });
+    state = reducer(state, updateJobSetSucceedAction);
+    expect(state).toMatchObject(expectedSaveEditedJobSetSucceedState);
   });
 });
