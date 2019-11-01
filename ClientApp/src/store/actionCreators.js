@@ -96,8 +96,9 @@ export const createJobSetFailed = (creatingId, failedMessage) => ({
   failedMessage
 });
 
-export const updateJobSetBegin = () => ({
-  type: fromActionTypes.updateJobSetBegin
+export const updateJobSetBegin = id => ({
+  type: fromActionTypes.updateJobSetBegin,
+  id
 });
 
 export const updateJobSetSucceed = (id, jobSet) => ({

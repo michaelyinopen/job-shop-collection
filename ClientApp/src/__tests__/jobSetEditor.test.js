@@ -6,11 +6,17 @@ import {
   setCurrentJobSetId,
   createJobSetBegin,
   createJobSetSucceed,
+  updateJobSetBegin,
+  updateJobSetSucceed,
 } from "../store/actionCreators";
 import {
   setReadOnly,
   setTitle,
   setDescription,
+  addMachine,
+  createJob,
+  createProcedure,
+  updateProcedure,
 } from '../components/JobSet/store/actionCreators';
 
 
@@ -267,12 +273,143 @@ describe("Start Create New JobSet", () => {
     state = reducer(state, setCurrentJobSetIdAction);
     expect(state).toMatchObject(expectedCreateNewUpdatedCurrentJobSetIdState);
   });
-  const expectedEditCreatedState = {};
+  const expectedEditCreatedJobSetEditorContentAddMachineState = {
+    ...expectedEditNewJobSetEditorContentDescriptionState,
+    machines: { [1]: { id: 1, title: 'M1', description: 'Machine 1' } }
+  };
+  const expectedEditCreatedJobSetEditorContentCreateJobState = {
+    ...expectedEditCreatedJobSetEditorContentAddMachineState,
+    jobs: { [1]: { id: 1 } },
+    jobColors: { [1]: { id: 1, color: "#3cb44b", textColor: "#000000" } },
+  };
+  const expectedEditCreatedJobSetEditorContentCreateProcedureState = {
+    ...expectedEditCreatedJobSetEditorContentCreateJobState,
+    procedures: { [1]: { id: 1, jobId: 1, machineId: undefined, sequence: 1, processingMilliseconds: undefined } }
+  };
+  const expectedEditCreatedJobSetEditorContentUpdateProcedureState = {
+    ...expectedEditCreatedJobSetEditorContentCreateProcedureState,
+    procedures: { [1]: { id: 1, jobId: 1, machineId: 1, sequence: 1, processingMilliseconds: 300000 } },
+    timeOptions: {
+      referenceDate: new Date(0),
+      maxTime: new Date(300000),
+      viewStartTime: new Date(0),
+      viewEndTime: new Date(300000),
+      minViewDuration: 300000,
+      maxViewDuration: 300000,
+    }
+  };
+  const expectedEditCreatedState = {
+    ...expectedCreateNewUpdatedCurrentJobSetIdState,
+    jobSetEditor: {
+      ...expectedCreateNewUpdatedCurrentJobSetIdState.jobSetEditor,
+      editContentHistory: {
+        past: [
+          {
+            historyStepName: "setCurrentJobSetId",
+            editContent: expectedEditNewJobSetEditorContentDescriptionState
+          },
+          {
+            historyStepName: "ADD_MACHINE",
+            editContent: expectedEditCreatedJobSetEditorContentAddMachineState
+          },
+          {
+            historyStepName: "CREATE_JOB",
+            editContent: expectedEditCreatedJobSetEditorContentCreateJobState
+          },
+          {
+            historyStepName: "CREATE_PROCEDURE",
+            editContent: expectedEditCreatedJobSetEditorContentCreateProcedureState
+          }
+        ],
+        present: {
+          historyStepName: "UPDATE_PROCEDURE",
+          editContent: expectedEditCreatedJobSetEditorContentUpdateProcedureState
+        },
+        future: []
+      },
+    }
+  };
   test("Edit Created", () => {
-
+    let state = expectedCreateNewUpdatedCurrentJobSetIdState;
+    const addMachineAction = addMachine();
+    state = reducer(state, addMachineAction);
+    const createJobAction = createJob();
+    state = reducer(state, createJobAction);
+    const createProcedureAction = createProcedure(1);
+    state = reducer(state, createProcedureAction);
+    const updateProcedureAction = updateProcedure(1, { id: 1, machineId: 1, processingMilliseconds: 300000 });
+    state = reducer(state, updateProcedureAction);
+    expect(state).toMatchObject(expectedEditCreatedState);
   });
-  const expectedSaveEdit = {};
-  test("Save Edit", () => {
-
+  const expectedSaveEditBeginState = {
+    ...expectedEditCreatedState,
+    jobSets: {
+      ...expectedEditCreatedState.jobSets,
+      [3]: {
+        ...expectedEditCreatedState.jobSets[3],
+        isUpdating: true
+      }
+    }
+  };
+  test("Save Edit Begin", () => {
+    let state = expectedEditCreatedState;
+    const updateJobSetBeginAction = updateJobSetBegin(3);
+    state = reducer(state, updateJobSetBeginAction);
+    expect(state).toMatchObject(expectedSaveEditBeginState);
+  });
+  const editedJobSet =
+  {
+    title: "Test Start Create new JobSet",
+    description: "A sample JobSet for testing the scenario Start Create new JobSet",
+    content: '{' +
+      '"machines": [{ "id": 1, "title": "M1", "description": "Machine 1" }],' +
+      '"jobs": [{ "id": 1, "procedures": [{ "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 300000 }] }]' +
+      '}',
+    jobColors: '[{ "id": 1, "color": "#3cb44b", "textColor": "#000000" }]',
+    isAutoTimeOptions: true,
+    timeOptions: '{"referenceDate":"1970-01-01T00:00:00.000Z",' +
+      '"maxTime":"1970-01-01T00:00:30.000Z",' +
+      '"viewStartTime":"1970-01-01T00:00:00.000Z",' +
+      '"viewEndTime":"1970-01-01T00:00:30.000Z",' +
+      '"minViewDuration":30000,' +
+      '"maxViewDuration":30000}',
+    eTag: "AAAAAAABQFw=",
+  };
+  const expectedSavedEditState = {
+    ...expectedEditCreatedState,
+    jobSets: {
+      ...expectedEditCreatedState.jobSets,
+      [3]: {
+        ...expectedEditCreatedState.jobSets[3],
+        title: "Test Start Create new JobSet",
+        description: "A sample JobSet for testing the scenario Start Create new JobSet",
+        content: {
+          "machines": [{ "id": 1, "title": "M1", "description": "Machine 1" }],
+          "jobs": [{ "id": 1, "procedures": [{ "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 300000 }] }]
+        },
+        jobColors: [{ "id": 1, "color": "#3cb44b", "textColor": "#000000" }],
+        isAutoTimeOptions: true,
+        timeOptions: {
+          "referenceDate": "1970-01-01T00:00:00.000Z",
+          "maxTime": "1970-01-01T00:00:30.000Z",
+          "viewStartTime": "1970-01-01T00:00:00.000Z",
+          "viewEndTime": "1970-01-01T00:00:30.000Z",
+          "minViewDuration": 30000,
+          "maxViewDuration": 30000
+        },
+        eTag: "AAAAAAABQFw=",
+        isUpdating: false
+      }
+    },
+    jobSetEditor: {
+      ...expectedEditCreatedState.jobSetEditor,
+      savedContent: expectedEditCreatedJobSetEditorContentUpdateProcedureState
+    }
+  };
+  test("Saved Edit", () => {
+    let state = expectedEditCreatedState;
+    const updateJobSetSucceedAction = updateJobSetSucceed(3, editedJobSet);
+    state = reducer(state, updateJobSetSucceedAction);
+    expect(state).toMatchObject(expectedSavedEditState);
   });
 });
