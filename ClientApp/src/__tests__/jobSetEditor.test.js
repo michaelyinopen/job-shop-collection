@@ -8,6 +8,9 @@ import {
   createJobSetSucceed,
   updateJobSetBegin,
   updateJobSetSucceed,
+
+  getJobSetBegin,
+  getJobSetSucceed,
 } from "../store/actionCreators";
 import {
   setReadOnly,
@@ -22,7 +25,7 @@ import {
 
 const editContentInitialState = editContentInit();
 
-describe("Start Create New JobSet", () => {
+describe("Create New JobSet", () => {
   const initialState = {
     snackbar: {
       isOpen: false,
@@ -368,11 +371,11 @@ describe("Start Create New JobSet", () => {
     jobColors: '[{ "id": 1, "color": "#3cb44b", "textColor": "#000000" }]',
     isAutoTimeOptions: true,
     timeOptions: '{"referenceDate":"1970-01-01T00:00:00.000Z",' +
-      '"maxTime":"1970-01-01T00:00:30.000Z",' +
+      '"maxTime":"1970-01-01T00:05:00.000Z",' +
       '"viewStartTime":"1970-01-01T00:00:00.000Z",' +
-      '"viewEndTime":"1970-01-01T00:00:30.000Z",' +
-      '"minViewDuration":30000,' +
-      '"maxViewDuration":30000}',
+      '"viewEndTime":"1970-01-01T00:05:00.000Z",' +
+      '"minViewDuration":300000,' +
+      '"maxViewDuration":300000}',
     eTag: "AAAAAAABQFw=",
   };
   const expectedSavedEditState = {
@@ -391,11 +394,11 @@ describe("Start Create New JobSet", () => {
         isAutoTimeOptions: true,
         timeOptions: {
           "referenceDate": "1970-01-01T00:00:00.000Z",
-          "maxTime": "1970-01-01T00:00:30.000Z",
+          "maxTime": "1970-01-01T00:05:00.000Z",
           "viewStartTime": "1970-01-01T00:00:00.000Z",
-          "viewEndTime": "1970-01-01T00:00:30.000Z",
-          "minViewDuration": 30000,
-          "maxViewDuration": 30000
+          "viewEndTime": "1970-01-01T00:05:00.000Z",
+          "minViewDuration": 300000,
+          "maxViewDuration": 300000
         },
         eTag: "AAAAAAABQFw=",
         isUpdating: false
@@ -411,5 +414,234 @@ describe("Start Create New JobSet", () => {
     const updateJobSetSucceedAction = updateJobSetSucceed(3, editedJobSet);
     state = reducer(state, updateJobSetSucceedAction);
     expect(state).toMatchObject(expectedSavedEditState);
+  });
+});
+
+describe("Edit Existing JobSetHeader", () => {
+  const initialState = {
+    snackbar: {
+      isOpen: false,
+      message: undefined
+    },
+    getJobSetsIsLoading: false,
+    getJobSetsFailedMessage: null,
+    jobSets: {
+      [1]: {
+        id: 1,
+        title: "First",
+        description: "The first job set",
+        content: undefined,
+        jobColors: undefined,
+        isAutoTimeOptions: undefined,
+        timeOptions: undefined,
+        eTag: "AAAAAAAAs7E=",
+        isLoading: false,
+        loadFailedMessage: null,
+        isUpdating: false,
+        updateFailedMessage: null,
+      },
+      [2]: {
+        id: 2,
+        title: "Second",
+        description: "The second job set",
+        content: undefined,
+        jobColors: undefined,
+        isAutoTimeOptions: undefined,
+        timeOptions: undefined,
+        eTag: "AAAAAAAApBI=",
+        isLoading: false,
+        loadFailedMessage: null,
+        isUpdating: false,
+        updateFailedMessage: null,
+      }
+    },
+    deletingJobSets: {},
+    currentJobSetId: null,
+    jobSetEditor: {
+      editStatus: {
+        readOnly: true,
+        isCreating: false,
+        creatingId: null,
+        createFailedMessage: null,
+        createdId: null,
+      },
+      editContentHistory: {
+        past: [],
+        present: {
+          historyStepName: "initial",
+          editContent: editContentInitialState
+        },
+        future: []
+      },
+      savedContent: editContentInitialState
+    },
+  };
+  const expectedJobSetEditorContentState = {
+    ...editContentInitialState,
+    title: "Second",
+    description: "The second job set",
+  };
+  const expectedStartEditingJobSetState = {
+    ...initialState,
+    currentJobSetId: 2, // * modified 
+    jobSetEditor: {
+      editStatus: {
+        readOnly: false, // * modified
+        isCreating: false,
+        creatingId: null,
+        createFailedMessage: null,
+        createdId: null,
+      },
+      editContentHistory: {
+        past: [],
+        present: { // * modified
+          historyStepName: "setCurrentJobSetId",
+          editContent: expectedJobSetEditorContentState
+        },
+        future: []
+      },
+      savedContent: expectedJobSetEditorContentState // * modified
+    }
+  };
+  test("Start Editing JobSet", () => {
+    let state = initialState;
+    const setCurrentJobSetIdAction = setCurrentJobSetId(2);
+    state = reducer(state, setCurrentJobSetIdAction);
+    const setReadOnlyAction = setReadOnly(false);
+    state = reducer(state, setReadOnlyAction);
+    expect(state).toMatchObject(expectedStartEditingJobSetState);
+  });
+  const expectedGetJobSetBeginState = {
+    ...expectedStartEditingJobSetState,
+    jobSets: {
+      ...expectedStartEditingJobSetState.jobSets,
+      [2]: {
+        ...expectedStartEditingJobSetState.jobSets[3],
+        isLoading: true
+      }
+    }
+  };
+  test("Get JobSet Begin", () => {
+    let state = expectedStartEditingJobSetState;
+    const getJobSetBeginAction = getJobSetBegin(2);
+    state = reducer(state, getJobSetBeginAction);
+    expect(state).toMatchObject(expectedGetJobSetBeginState);
+  });
+  const expectedJobSetEditorContentGottenState = {
+    title: "Second",
+    description: "The second job set",
+    machines: {
+      [1]: { id: 1, title: "Machine 1", description: undefined },
+      [2]: { id: 2, title: "Machine 2", description: undefined },
+      [3]: { id: 3, title: "Machine 3", description: undefined },
+    },
+    jobs: {
+      [1]: { id: 1 },
+      [2]: { id: 2 },
+      [3]: { id: 3 },
+    },
+    procedures: {
+      [1]: { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 180000 },
+      [2]: { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 120000 },
+      [3]: { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 120000 },
+      [4]: { "id": 4, "jobId": 2, "machineId": 1, "sequence": 1, "processingMilliseconds": 120000 },
+      [5]: { "id": 5, "jobId": 2, "machineId": 3, "sequence": 2, "processingMilliseconds": 60000 },
+      [6]: { "id": 6, "jobId": 2, "machineId": 2, "sequence": 3, "processingMilliseconds": 240000 },
+      [7]: { "id": 7, "jobId": 3, "machineId": 2, "sequence": 1, "processingMilliseconds": 240000 },
+      [8]: { "id": 8, "jobId": 3, "machineId": 3, "sequence": 2, "processingMilliseconds": 180000 }
+    },
+    jobColors: {
+      [1]: { "id": 1, "color": "#3cb44b", "textColor": "#000000" },
+      [2]: { "id": 2, "color": "#ffe119", "textColor": "#000000" },
+      [3]: { "id": 3, "color": "#4363d8", "textColor": "#ffffff" }
+    },
+    isAutoTimeOptions: true,
+    timeOptions: {
+      "referenceDate": new Date(0),
+      "maxTime": new Date(1260000),
+      "viewStartTime": new Date(0),
+      "viewEndTime": new Date(1260000),
+      "minViewDuration": 180000,
+      "maxViewDuration": 1260000,
+    }
+  };
+  const expectedGetJobSetSucceedState = {
+    ...expectedGetJobSetBeginState,
+    jobSets: {
+      ...expectedGetJobSetBeginState.jobSets,
+      [2]: {
+        ...expectedGetJobSetBeginState.jobSets[3],
+        isLoading: false,
+        title: "Second",
+        description: "The second job set",
+        content: {
+          "machines": [{ "id": 1, "title": "Machine 1" }, { "id": 2, "title": "Machine 2" }, { "id": 3, "title": "Machine 3" }],
+          "jobs": [{
+            "id": 1, "procedures": [
+              { "id": 1, "jobId": 1, "machineId": 1, "sequence": 1, "processingMilliseconds": 180000 },
+              { "id": 2, "jobId": 1, "machineId": 2, "sequence": 2, "processingMilliseconds": 120000 },
+              { "id": 3, "jobId": 1, "machineId": 3, "sequence": 3, "processingMilliseconds": 120000 }]
+          },
+          {
+            "id": 2, "procedures": [
+              { "id": 4, "jobId": 2, "machineId": 1, "sequence": 1, "processingMilliseconds": 120000 },
+              { "id": 5, "jobId": 2, "machineId": 3, "sequence": 2, "processingMilliseconds": 60000 },
+              { "id": 6, "jobId": 2, "machineId": 2, "sequence": 3, "processingMilliseconds": 240000 }]
+          },
+          {
+            "id": 3, "procedures": [
+              { "id": 7, "jobId": 3, "machineId": 2, "sequence": 1, "processingMilliseconds": 240000 },
+              { "id": 8, "jobId": 3, "machineId": 3, "sequence": 2, "processingMilliseconds": 180000 }]
+          }]
+        },
+        jobColors: null,
+        isAutoTimeOptions: true,
+        timeOptions: null,
+        eTag: "AAAAAAAApBI=",
+      }
+    },
+    jobSetEditor: { // * modified
+      ...expectedGetJobSetBeginState.jobSetEditor,
+      editContentHistory: {
+        past: [{
+          historyStepName: "setCurrentJobSetId",
+          editContent: expectedJobSetEditorContentState
+        }],
+        present: {
+          historyStepName: "getJobSetSucceed",
+          editContent: expectedJobSetEditorContentGottenState
+        },
+        future: []
+      },
+      savedContent: expectedJobSetEditorContentGottenState
+    }
+  };
+  test("Get JobSet Succeed", () => {
+    let state = expectedGetJobSetBeginState;
+    const getJobSetSucceedAction = getJobSetSucceed(
+      2,
+      {
+        title: "Second",
+        description: "The second job set",
+        content: '{"machines":[{"id":1,"title":"Machine 1"},{"id":2,"title":"Machine 2"},{"id":3,"title":"Machine 3"}],' +
+          '"jobs":[{"id":1,"procedures":[' +
+          '{"id":1,"jobId":1,"machineId":1,"sequence":1,"processingMilliseconds":180000},' +
+          '{"id":2,"jobId":1,"machineId":2,"sequence":2,"processingMilliseconds":120000},' +
+          '{"id":3,"jobId":1,"machineId":3,"sequence":3,"processingMilliseconds":120000}]},' +
+          '{"id":2,"procedures":[' +
+          '{"id":4,"jobId":2,"machineId":1,"sequence":1,"processingMilliseconds":120000},' +
+          '{"id":5,"jobId":2,"machineId":3,"sequence":2,"processingMilliseconds":60000},' +
+          '{"id":6,"jobId":2,"machineId":2,"sequence":3,"processingMilliseconds":240000}]},' +
+          '{"id":3,"procedures":[' +
+          '{"id":7,"jobId":3,"machineId":2,"sequence":1,"processingMilliseconds":240000},' +
+          '{"id":8,"jobId":3,"machineId":3,"sequence":2,"processingMilliseconds":180000}]}]}',
+        jobColors: null,
+        isAutoTimeOptions: true,
+        timeOptions: null,
+        eTag: "AAAAAAAApBI=",
+      }
+    );
+    state = reducer(state, getJobSetSucceedAction);
+    expect(state).toMatchObject(expectedGetJobSetSucceedState);
   });
 });

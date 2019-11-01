@@ -66,13 +66,16 @@ export const init = ({
 const reducer = (state, action, ...rest) => reduceReducers(
   combineReducers({
     editStatus: editStatusReducer,
-    editContentHistory: (state, action) => undoable(
-      historyStepNameEnhancer(editContentReducer, editContentInit()),
+    editContentHistory: undoable(
+      (state, action) => historyStepNameEnhancer(
+        editContentReducer,
+        editContentInit()
+      )(state, action, ...rest),// bypass combineReducers and undoable to pass in ...rest
       {
         filter: distinctState,
         initTypes: [setCurrentJobSetId]
       }
-    )(state, action, ...rest), // bypass combineReducers to pass in ...rest
+    ),
     savedContent,
   }),
   savedContentAdjustReducer
