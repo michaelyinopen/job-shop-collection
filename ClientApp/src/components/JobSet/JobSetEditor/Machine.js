@@ -36,7 +36,7 @@ const Machine = React.memo(({
     <Card className={classes.machine}>
       <TextField
         label="Title"
-        value={title}
+        value={title || ''}
         onChange={onTitleChangeCallback}
         required
         error={!title || title.length === 0}
@@ -47,7 +47,7 @@ const Machine = React.memo(({
       />
       <TextField
         label="Description"
-        value={description}
+        value={description || ''}
         onChange={onDescriptionChangeCallback}
         variant="filled"
         margin="dense"

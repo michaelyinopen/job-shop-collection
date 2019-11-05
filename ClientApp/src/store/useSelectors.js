@@ -174,3 +174,21 @@ export const useLoadJobSetFailedMessage = id => {
   const jobSet = state.jobSets[id];
   return jobSet ? jobSet.loadFailedMessage : undefined;
 };
+
+export const useIsUpdatingJobSet = id => {
+  const state = useContext(JobShopCollectionMainStateContext);
+  if (!id) {
+    return false;
+  }
+  const jobSet = state.jobSets[id];
+  return jobSet ? jobSet.isUpdating : false;
+};
+
+export const useUpdateJobSetFailedMessage = id => {
+  const state = useContext(JobShopCollectionMainStateContext);
+  if (!id) {
+    return undefined;
+  }
+  const jobSet = state.jobSets[id];
+  return jobSet ? jobSet.updateFailedMessage : undefined;
+};

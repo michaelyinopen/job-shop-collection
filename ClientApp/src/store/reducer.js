@@ -135,7 +135,7 @@ const jobSet = createReducer(
         updateFailedMessage: null
       }
     ),
-    [updateJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
+    [updateJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isUpdating: false, updateFailedMessage: action.failedMessage }),
   }
 );
 

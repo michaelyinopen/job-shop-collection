@@ -208,12 +208,12 @@ export const useJobSetForCreation = () => {
   return jobSetForCreation;
 };
 
-export const useJobSetForUpdateFunction = () => {
+export const useJobSetForUpdate = id => {
   const state = useContext(JobSetEditorStateContext);
-  const jobSetForUpdateFunction = useMemo(
-    () => id => {
+  const jobSetForUpdate = useMemo(
+    () => {
       const machines = Object.values(state.machines);
-      const procedures = Object.values(state.prcedures);
+      const procedures = Object.values(state.procedures);
       const jobs = Object.values(state.jobs)
         .map(j => ({ ...j, procedures: procedures.filter(p => p.jobId === j.id) }));
       const content = JSON.stringify({
@@ -225,14 +225,14 @@ export const useJobSetForUpdateFunction = () => {
         title: state.title,
         description: state.description,
         content,
-        jobColors: Object.values(state.jobColors),
+        jobColors: JSON.stringify(Object.values(state.jobColors)),
         isAutoTimeOptions: state.isAutoTimeOptions,
-        timeOptions: state.timeOptions
+        timeOptions: JSON.stringify(state.timeOptions)
       };
     },
-    [state]
+    [state, id]
   );
-  return jobSetForUpdateFunction;
+  return jobSetForUpdate;
 };
 
 export const useCreatedId = () => {
@@ -245,4 +245,7 @@ export const useIsCreating = () => {
   return jobSetState.jobSetEditor.editStatus.isCreating;
 };
 
-//todo export const useHasUnchanged
+export const useHasChanged = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.jobSetEditor.savedContent !== jobSetState.jobSetEditor.editContentHistory.present.editContent;
+};

@@ -1,8 +1,16 @@
 import React, { useMemo, useContext, useEffect } from 'react';
-import { createJobSetApiAsync } from '../../../api/jobSetsApi';
-import { useJobSetForCreation, useIsCreating, useCreatedId, useCurrentJobSetId } from '../store/useSelectors';
+import { createJobSetApiAsync, updateJobSetApiAsync } from '../../../api/jobSetsApi';
+import { useJobSetForCreation, useIsCreating, useCreatedId, useCurrentJobSetId, useJobSetForUpdate, useHasChanged } from '../store/useSelectors';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
-import { showSnackbar, createJobSetBegin, createJobSetSucceed, createJobSetFailed } from '../../../store/actionCreators';
+import {
+  showSnackbar,
+  createJobSetBegin,
+  createJobSetSucceed,
+  createJobSetFailed,
+  updateJobSetBegin,
+  updateJobSetSucceed,
+  updateJobSetFailed,
+} from '../../../store/actionCreators';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
 import { jobSet as jobSetPath } from '../../../routePaths';
@@ -14,6 +22,7 @@ import {
 } from '@material-ui/core';
 import { Save as SaveIcon } from '@material-ui/icons';
 import { Prompt } from 'react-router';
+import { useIsUpdatingJobSet, useJobSet } from '../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   withProgressWrapper: {
@@ -33,22 +42,24 @@ const useStyles = makeStyles(theme => ({
 
 const SaveJobSetButton = ({
   label,
+  tooltip,
   onClick,
   isProgress,
   blockExit,
   blockMessage,
+  forceDisabled
 }) => {
   const classes = useStyles();
   return (
     <div>
-      <Tooltip title={label} placement="bottom-end">
+      <Tooltip title={tooltip} placement="bottom-end">
         <div className={classes.withProgressWrapper}>
           <Button
             variant="contained"
             color="primary"
             onClick={onClick}
             className={classes.saveButton}
-            disabled={isProgress}
+            disabled={isProgress || forceDisabled}
           >
             <SaveIcon className={classes.saveIcon} />
             {label}
@@ -61,6 +72,56 @@ const SaveJobSetButton = ({
         message={blockMessage}
       />
     </div >
+  );
+};
+
+const UpdateJobSetButtonContainer = ({
+  id
+}) => {
+  const dispatch = useContext(JobShopCollectionDispatchContext);
+  const jobSetForUpdate = useJobSetForUpdate(id);
+  const jobSet = useJobSet(id);
+  const eTag = jobSet.eTag;
+  const onUpdate = useMemo(
+    () => {
+      let isUpdating = false;
+      const getIsUpdating = () => isUpdating;
+      const callback = () => {
+        if (getIsUpdating()) {
+          return;
+        }
+        const updateJobSetAsync = async () => {
+          isUpdating = true;
+          dispatch(updateJobSetBegin(id));
+          try {
+            const updateResult = await updateJobSetApiAsync(id, jobSetForUpdate, eTag);
+            isUpdating = false;
+            dispatch(updateJobSetSucceed(id, updateResult));
+          }
+          catch (e) {
+            alert(`Failed to update Job Set.\nPlease try again.`);
+            isUpdating = false;
+            dispatch(updateJobSetFailed(id, e.message));
+          }
+        };
+        updateJobSetAsync();
+      };
+      return callback;
+    },
+    [id, dispatch, jobSetForUpdate, eTag]
+  );
+  const isProgress = useIsUpdatingJobSet(id);
+  const hasChanged = useHasChanged();
+  return (
+    <SaveJobSetButton
+      label="Save"
+      tooltip={!hasChanged ? "All changes saved" : "Save"}
+      onClick={onUpdate}
+      isProgress={isProgress}
+      blockExit={hasChanged}
+      blockMessage={"Exit without saving?\nAll changes will be lost."}
+      forceDisabled={!hasChanged}
+    />
   );
 };
 
@@ -95,7 +156,7 @@ const CreateJobSetButtonContainer = () => {
       };
       return callback;
     },
-    [creatingId, dispatch, jobSetForCreation,]
+    [creatingId, dispatch, jobSetForCreation]
   );
   const createdId = useCreatedId();
   const { history: { push } } = useReactRouter();
@@ -113,19 +174,19 @@ const CreateJobSetButtonContainer = () => {
   return (
     <SaveJobSetButton
       label="Create"
+      tooltip="Create"
       onClick={onCreate}
       isProgress={isProgress}
       blockExit={!createdId}
       blockMessage={"Exit without creating?\nAll changes will be lost."}
     />
   );
-  // const label = "Create";
 };
 
 const SaveJobSetButtonContainer = ({
   id
 }) => {
-  return id ? null/*<UpdateJobSetButtonContainer id={id} />*/ : <CreateJobSetButtonContainer />;
+  return id ? <UpdateJobSetButtonContainer id={id} /> : <CreateJobSetButtonContainer />;
 };
 
 export default SaveJobSetButtonContainer;

@@ -24,7 +24,7 @@ const Title = React.memo(({
   return (
     <TextField
       label="Title"
-      value={value ? value : undefined}
+      value={value ? value : ''}
       onChange={onChange}
       required
       error={!value || value.length === 0}
