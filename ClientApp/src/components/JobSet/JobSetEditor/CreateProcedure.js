@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { createProcedure } from '../store/actionCreators';
 import { procedure as procedureStyle } from './sharedStyles';
 
@@ -38,7 +38,7 @@ const CreateProcedure = React.memo(({
 const CreateProcedureContainer = ({
   jobId
 }) => {
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const createProcedureCallback = useCallback(
     () => dispatch(createProcedure(jobId)),
     [dispatch, jobId]

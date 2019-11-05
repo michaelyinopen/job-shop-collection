@@ -8,12 +8,15 @@ import {
   getJobSetFailed,
   setCurrentJobSetId,
 } from '../../store/actionCreators';
-import {
-  useJobSet,
-  useIsLoadingJobSet,
-  useLoadJobSetFailedMessage,
-} from '../../store/useSelectors';
+import { useJobSetState } from '../../store/useSelectors';
+import { getNewJobSetId, isNewJobSetId } from '../../functions/newJobSetId';
 import { setReadOnly } from './store/actionCreators';
+import JobSetStateContext from './JobSetStateContext';
+import {
+  useJobSetEditorState,
+  useCurrentJobSetId,
+} from './store/useSelectors';
+import JobSetEditorStateContext from './JobSetEditor/JobSetEditorStateContext';
 
 // when used as new jobset, id will be undefined
 const JobSet = ({
@@ -36,41 +39,39 @@ const JobSet = ({
   );
   useEffect(
     () => {
-      if (id) {
-        dispatch(setCurrentJobSetId(id));
+      dispatch(setCurrentJobSetId(id ? id : getNewJobSetId()));
+      if (id && !isNewJobSetId(id)) {
         getJobSetAsync();
       }
     },
-    [id, getJobSetAsync]
+    [id, getJobSetAsync, dispatch]
   );
   useEffect(
     () => {
       dispatch(setReadOnly(!edit));
     },
-    [edit]
+    [edit, dispatch]
   );
-  const isLoading = useIsLoadingJobSet(id);
-  const loadFailedMessage = useLoadJobSetFailedMessage(id);
-  const jobSet = useJobSet(id);
+  const currentJobSetId = useCurrentJobSetId();
+  const jobSetEditorState = useJobSetEditorState();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (loadFailedMessage) {
-    return <div>Loading Failed. {loadFailedMessage}</div>;
+  if ((id && currentJobSetId !== id) || (!id && !isNewJobSetId(currentJobSetId))) {
+    return <div>transitioning...</div>;
   }
   return (
-    <JobSetEditor
-      id={id}
-      edit={edit}
-      title={jobSet ? jobSet.title : undefined}
-      description={jobSet ? jobSet.description : undefined}
-      jobSet={jobSet ? jobSet.content : undefined}
-      isAutoTimeOptions={jobSet ? jobSet.isAutoTimeOptions : undefined}
-      timeOptions={jobSet ? jobSet.timeOptions : undefined}
-      jobColors={jobSet ? jobSet.jobColors : undefined}
-    />
+    <JobSetEditorStateContext.Provider value={jobSetEditorState}>
+      <JobSetEditor id={id} />
+    </JobSetEditorStateContext.Provider>
   );
 };
 
-export default JobSet;
+const JobSetWithContext = props => {
+  const jobSetState = useJobSetState();
+  return (
+    <JobSetStateContext.Provider value={jobSetState}>
+      <JobSet {...props} />
+    </JobSetStateContext.Provider>
+  );
+};
+
+export default JobSetWithContext;

@@ -5,7 +5,7 @@ import { OpenWith } from '@material-ui/icons';
 import TimeField from 'react-simple-timefield';
 import msToFormattedTime from '../../../../functions/msToFormattedTime';
 import formattedTimeToMs from '../../../../functions/formattedTimeToMs';
-import JobSetEditorDispatchContext from '../JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../../JobShopCollectionDispatchContext';
 import DeleteProcedureButton from '../DeleteProcedureButton';
 import { updateProcedure, moveProcedure } from '../../store/actionCreators';
 import { useProcedure, useMachines, useGetProcedureSequence, useJobColor, useReadOnly } from '../../store/useSelectors';
@@ -153,7 +153,7 @@ const ProcedureContainer = ({
 }) => {
   const readOnly = useReadOnly();
   const procedure = useProcedure(id);
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
 
   const machines = useMachines();
   const machineOptions = useMemo(

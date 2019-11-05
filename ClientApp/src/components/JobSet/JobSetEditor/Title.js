@@ -5,7 +5,7 @@ import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
 import { useTitle, useReadOnly } from '../store/useSelectors';
 import { setTitle } from '../store/actionCreators';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
   field: {
@@ -39,7 +39,7 @@ const Title = React.memo(({
 const TitleContainer = () => {
   const title = useTitle();
   const readOnly = useReadOnly();
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const setTitleCallback = useCallback(
     valueArg => {
       dispatch(setTitle(valueArg));

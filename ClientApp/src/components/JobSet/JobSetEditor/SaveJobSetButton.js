@@ -173,8 +173,7 @@ const SaveJobSetButtonContainer = ({
     },
     [
       jobSetForCreation,
-      saveDispatch,
-      dispatch
+      saveDispatch
     ]
   );
   const label = id ? "Save" : "Create";

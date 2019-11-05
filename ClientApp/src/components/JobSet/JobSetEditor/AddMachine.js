@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, Button } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { addMachine } from '../store/actionCreators';
 import { machine as machineStyle } from './sharedStyles';
 
@@ -37,7 +37,7 @@ const AddMachine = React.memo(({
 });
 
 const AddMachineContainer = () => {
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const addMachineCallback = useCallback(
     () => dispatch(addMachine()),
     [dispatch]

@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, TextField } from '@material-ui/core';
 import RemoveMachineButton from './RemoveMachineButton';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { useMachine, useReadOnly } from '../store/useSelectors';
 import { updateMachineTitle, updateMachineDescription } from '../store/actionCreators';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
@@ -69,7 +69,7 @@ const MachineContainer = ({
   const machine = useMachine(id);
   const readOnly = useReadOnly();
 
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const dispatchUpdateMachineTitle = useCallback(
     value => dispatch(updateMachineTitle(id, value)),
     [dispatch, id]

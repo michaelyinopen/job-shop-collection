@@ -11,4 +11,4 @@ const getNewJobSetIdClosure = () => {
 
 export const getNewJobSetId = getNewJobSetIdClosure();
 
-export const isNewJobSetId = id => string(id).startsWith(prefix);
+export const isNewJobSetId = id => String(id).startsWith(prefix);

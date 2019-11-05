@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useState } from 'react';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { deleteProcedure } from '../store/actionCreators';
 import {
   Button,
@@ -66,7 +66,7 @@ const DeleteProcedureButtonContainer = ({
     [setOpen]
   );
 
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const confirmCallback = useCallback(
     () => {
       dispatch(deleteProcedure(id));

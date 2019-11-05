@@ -6,7 +6,9 @@ import {
 } from './actionTypes';
 import {
   jobSetEditorReducer,
+  jobSetEditorInit
 } from '../components/JobSet';
+import { isNewJobSetId } from '../functions/newJobSetId';
 
 export const jobSetEditorUpdatingActionsTypes = [
   getJobSetSucceed,
@@ -25,6 +27,12 @@ const currentJobSetAdjustReducer = (state, action) => {
   }
   if (action.type !== setCurrentJobSetId && action.id !== id) {
     return state;
+  }
+  if (action.type === setCurrentJobSetId && isNewJobSetId(action.id)) {
+    return {
+      ...state,
+      jobSetEditor: jobSetEditorInit({ readOnly: false })
+    };
   }
   const jobSet = state.jobSets[id];
   if (!jobSet) {

@@ -2,6 +2,17 @@ import { useContext, useMemo } from 'react';
 import { differenceInMilliseconds } from 'date-fns/fp';
 import JobSetEditorStateContext from '../JobSetEditor/JobSetEditorStateContext';
 import compareJobSetWithState from './compareJobSetWithState';
+import JobSetStateContext from '../JobSetStateContext';
+
+export const useJobSetEditorState = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.jobSetEditor.editContentHistory.present.editContent;
+};
+
+export const useCurrentJobSetId = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.currentJobSetId;
+};
 
 export const useReadOnly = () => {
   const state = useContext(JobSetEditorStateContext);

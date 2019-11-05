@@ -1,5 +1,5 @@
 import React from 'react';
 
-const JobSetEditorStateContext = React.createContext(null);
+const JobSetStateContext = React.createContext(null);
 
-export default JobSetEditorStateContext;
+export default JobSetStateContext;

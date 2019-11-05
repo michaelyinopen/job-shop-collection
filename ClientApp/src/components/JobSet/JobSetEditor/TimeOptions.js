@@ -21,7 +21,7 @@ import {
   useMaxViewDuration,
   useReadOnly
 } from '../store/useSelectors';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import {
   setIsAutoTimeOptions,
   setMaxTimeFromRef,
@@ -165,7 +165,7 @@ const TimeOptionsContainer = () => {
   const minViewDuration = useMinViewDuration();
   const maxViewDuration = useMaxViewDuration();
 
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
 
   const dispatchSetIsAutoTimeOptions = useCallback(
     event => dispatch(setIsAutoTimeOptions((event.target.value === 'true'))),

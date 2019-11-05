@@ -1,5 +1,6 @@
 import { useMemo, useContext } from 'react';
 import JobShopCollectionMainStateContext from '../components/JobShopCollectionMainStateContext';
+import JobShopCollectionStateContext from '../components/JobShopCollectionStateContext';
 
 export const useJobShopCollectionMain = state => {
   const {
@@ -28,6 +29,27 @@ export const useJobShopCollectionMain = state => {
     ]
   );
   return jobShopCollectionMainMemo;
+};
+
+export const useJobSetState = () => {
+  const state = useContext(JobShopCollectionStateContext);
+  const {
+    currentJobSetId,
+    jobSetEditor
+  } = state;
+  const JobSetStateMemo = useMemo(
+    () => {
+      return {
+        currentJobSetId,
+        jobSetEditor,
+      }
+    },
+    [
+      currentJobSetId,
+      jobSetEditor,
+    ]
+  );
+  return JobSetStateMemo;
 };
 
 

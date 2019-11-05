@@ -1,7 +1,7 @@
 import React, { useContext, useCallback, useState } from 'react';
 import prettyMs from 'pretty-ms';
 import { useMachine, useProceduresOfMachine } from '../store/useSelectors';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { removeMachine } from '../store/actionCreators';
 import {
   Button,
@@ -28,7 +28,7 @@ const RemoveMachineDialogChildren = ({
 }) => {
   const machine = useMachine(id);
   const title = removeTooltip + "?";
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const confirmCallback = useCallback(
     () => {
       dispatch(removeMachine(id));

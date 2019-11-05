@@ -5,9 +5,6 @@ import {
   jobSet as jobSetPath,
   newJobSet as newJobSetPath
 } from '../../../routePaths';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
-import JobSetEditorStateContext from './JobSetEditorStateContext';
-import reducer, { init as jobSetEditorInit } from '../store/reducer';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Fab,
@@ -152,50 +149,4 @@ const JobSetEditor = ({
   return form;
 };
 
-const JobSetEditorWithContext = ({
-  id,
-  edit,
-  title,
-  description,
-  jobSet = {},
-  isAutoTimeOptions,
-  timeOptions,
-  jobColors,
-  deleteJobSetButton
-}) => {
-  const { machines, jobs } = jobSet;
-  const readOnly = id && !edit; //when id is defined and not edit 
-  const [state, dispatch] = useReducer(
-    reducer,
-    {
-      readOnly,
-      title,
-      description,
-      machines,
-      jobs,
-      isAutoTimeOptions,
-      timeOptions,
-      jobColors
-    },
-    jobSetEditorInit
-  );
-
-  useEffect(
-    () => {
-      dispatch(setReadOnly(readOnly));
-    },
-    [readOnly, dispatch]
-  );
-  return (
-    <JobSetEditorDispatchContext.Provider value={dispatch}>
-      <JobSetEditorStateContext.Provider value={state}>
-        <JobSetEditor
-          id={id}
-          deleteJobSetButton={deleteJobSetButton}
-        />
-      </JobSetEditorStateContext.Provider>
-    </JobSetEditorDispatchContext.Provider>
-  );
-};
-
-export default JobSetEditorWithContext;
+export default JobSetEditor;

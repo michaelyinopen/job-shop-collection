@@ -5,7 +5,7 @@ import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
 import { useDescription, useReadOnly } from '../store/useSelectors';
 import { setDescription } from '../store/actionCreators';
-import JobSetEditorDispatchContext from './JobSetEditorDispatchContext';
+import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
   field: {
@@ -40,7 +40,7 @@ const Description = React.memo(({
 const DescriptionContainer = () => {
   const description = useDescription();
   const readOnly = useReadOnly();
-  const dispatch = useContext(JobSetEditorDispatchContext);
+  const dispatch = useContext(JobShopCollectionDispatchContext);
   const setDescriptionCallback = useCallback(
     valueArg => {
       dispatch(setDescription(valueArg));
