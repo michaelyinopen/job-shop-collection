@@ -269,4 +269,6 @@ const reducer = reduceReducers(
   currentJobSetAdjustReducer
 );
 
+export const jobSetEditorSelector = state => state.jobSetEditor;
+
 export default reducer;

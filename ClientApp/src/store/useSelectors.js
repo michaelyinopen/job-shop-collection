@@ -1,14 +1,44 @@
 import { useMemo, useContext } from 'react';
-import JobShopCollectionStateContext from '../components/JobShopCollectionStateContext';
+import JobShopCollectionMainStateContext from '../components/JobShopCollectionMainStateContext';
+
+export const useJobShopCollectionMain = state => {
+  const {
+    snackbar,
+    getJobSetsIsLoading,
+    getJobSetsFailedMessage,
+    jobSets,
+    deletingJobSets,
+  } = state;
+  const jobShopCollectionMainMemo = useMemo(
+    () => {
+      return {
+        snackbar,
+        getJobSetsIsLoading,
+        getJobSetsFailedMessage,
+        jobSets,
+        deletingJobSets
+      }
+    },
+    [
+      snackbar,
+      getJobSetsIsLoading,
+      getJobSetsFailedMessage,
+      jobSets,
+      deletingJobSets
+    ]
+  );
+  return jobShopCollectionMainMemo;
+};
+
 
 export const useSnackbar = () => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const { isOpen, message } = state.snackbar;
   return [isOpen, message];
 };
 
 export const useJobSetIds = () => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const jobSetIds = useMemo(
     () => {
       return Object.keys(state.jobSets).sort((a, b) => parseInt(b) - parseInt(a));
@@ -18,18 +48,18 @@ export const useJobSetIds = () => {
   return jobSetIds;
 };
 
-export const useGetJobSetIsLoading = () => {
-  const state = useContext(JobShopCollectionStateContext);
+export const useGetJobSetsIsLoading = () => {
+  const state = useContext(JobShopCollectionMainStateContext);
   return state.getJobSetsIsLoading;
 };
 
-export const useGetJobSetFailedMessage = () => {
-  const state = useContext(JobShopCollectionStateContext);
+export const useGetJobSetsFailedMessage = () => {
+  const state = useContext(JobShopCollectionMainStateContext);
   return state.getJobSetsFailedMessage;
 };
 
 export const useJobSetHeaders = () => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const jobSetHeaders = useMemo(
     () => {
       return Object.keys(state.jobSets)
@@ -49,7 +79,7 @@ export const useJobSetHeaders = () => {
 }
 
 export const useJobSetHeader = id => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const jobSet = state.jobSets[id];
   const jobSetHeader = useMemo(
     () => {
@@ -70,7 +100,7 @@ export const useJobSetHeader = id => {
 
 // returns [isDeleting, deleteSucceed, deleteFailed]
 export const useJobSetDeleting = id => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const deletingJobSet = state.deletingJobSets[id];
   if (deletingJobSet === undefined) {
     const isDeleting = false;
@@ -85,13 +115,13 @@ export const useJobSetDeleting = id => {
 };
 
 export const useJobSetSomeDeleting = () => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const someDeleting = Object.keys(state.deletingJobSets).length > 0;
   return someDeleting;
 };
 
 export const useSelectedJobSets = idArray => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   const selectedJobSets = useMemo(
     () => idArray.map(id => state.jobSets[id]).filter(js => js),
     [state.jobSets, idArray]
@@ -100,13 +130,13 @@ export const useSelectedJobSets = idArray => {
 };
 
 export const useJobSet = id => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   return state.jobSets[id];
 };
 
 // returns true when there is no jobSet in redux store
 export const useIsLoadingJobSet = id => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   if (!id) {
     return false;
   }
@@ -115,7 +145,7 @@ export const useIsLoadingJobSet = id => {
 };
 
 export const useLoadJobSetFailedMessage = id => {
-  const state = useContext(JobShopCollectionStateContext);
+  const state = useContext(JobShopCollectionMainStateContext);
   if (!id) {
     return undefined;
   }

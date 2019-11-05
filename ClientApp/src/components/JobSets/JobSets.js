@@ -4,34 +4,41 @@ import useReactRouter from 'use-react-router';
 import { Link } from 'react-router-dom';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import { green, red } from '@material-ui/core/colors';
-import CheckIcon from '@material-ui/icons/Check';
-import ReportProblemIcon from '@material-ui/icons/ReportProblem';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import ForwardIcon from '@material-ui/icons/Forward';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  Container,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
+import {
+  green,
+  red
+} from '@material-ui/core/colors';
+import {
+  Add as AddIcon,
+  Check as CheckIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Forward as ForwardIcon,
+  MoreVert as MoreVertIcon,
+  OpenInNew as OpenInNewIcon,
+  Refresh as RefreshIcon,
+  ReportProblem as ReportProblemIcon,
+} from '@material-ui/icons';
 import preventDefaultPropagation from '../../functions/preventDefaultPropagation';
 import { jobSet as jobSetPath, newJobSet as newJobSetPath } from '../../routePaths';
 import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
@@ -46,8 +53,8 @@ import {
 } from '../../store/actionCreators';
 import getJobSetsRequest from '../../requests/getJobSetsRequest'
 import {
-  useGetJobSetIsLoading,
-  useGetJobSetFailedMessage,
+  useGetJobSetsIsLoading,
+  useGetJobSetsFailedMessage,
   useJobSetHeaders,
   useJobSetDeleting,
   useJobSetSomeDeleting,
@@ -765,8 +772,8 @@ const JobSetsContainer = () => {
   );
 
   const jobSetHeaders = useJobSetHeaders();
-  const isLoading = useGetJobSetIsLoading();
-  const failedMessage = useGetJobSetFailedMessage();
+  const isLoading = useGetJobSetsIsLoading();
+  const failedMessage = useGetJobSetsFailedMessage();
 
   const [pageState, pageDispatch] = usePage(jobSetHeaders);
 
