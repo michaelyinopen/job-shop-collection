@@ -23,6 +23,9 @@ const currentJobSetAdjustReducer = (state, action) => {
   if (!id) {
     return state;
   }
+  if (action.type !== setCurrentJobSetId && action.id !== id) {
+    return state;
+  }
   const jobSet = state.jobSets[id];
   if (!jobSet) {
     return state;
