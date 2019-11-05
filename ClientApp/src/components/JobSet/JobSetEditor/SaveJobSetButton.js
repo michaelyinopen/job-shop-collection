@@ -1,8 +1,8 @@
-import React, { useMemo, useReducer, useContext, useEffect } from 'react';
+import React, { useMemo, useContext, useEffect } from 'react';
 import { createJobSetApiAsync } from '../../../api/jobSetsApi';
-import { useJobSetForCreation } from '../store/useSelectors';
+import { useJobSetForCreation, useIsCreating, useCreatedId, useCurrentJobSetId } from '../store/useSelectors';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
-import { showSnackbar } from '../../../store/actionCreators';
+import { showSnackbar, createJobSetBegin, createJobSetSucceed, createJobSetFailed } from '../../../store/actionCreators';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
 import { jobSet as jobSetPath } from '../../../routePaths';
@@ -64,85 +64,10 @@ const SaveJobSetButton = ({
   );
 };
 
-const SaveJobSetButtonContainer = ({
-  id
-}) => {
-  const [saveState, saveDispatch] = useReducer(
-    (state, action) => {
-      switch (action.type) {
-        case 'beginCreate':
-          return {
-            isCreating: true,
-            createFailedMessage: undefined,
-            createdId: undefined,
-            isUpdating: false,
-            updateFailedMessage: undefined,
-          };
-        case 'createSucceed':
-          return {
-            isCreating: false,
-            createFailedMessage: undefined,
-            createdId: action.id,
-            isUpdating: false,
-            updateFailedMessage: undefined,
-          };
-        case 'createFailed':
-          return {
-            isCreating: false,
-            createFailedMessage: action.failedMessage,
-            createdId: undefined,
-            isUpdating: false,
-            updateFailedMessage: undefined,
-          };
-        case 'beginUpdate':
-          return {
-            isCreating: false,
-            createFailedMessage: undefined,
-            createdId: undefined,
-            isUpdating: true,
-            updateFailedMessage: undefined,
-          };
-        case 'updateSucceed':
-          return {
-            isCreating: false,
-            createFailedMessage: undefined,
-            createdId: undefined,
-            isUpdating: false,
-            updateFailedMessage: undefined,
-          };
-        case 'updateFailed':
-          return {
-            isCreating: false,
-            createFailedMessage: undefined,
-            createdId: undefined,
-            isUpdating: false,
-            updateFailedMessage: action.failedMessage,
-          };
-        default:
-          return state;
-      }
-    },
-    {
-      isCreating: false,
-      createFailedMessage: undefined,
-      createdId: undefined,
-      isUpdating: false,
-      updateFailedMessage: undefined,
-    }
-  );
+const CreateJobSetButtonContainer = () => {
+  const creatingId = useCurrentJobSetId();
   const dispatch = useContext(JobShopCollectionDispatchContext);
   const jobSetForCreation = useJobSetForCreation();
-  const { history: { push } } = useReactRouter();
-  useEffect(
-    () => {
-      if (saveState.createdId) {
-        const generatedJobSetPath = generatePath(jobSetPath, { id: saveState.createdId, edit: 'edit' });
-        dispatch(showSnackbar(`Created Job Set ${saveState.createdId}`));
-        push(generatedJobSetPath);
-      }
-    },
-    [saveState.createdId, push, dispatch]
-  );
   const onCreate = useMemo(
     () => {
       let isCreating = false;
@@ -153,41 +78,54 @@ const SaveJobSetButtonContainer = ({
         }
         const createJobSetAsync = async () => {
           isCreating = true;
-          saveDispatch({ type: 'beginCreate' });
+          dispatch(createJobSetBegin(creatingId));
           try {
             const createResult = await createJobSetApiAsync(jobSetForCreation);
             isCreating = false;
             const id = createResult.id;
-            saveDispatch({ type: 'createSucceed', id });
-            //dispatch(savedJobSet(id, createResult));
+            dispatch(createJobSetSucceed(creatingId, id, createResult));
           }
           catch (e) {
             alert(`Failed to create Job Set.\nPlease try again.`);
             isCreating = false;
-            saveDispatch({ type: 'createFailed', failedMessage: e.message });
+            dispatch(createJobSetFailed(creatingId, e.message));
           }
         };
         createJobSetAsync();
       };
       return callback;
     },
-    [
-      jobSetForCreation,
-      saveDispatch
-    ]
+    [creatingId, dispatch, jobSetForCreation,]
   );
-  const label = id ? "Save" : "Create";
-  const onClick = id ? () => { } : onCreate;
-  const isProgress = id ? saveState.isUpdating : saveState.isCreating;
+  const createdId = useCreatedId();
+  const { history: { push } } = useReactRouter();
+  useEffect(
+    () => {
+      if (createdId) {
+        dispatch(showSnackbar(`Created Job Set ${createdId}`));
+        const generatedJobSetPath = generatePath(jobSetPath, { id: createdId, edit: 'edit' });
+        push(generatedJobSetPath);
+      }
+    },
+    [createdId, push, dispatch]
+  );
+  const isProgress = useIsCreating();
   return (
     <SaveJobSetButton
-      label={label}
-      onClick={onClick}
+      label="Create"
+      onClick={onCreate}
       isProgress={isProgress}
-      blockExit={id ? false : !saveState.createdId}
-      blockMessage={id ? "" : "Exit without creating?\nAll changes will be lost."}
+      blockExit={!createdId}
+      blockMessage={"Exit without creating?\nAll changes will be lost."}
     />
   );
+  // const label = "Create";
+};
+
+const SaveJobSetButtonContainer = ({
+  id
+}) => {
+  return id ? null/*<UpdateJobSetButtonContainer id={id} />*/ : <CreateJobSetButtonContainer />;
 };
 
 export default SaveJobSetButtonContainer;

@@ -235,4 +235,14 @@ export const useJobSetForUpdateFunction = () => {
   return jobSetForUpdateFunction;
 };
 
+export const useCreatedId = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.jobSetEditor.editStatus.createdId;
+};
+
+export const useIsCreating = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.jobSetEditor.editStatus.isCreating;
+};
+
 //todo export const useHasUnchanged
