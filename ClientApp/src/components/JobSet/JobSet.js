@@ -48,9 +48,9 @@ const JobSet = ({
   );
   useEffect(
     () => {
-      dispatch(setReadOnly(!edit));
+      dispatch(setReadOnly(id && !edit));
     },
-    [edit, dispatch]
+    [id, edit, dispatch]
   );
   const currentJobSetId = useCurrentJobSetId();
   const jobSetEditorState = useJobSetEditorState();

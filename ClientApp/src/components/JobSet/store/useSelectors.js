@@ -15,8 +15,8 @@ export const useCurrentJobSetId = () => {
 };
 
 export const useReadOnly = () => {
-  const state = useContext(JobSetEditorStateContext);
-  return state.readOnly;
+  const jobSetState = useContext(JobSetStateContext);
+  return jobSetState.jobSetEditor.editStatus.readOnly;
 };
 
 export const useTitle = () => {

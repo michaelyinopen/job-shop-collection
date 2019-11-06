@@ -1,7 +1,7 @@
 import React, { useMemo, useContext, useEffect } from 'react';
-import { createJobSetApiAsync, updateJobSetApiAsync } from '../../../api/jobSetsApi';
-import { useJobSetForCreation, useIsCreating, useCreatedId, useCurrentJobSetId, useJobSetForUpdate, useHasChanged } from '../store/useSelectors';
-import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
+import { createJobSetApiAsync, updateJobSetApiAsync } from '../../../../api/jobSetsApi';
+import { useJobSetForCreation, useIsCreating, useCreatedId, useCurrentJobSetId, useJobSetForUpdate, useHasChanged } from '../../store/useSelectors';
+import JobShopCollectionDispatchContext from '../../../JobShopCollectionDispatchContext';
 import {
   showSnackbar,
   createJobSetBegin,
@@ -10,10 +10,10 @@ import {
   updateJobSetBegin,
   updateJobSetSucceed,
   updateJobSetFailed,
-} from '../../../store/actionCreators';
+} from '../../../../store/actionCreators';
 import { generatePath } from 'react-router';
 import useReactRouter from 'use-react-router';
-import { jobSet as jobSetPath } from '../../../routePaths';
+import { jobSet as jobSetPath } from '../../../../routePaths';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -22,7 +22,7 @@ import {
 } from '@material-ui/core';
 import { Save as SaveIcon } from '@material-ui/icons';
 import { Prompt } from 'react-router';
-import { useIsUpdatingJobSet, useJobSet } from '../../../store/useSelectors';
+import { useIsUpdatingJobSet, useJobSet, useIsLoadingJobSet } from '../../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   withProgressWrapper: {
@@ -110,17 +110,18 @@ const UpdateJobSetButtonContainer = ({
     },
     [id, dispatch, jobSetForUpdate, eTag]
   );
+  const isLoading = useIsLoadingJobSet(id);
   const isProgress = useIsUpdatingJobSet(id);
   const hasChanged = useHasChanged();
   return (
     <SaveJobSetButton
-      label="Save"
-      tooltip={!hasChanged ? "All changes saved" : "Save"}
+      label={hasChanged ? "Save" : "Saved"}
+      tooltip={!hasChanged ? "All changes saved" : isProgress ? "Saving..." : "Save"}
       onClick={onUpdate}
       isProgress={isProgress}
       blockExit={hasChanged}
       blockMessage={"Exit without saving?\nAll changes will be lost."}
-      forceDisabled={!hasChanged}
+      forceDisabled={!hasChanged || isLoading}
     />
   );
 };
