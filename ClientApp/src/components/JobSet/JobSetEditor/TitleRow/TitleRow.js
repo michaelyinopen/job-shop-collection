@@ -44,14 +44,12 @@ const TitleRow = ({
         <div className={classes.separator} />
         {!readOnly ? <SaveJobSetButton id={id} /> : null}
         {id ? <EditButtons id={id} /> : null}
-        {/* <Tooltip
-            title={isJsonEditorOpen ? "Already opened JSON Editor" : "Open JSON Editor"}
-          >
-            <Fab disabled={isJsonEditorOpen} size="medium" onClick={openJsonEditorCallback}>
-              <InlineIcon icon={jsonIcon} className={classes.icon} />
-            </Fab>
-          </Tooltip> */}
-        <MoreOptions id={id} />
+        <MoreOptions
+          id={id}
+          isJsonEditorOpen={isJsonEditorOpen}
+          openJsonEditorCallback={openJsonEditorCallback}
+          closeJsonEditorCallback={closeJsonEditorCallback}
+        />
       </Toolbar>
       <Divider variant="middle" />
     </div>
