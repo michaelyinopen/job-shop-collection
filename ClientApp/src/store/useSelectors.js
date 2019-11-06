@@ -59,17 +59,6 @@ export const useSnackbar = () => {
   return [isOpen, message];
 };
 
-export const useJobSetIds = () => {
-  const state = useContext(JobShopCollectionMainStateContext);
-  const jobSetIds = useMemo(
-    () => {
-      return Object.keys(state.jobSets).sort((a, b) => parseInt(b) - parseInt(a));
-    },
-    [state.jobSets]
-  )
-  return jobSetIds;
-};
-
 export const useGetJobSetsIsLoading = () => {
   const state = useContext(JobShopCollectionMainStateContext);
   return state.getJobSetsIsLoading;
@@ -84,16 +73,14 @@ export const useJobSetHeaders = () => {
   const state = useContext(JobShopCollectionMainStateContext);
   const jobSetHeaders = useMemo(
     () => {
-      return Object.keys(state.jobSets)
-        .map(id => {
-          const jobSet = state.jobSets[id];
-          return {
-            id: jobSet.id,
-            title: jobSet.title,
-            description: jobSet.description,
-            eTag: jobSet.eTag
-          }
-        });
+      return Object.values(state.jobSets)
+        .filter(jobSet => jobSet.eTag)
+        .map(jobSet => ({
+          id: jobSet.id,
+          title: jobSet.title,
+          description: jobSet.description,
+          eTag: jobSet.eTag
+        }));
     },
     [state.jobSets]
   )

@@ -89,7 +89,7 @@ const jobSet = createReducer(
       description: jobSetFromAction.description,
       eTag: jobSetFromAction.eTag
     }),
-    [getJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isLoading: true, loadingFailedMessage: null }),
+    [getJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isLoading: true, loadFailedMessage: null }),
     [getJobSetSucceed]: (state, action) => updateObject(
       state,
       {
@@ -105,7 +105,7 @@ const jobSet = createReducer(
         loadFailedMessage: null
       }
     ),
-    [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadingFailedMessage: action.failedMessage }),
+    [getJobSetFailed]: (state, action) => updateObject(state, { id: action.id, isLoading: false, loadFailedMessage: action.failedMessage }),
     [createJobSetSucceed]: (state, action) => updateObject(
       state,
       {

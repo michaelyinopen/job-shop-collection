@@ -22,7 +22,7 @@ import {
 } from '@material-ui/core';
 import { Save as SaveIcon } from '@material-ui/icons';
 import { Prompt } from 'react-router';
-import { useIsUpdatingJobSet, useJobSet, useIsLoadingJobSet } from '../../../../store/useSelectors';
+import { useIsUpdatingJobSet, useJobSet, useIsLoadingJobSet, useLoadJobSetFailedMessage } from '../../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   withProgressWrapper: {
@@ -111,17 +111,20 @@ const UpdateJobSetButtonContainer = ({
     [id, dispatch, jobSetForUpdate, eTag]
   );
   const isLoading = useIsLoadingJobSet(id);
+  const loadFailedMessage = useLoadJobSetFailedMessage(id);
   const isProgress = useIsUpdatingJobSet(id);
   const hasChanged = useHasChanged();
+  const tooltip = isLoading ? "loading" : loadFailedMessage ? "load failed"
+    : !hasChanged ? "All changes saved" : isProgress ? "Saving..." : "Save";
   return (
     <SaveJobSetButton
       label={hasChanged ? "Save" : "Saved"}
-      tooltip={!hasChanged ? "All changes saved" : isProgress ? "Saving..." : "Save"}
+      tooltip={tooltip}
       onClick={onUpdate}
       isProgress={isProgress}
       blockExit={hasChanged}
       blockMessage={"Exit without saving?\nAll changes will be lost."}
-      forceDisabled={!hasChanged || isLoading}
+      forceDisabled={!hasChanged || isLoading || loadFailedMessage}
     />
   );
 };

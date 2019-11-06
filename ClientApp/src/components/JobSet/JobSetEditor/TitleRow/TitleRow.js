@@ -7,6 +7,7 @@ import {
 import MoreOptions from './MoreOptions';
 import EditButtons from './EditButtons';
 import SaveJobSetButton from './SaveJobSetButton';
+import LoadButton from './LoadButton';
 import { useReadOnly } from '../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +42,7 @@ const TitleRow = ({
     <div className={classes.titleRow}>
       <Toolbar className={classes.toolbar}>
         <h1>{pageTitle}</h1>
+        {id ? <LoadButton id={id} /> : null}
         <div className={classes.separator} />
         {!readOnly ? <SaveJobSetButton id={id} /> : null}
         {id ? <EditButtons id={id} /> : null}
