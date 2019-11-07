@@ -119,7 +119,7 @@ describe("Create New JobSet", () => {
         past: [],
         present: {
           editContent: expectedStartCreateNewJobSetEditorContentState,
-          historyStepName: "setCurrentJobSetId",
+          historyStepName: "initial",
         },
         future: []
       },
@@ -150,7 +150,7 @@ describe("Create New JobSet", () => {
         past: [
           {
             editContent: expectedStartCreateNewJobSetEditorContentState,
-            historyStepName: "setCurrentJobSetId",
+            historyStepName: "initial",
           },
           {
             editContent: expectedEditNewJobSetEditorContentTitleState,

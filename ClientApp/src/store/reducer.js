@@ -143,9 +143,15 @@ const jobSetsInitialState = {}
 const jobSets = createReducer(
   jobSetsInitialState,
   {
-    [getJobSetsSucceed]: (_state, action) => {
+    [getJobSetsSucceed]: (state, action) => {
       return action.jobSets.reduce((newState, js) => {
-        newState[js.id] = jobSet(undefined, action, js);
+        const oldJobSet = state[js.id];
+        if (oldJobSet && oldJobSet.eTag === js.eTag) {
+          newState[js.id] = oldJobSet;
+        }
+        else {
+          newState[js.id] = jobSet(undefined, action, js);
+        }
         return newState;
       }, {});
     },
