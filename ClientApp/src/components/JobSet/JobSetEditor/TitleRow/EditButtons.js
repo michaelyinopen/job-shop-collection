@@ -64,11 +64,13 @@ const EditButtonsContainer = ({
     () => {
       const readonlyPath = generatePath(jobSetPath, { id });
       const editingPath = generatePath(jobSetPath, { id, edit: "edit" });
-      return (_event, readOnlyValue) => {
-        if (!readOnly && readOnlyValue) {
+      return (event, readOnlyValue) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!readOnly && readOnlyValue === true) {
           push(readonlyPath)
         }
-        if (readOnly && !readOnlyValue) {
+        if (readOnly && readOnlyValue === false) {
           push(editingPath)
         }
       }

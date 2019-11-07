@@ -9,7 +9,6 @@ import TimeOptions from './TimeOptions';
 // import JsonEditor from './JsonEditor';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-import jsonIcon from '@iconify/icons-mdi/json';
 import TitleRow from './TitleRow';
 
 const useStyles = makeStyles(theme => ({

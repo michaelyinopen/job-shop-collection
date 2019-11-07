@@ -5,6 +5,7 @@ import {
   IconButton,
 } from '@material-ui/core';
 import { MoreVert as MoreVertIcon } from '@material-ui/icons';
+import jsonIcon from '@iconify/icons-mdi/json';
 import DeleteJobSetMenuItem from './DeleteJobSetMenuItem';
 
 const useStyles = makeStyles(theme => ({

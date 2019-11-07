@@ -43,18 +43,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DeleteJobSetMenuItem = ({
-  id,
-  deleteTooltip,
-  dialogOpen,
-  clickOpenCallback,
-  closeCallback,
-  confirmCallback,
-  isDeleting
-}) => {
+const DeleteJobSetMenuItem = React.memo(React.forwardRef((
+  {
+    id,
+    deleteTooltip,
+    dialogOpen,
+    clickOpenCallback,
+    closeCallback,
+    confirmCallback,
+    isDeleting
+  },
+  ref
+) => {
   const classes = useStyles();
   return (
-    <MenuItem onClick={clickOpenCallback}>
+    <MenuItem onClick={clickOpenCallback} ref={ref}>
       <Tooltip title={deleteTooltip} placement="bottom-end">
         <div className={classes.wrapper}>
           <ListItemIcon>
@@ -80,11 +83,14 @@ const DeleteJobSetMenuItem = ({
       </Dialog>
     </MenuItem>
   );
-};
+}));
 
-const DeleteJobSetMenuItemContainer = ({
-  id,
-}) => {
+const DeleteJobSetMenuItemContainer = React.forwardRef((
+  {
+    id,
+  },
+  ref
+) => {
   const jobSet = useJobSet(id);
   const dispatch = useContext(JobShopCollectionDispatchContext);
 
@@ -174,6 +180,7 @@ const DeleteJobSetMenuItemContainer = ({
   };
   return (
     <DeleteJobSetMenuItem
+      ref={ref}
       id={id}
       deleteTooltip={deleteTooltip}
       dialogOpen={dialogOpen}
@@ -183,6 +190,6 @@ const DeleteJobSetMenuItemContainer = ({
       isDeleting={isDeletingState}
     />
   );
-};
+});
 
 export default DeleteJobSetMenuItemContainer;

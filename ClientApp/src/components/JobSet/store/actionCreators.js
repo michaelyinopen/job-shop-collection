@@ -1,4 +1,5 @@
 import * as fromActionTypes from './actionTypes';
+import { ActionCreators } from 'redux-undo';
 
 export const setReadOnly = isReadOnly => ({
   type: fromActionTypes.setReadOnly,
@@ -104,3 +105,7 @@ export const changeJobColor = id => ({
   type: fromActionTypes.changeJobColor,
   id
 });
+
+export const undo = ActionCreators.undo;
+
+export const redo = ActionCreators.redo;

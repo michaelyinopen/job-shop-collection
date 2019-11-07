@@ -249,3 +249,15 @@ export const useHasChanged = () => {
   const jobSetState = useContext(JobSetStateContext);
   return jobSetState.jobSetEditor.savedContent !== jobSetState.jobSetEditor.editContentHistory.present.editContent;
 };
+
+export const useHasUndo = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  const hasUndo = jobSetState.jobSetEditor.editContentHistory.past.length > 0;
+  return hasUndo;
+};
+
+export const useHasRedo = () => {
+  const jobSetState = useContext(JobSetStateContext);
+  const hasRedo = jobSetState.jobSetEditor.editContentHistory.future.length > 0;
+  return hasRedo;
+};
