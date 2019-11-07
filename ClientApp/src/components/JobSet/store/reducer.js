@@ -6,6 +6,7 @@ import { jobSetEditorUpdatingActionsTypes } from '../../../store/currentJobSetAd
 import { setCurrentJobSetId } from '../../../store/actionTypes';
 import updateObject from '../../../functions/updateObject';
 import reduceReducers from 'reduce-reducers';
+import { setReadOnly } from './actionTypes';
 
 const savedContentAdjustReducer = (state, action, jobSet) => {
   if (!jobSetEditorUpdatingActionsTypes.includes(action.type) || !jobSet) {
@@ -40,6 +41,19 @@ const historyStepNameEnhancer = (reducer, init) => (state, action, ...rest) => {
     }
   }
   return state;
+};
+
+const loadSaveContentAdjustReducer = (state, action) => {
+  if (action.type !== setReadOnly || action.isReadOnly !== true || !state.savedContent) {
+    return state;
+  }
+  const newEditContentHistory = undoable(
+    historyStepNameEnhancer(
+      () => state.savedContent,
+      editContentInit()
+    )
+  )(state.editContentHistory, action)
+  return updateObject(state, { editContentHistory: newEditContentHistory });
 };
 
 const initEditContentHistory = contentPresent => ({
@@ -78,7 +92,8 @@ const reducer = (state, action, ...rest) => reduceReducers(
     ),
     savedContent,
   }),
-  savedContentAdjustReducer
+  savedContentAdjustReducer,
+  loadSaveContentAdjustReducer
 )(state, action, ...rest);
 
 export const editStatusSelector = state => state.editStatus;
