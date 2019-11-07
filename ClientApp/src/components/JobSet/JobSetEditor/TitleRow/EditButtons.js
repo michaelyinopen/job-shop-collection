@@ -13,6 +13,7 @@ import useReactRouter from 'use-react-router';
 import StyledToggleButtonGroup, { toggleButtonGroupBorderStyle } from '../../../StyledToggleButtonGroup';
 import { jobSet as jobSetPath } from '../../../../routePaths';
 import { useReadOnly } from '../../store/useSelectors';
+import { useIsJobSetLocked } from '../../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -26,7 +27,8 @@ const useStyles = makeStyles(theme => ({
 
 const EditButtons = React.memo(({
   readOnly,
-  handleReadOnlyChange
+  handleReadOnlyChange,
+  isLocked,
 }) => {
   const classes = useStyles();
   return (
@@ -37,7 +39,7 @@ const EditButtons = React.memo(({
         onChange={handleReadOnlyChange}
         className={classes.toggleButtonGroupStyle}
       >
-        <ToggleButton value={false} {...(false ? { disabled: true } : {})/* for locked jobSet*/} >
+        <ToggleButton value={false} {...(isLocked ? { disabled: true } : {})} >
           <Tooltip title="Edit" placement="bottom-end">
             <Edit />
           </Tooltip>
@@ -50,7 +52,7 @@ const EditButtons = React.memo(({
           </Tooltip>
         </ToggleButton>
       </StyledToggleButtonGroup>
-    </Paper>
+    </Paper >
   );
 });
 
@@ -77,10 +79,12 @@ const EditButtonsContainer = ({
     },
     [id, push, readOnly]
   );
+  const isLocked = useIsJobSetLocked(id);
   return (
     <EditButtons
       readOnly={readOnly}
       handleReadOnlyChange={handleReadOnlyChange}
+      isLocked={isLocked}
     />
   )
 };

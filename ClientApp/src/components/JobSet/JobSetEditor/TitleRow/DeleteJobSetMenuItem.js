@@ -24,7 +24,8 @@ import {
 } from '../../../../store/actionCreators';
 import {
   useJobSet,
-  useJobSetDeleting
+  useJobSetDeleting,
+  useIsJobSetLocked
 } from '../../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
@@ -46,6 +47,7 @@ const useStyles = makeStyles(theme => ({
 const DeleteJobSetMenuItem = React.memo(React.forwardRef((
   {
     id,
+    isLocked,
     deleteTooltip,
     dialogOpen,
     clickOpenCallback,
@@ -57,7 +59,11 @@ const DeleteJobSetMenuItem = React.memo(React.forwardRef((
 ) => {
   const classes = useStyles();
   return (
-    <MenuItem onClick={clickOpenCallback} ref={ref}>
+    <MenuItem
+      ref={ref}
+      onClick={clickOpenCallback}
+      disabled={isLocked}
+    >
       <Tooltip title={deleteTooltip} placement="bottom-end">
         <div className={classes.wrapper}>
           <ListItemIcon>
@@ -174,6 +180,7 @@ const DeleteJobSetMenuItemContainer = React.forwardRef((
     },
     [onDelete]
   );
+  const isLocked = useIsJobSetLocked(id);
 
   if (!onDelete) {
     return null;
@@ -182,6 +189,7 @@ const DeleteJobSetMenuItemContainer = React.forwardRef((
     <DeleteJobSetMenuItem
       ref={ref}
       id={id}
+      isLocked={isLocked}
       deleteTooltip={deleteTooltip}
       dialogOpen={dialogOpen}
       clickOpenCallback={clickOpenCallback}

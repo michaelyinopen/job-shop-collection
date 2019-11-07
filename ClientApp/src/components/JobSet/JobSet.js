@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useEffect } from 'react';
+import { generatePath, Redirect } from 'react-router';
 import JobShopCollectionDispatchContext from '../JobShopCollectionDispatchContext';
 import JobSetEditor from './JobSetEditor';
 import { getJobSetApiAsync } from '../../api';
@@ -8,7 +9,7 @@ import {
   getJobSetFailed,
   setCurrentJobSetId,
 } from '../../store/actionCreators';
-import { useJobSetState } from '../../store/useSelectors';
+import { useJobSetState, useIsJobSetLocked } from '../../store/useSelectors';
 import { getNewJobSetId, isNewJobSetId } from '../../functions/newJobSetId';
 import { setReadOnly } from './store/actionCreators';
 import JobSetStateContext from './JobSetStateContext';
@@ -17,6 +18,7 @@ import {
   useCurrentJobSetId,
 } from './store/useSelectors';
 import JobSetEditorStateContext from './JobSetEditor/JobSetEditorStateContext';
+import { jobSet as jobSetPath } from '../../routePaths';
 
 // when used as new jobset, id will be undefined
 const JobSet = ({
@@ -55,8 +57,14 @@ const JobSet = ({
   const currentJobSetId = useCurrentJobSetId();
   const jobSetEditorState = useJobSetEditorState();
 
+  const readOnlyPath = id ? generatePath(jobSetPath, { id }) : "/";
+  const isLocked = useIsJobSetLocked(id);
+
   if ((id && currentJobSetId !== id) || (!id && !isNewJobSetId(currentJobSetId))) {
     return <div>transitioning...</div>;
+  }
+  if (isLocked && edit) {
+    return <Redirect to={readOnlyPath} />
   }
   return (
     <JobSetEditorStateContext.Provider value={jobSetEditorState}>

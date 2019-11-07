@@ -11,6 +11,7 @@ import HistoryButtons from './HistoryButtons';
 import SaveJobSetButton from './SaveJobSetButton';
 import LoadButton from './LoadButton';
 import { useReadOnly } from '../../store/useSelectors';
+import { useIsJobSetLocked } from '../../../../store/useSelectors';
 
 const useStyles = makeStyles(theme => ({
   titleRow: {
@@ -35,6 +36,7 @@ const TitleRow = ({
   id,
   pageTitle,
   readOnly,
+  isLocked,
   isJsonEditorOpen,
   openJsonEditorCallback,
   closeJsonEditorCallback,
@@ -51,7 +53,7 @@ const TitleRow = ({
             fontSize="h5.fontSize"
             component="span"
           >
-            {readOnly ? "(read-only)" : "(edit)"}
+            {isLocked ? "(locked)" : readOnly ? "(read-only)" : "(edit)"}
           </Box>
         </h1>
         {id ? <LoadButton id={id} /> : null}
@@ -78,11 +80,13 @@ const TitleRowContainer = ({
 }) => {
   const readOnly = useReadOnly();
   const pageTitle = id ? `Job Set #${id}` : "New Job Set";
+  const isLocked = useIsJobSetLocked(id);
   return (
     <TitleRow
       id={id}
       pageTitle={pageTitle}
       readOnly={readOnly}
+      isLocked={isLocked}
       isJsonEditorOpen={isJsonEditorOpen}
       openJsonEditorCallback={openJsonEditorCallback}
       closeJsonEditorCallback={closeJsonEditorCallback}
