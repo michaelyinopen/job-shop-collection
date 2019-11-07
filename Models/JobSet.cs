@@ -24,6 +24,8 @@ namespace JobShopCollection.Models
 
         public string? TimeOptions { get; set; }
 
+        public bool IsLocked { get; set; }
+
         public byte[]? RowVersion { get; set; }
     }
 }

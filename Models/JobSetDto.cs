@@ -14,6 +14,8 @@ namespace JobShopCollection.Models
 
         public string? Description { get; set; }
 
+        public bool IsLocked { get; set; }
+
         [JsonIgnore]
         public byte[]? RowVersion { get; set; }
 
@@ -45,6 +47,8 @@ namespace JobShopCollection.Models
         public bool IsAutoTimeOptions { get; set; }
 
         public string? TimeOptions { get; set; }
+
+        public bool IsLocked { get; set; }
 
         [JsonIgnore]
         public byte[]? RowVersion { get; set; }

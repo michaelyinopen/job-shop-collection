@@ -50,6 +50,7 @@ import {
   deleteJobSetSucceed,
   deleteJobSetFailed,
   clearDeletingJobSets,
+  showSnackbar,
 } from '../../store/actionCreators';
 import getJobSetsRequest from '../../requests/getJobSetsRequest'
 import {
@@ -58,7 +59,8 @@ import {
   useJobSetHeaders,
   useJobSetDeleting,
   useJobSetSomeDeleting,
-  useSelectedJobSets
+  useSelectedJobSets,
+  useIsJobSetLocked,
 } from '../../store/useSelectors';
 import { deleteJobSetApiAsync } from '../../api';
 import usePage, { actionCreators as pageActionCreators } from './usePage';
@@ -153,7 +155,7 @@ const ToolbarDeleteButton = React.memo(({
   const classes = useStyles();
   return (
     <div className={clsx(classes.withProgressWrapper, classes.toolbarDeleteButton)} onClick={preventDefaultPropagation}>
-      <IconButton onClick={onDelete} disabled>
+      <IconButton onClick={onDelete}>
         <DeleteIcon />
       </IconButton>
       {isDeleting ? <div className={classes.progressOnButton}><CircularProgress /></div> : null}
@@ -181,6 +183,7 @@ const ToolbarDeleteButtonContainer = ({
 }) => {
   const isSomeDeleting = useJobSetSomeDeleting();
   const selectedJobSets = useSelectedJobSets(selected);
+  const deletingJobSets = selectedJobSets.filter(js => !js.isLocked);
   const dispatch = useContext(JobShopCollectionDispatchContext);
   const onDelete = useMemo(
     () => {
@@ -193,19 +196,33 @@ const ToolbarDeleteButtonContainer = ({
         if (selectedJobSets.length === 0) {
           return;
         }
-        if (!window.confirm(`Do you want to permanently delete ${selectedJobSets.length} Job Sets?`)) {
+        //#region confirm dialog
+        if (deletingJobSets.length === 0) {
+          window.alert("The selected Job Set(s) are locked and cannot be deleted.");
           return;
         }
+        if (selectedJobSets.length === deletingJobSets.length) {
+          if (!window.confirm(`Do you want to permanently delete ${selectedJobSets.length} Job Sets?`)) {
+            return;
+          }
+        }
+        if (selectedJobSets.length !== deletingJobSets.length) {
+          if (!window.confirm(`${selectedJobSets.length - deletingJobSets.length} Job Sets are locked and cannot be deleted.\nDo you want to permanently delete ${deletingJobSets.length} Job Sets?`)) {
+            return;
+          }
+        }
+        //#endregion confirm dialog
         const deleteJobSetsAsync = async () => {
           isDeleting = true;
-          const deleteJobSetsPromises = selectedJobSets.map(js => deleteOneJobSetFromSelected(js, dispatch));
+          const deleteJobSetsPromises = deletingJobSets.map(js => deleteOneJobSetFromSelected(js, dispatch));
           const results = await Promise.all(deleteJobSetsPromises);
-          const selectedJobSetsCount = selectedJobSets.length;
+          const deletingJobSetsCount = deletingJobSets.length;
           const successfulDeletesCount = results.filter(r => r).length;
-          if (selectedJobSetsCount !== successfulDeletesCount) {
-            alert(`Only deleted ${successfulDeletesCount} Job Set from ${selectedJobSetsCount} selected.\nPlease try again.`);
+          if (deletingJobSetsCount !== successfulDeletesCount) {
+            alert(`Only deleted ${successfulDeletesCount} Job Set from ${deletingJobSetsCount} selected.\nPlease try again.`);
           }
           dispatch(clearDeletingJobSets());
+          dispatch(showSnackbar(`Deleted ${successfulDeletesCount} Job Sets`));
           reloadCallback();
           isDeleting = false;
         };
@@ -215,6 +232,7 @@ const ToolbarDeleteButtonContainer = ({
     },
     [
       selectedJobSets,
+      deletingJobSets,
       reloadCallback,
       dispatch,
     ]
@@ -417,7 +435,8 @@ const RowDeleteButton = React.memo(({
   onDelete,
   isDeleting,
   deleteSucceed,
-  deleteFailed
+  deleteFailed,
+  disabled,
 }) => {
   const classes = useStyles();
   return (
@@ -427,7 +446,7 @@ const RowDeleteButton = React.memo(({
           [classes.buttonSuccess]: deleteSucceed,
           [classes.buttonFailed]: deleteFailed
         })}
-        disabled
+        {...(disabled ? { disabled: true } : {})}
         onClick={onDelete}
         onContextMenu={preventDefaultPropagation}
         size={dense ? 'small' : 'medium'}
@@ -466,6 +485,7 @@ const RowDeleteButtonContainer = ({
             await deleteJobSetApiAsync(id, jobSetHeader.eTag);
             isDeleting = false;
             dispatch(deleteJobSetSucceed(id, true));
+            dispatch(showSnackbar(`Deleted Job Set ${id}`));
             reloadCallback();
           }
           catch (e) {
@@ -486,6 +506,7 @@ const RowDeleteButtonContainer = ({
       dispatch,
     ]
   );
+  const isLocked = useIsJobSetLocked(id);
   return (
     <RowDeleteButton
       dense={dense}
@@ -493,6 +514,7 @@ const RowDeleteButtonContainer = ({
       isDeleting={isDeletingState}
       deleteSucceed={deleteSucceed}
       deleteFailed={deleteFailed}
+      disabled={isLocked}
     />
   );
 };
@@ -505,7 +527,8 @@ const RowMoreActionsMenu = ({
   anchorReference,
   anchorPosition,
   open,
-  handleClose
+  handleClose,
+  isLocked
 }) => {
   return (
     <Menu
@@ -523,7 +546,11 @@ const RowMoreActionsMenu = ({
         </ListItemIcon>
         View
       </MenuItem>
-      <MenuItem onClick={editJobSetCallback} onContextMenu={preventDefaultPropagation}>
+      <MenuItem
+        onClick={editJobSetCallback}
+        onContextMenu={preventDefaultPropagation}
+        disabled={isLocked}
+      >
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
@@ -588,6 +615,7 @@ const JobSetRow = React.memo(({
     setMenuPosition(null);
     setAnchorEl(null);
   };
+  const isLocked = useIsJobSetLocked(id);
   return (
     <TableRow
       className={clsx({ [classes.rowWithMenu]: menuOpen })}
@@ -650,6 +678,7 @@ const JobSetRow = React.memo(({
         anchorPosition={menuPosition}
         open={menuOpen}
         handleClose={handleCloseContextMenu}
+        isLocked={isLocked}
       />
     </TableRow>
   );

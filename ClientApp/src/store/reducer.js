@@ -73,6 +73,7 @@ const jobSetInitialState = {
   jobColors: undefined,
   isAutoTimeOptions: undefined,
   timeOptions: undefined,
+  isLocked: false,
   eTag: undefined,
   isLoading: false,
   loadFailedMessage: null,
@@ -87,6 +88,7 @@ const jobSet = createReducer(
       id: jobSetFromAction.id,
       title: jobSetFromAction.title,
       description: jobSetFromAction.description,
+      isLocked: jobSetFromAction.isLocked,
       eTag: jobSetFromAction.eTag
     }),
     [getJobSetBegin]: (state, action) => updateObject(state, { id: action.id, isLoading: true, loadFailedMessage: null }),
@@ -100,6 +102,7 @@ const jobSet = createReducer(
         jobColors: action.jobColors,
         isAutoTimeOptions: action.isAutoTimeOptions,
         timeOptions: action.timeOptions,
+        isLocked: action.isLocked,
         eTag: action.eTag,
         isLoading: false,
         loadFailedMessage: null
@@ -116,6 +119,7 @@ const jobSet = createReducer(
         jobColors: action.jobColors,
         isAutoTimeOptions: action.isAutoTimeOptions,
         timeOptions: action.timeOptions,
+        isLocked: action.isLocked,
         eTag: action.eTag,
       }
     ),
@@ -130,6 +134,7 @@ const jobSet = createReducer(
         jobColors: action.jobColors,
         isAutoTimeOptions: action.isAutoTimeOptions,
         timeOptions: action.timeOptions,
+        isLocked: action.isLocked,
         eTag: action.eTag,
         isUpdating: false,
         updateFailedMessage: null

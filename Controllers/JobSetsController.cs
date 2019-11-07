@@ -121,17 +121,21 @@ namespace JobShopCollection.Controllers
 
             if (current is null)
                 return NotFound();
+            if (current.IsLocked)
+            {
+                return new StatusCodeResult((int)StatusCodes.Status403Forbidden);
+            }
 
             // the "If-Match" Header is mandatory
             if (!HttpContext.Request.Headers.Keys.Contains("If-Match"))
             {
-                return new StatusCodeResult(412); //precondition failed
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
             }
 
             string? currentETag = current.GetETag();
             if (currentETag != null && HttpContext.Request.Headers["If-Match"].ToString() != currentETag)
             {
-                return new StatusCodeResult(412); //precondition failed
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
             }
 
             JobShopCollectionDbContext.Entry(current).CurrentValues.SetValues(newJobSet);
@@ -154,17 +158,21 @@ namespace JobShopCollection.Controllers
 
             if (original is null)
                 return NotFound();
+            if (original.IsLocked)
+            {
+                return new StatusCodeResult((int)StatusCodes.Status403Forbidden);
+            }
 
             // the "If-Match" Header is mandatory
             if (!HttpContext.Request.Headers.Keys.Contains("If-Match"))
             {
-                return new StatusCodeResult(412); //precondition failed
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
             }
 
             string? originalETag = original.GetETag();
             if (originalETag != null && HttpContext.Request.Headers["If-Match"].ToString() != originalETag)
             {
-                return new StatusCodeResult(412); //precondition failed
+                return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
             }
 
             JobShopCollectionDbContext.Entry(original).State = EntityState.Deleted;

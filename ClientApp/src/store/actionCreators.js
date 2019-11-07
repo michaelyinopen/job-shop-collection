@@ -63,6 +63,7 @@ export const getJobSetSucceed = (id, jobSet) => ({
   jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
   timeOptions: JSON.parse(jobSet.timeOptions),
+  isLocked: jobSet.isLocked,
   eTag: jobSet.eTag,
 });
 
@@ -87,6 +88,7 @@ export const createJobSetSucceed = (creatingId, id, jobSet) => ({
   jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
   timeOptions: JSON.parse(jobSet.timeOptions),
+  isLocked: jobSet.isLocked,
   eTag: jobSet.eTag,
 });
 
@@ -110,6 +112,7 @@ export const updateJobSetSucceed = (id, jobSet) => ({
   jobColors: JSON.parse(jobSet.jobColors),
   isAutoTimeOptions: jobSet.isAutoTimeOptions,
   timeOptions: JSON.parse(jobSet.timeOptions),
+  isLocked: jobSet.isLocked,
   eTag: jobSet.eTag,
 });
 

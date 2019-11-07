@@ -179,3 +179,12 @@ export const useUpdateJobSetFailedMessage = id => {
   const jobSet = state.jobSets[id];
   return jobSet ? jobSet.updateFailedMessage : undefined;
 };
+
+export const useIsJobSetLocked = id => {
+  const state = useContext(JobShopCollectionMainStateContext);
+  if (!id) {
+    return false;
+  }
+  const jobSet = state.jobSets[id];
+  return jobSet ? jobSet.isLocked : false;
+};
