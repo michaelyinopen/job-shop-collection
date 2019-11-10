@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { useMediaQuery } from '@material-ui/core';
+import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Container from '@material-ui/core/Container';
 import * as fromRoutePaths from '../routePaths';
@@ -13,7 +15,10 @@ const useStyles = makeStyles(theme => ({
   },
   examplesLink: {
     margin: theme.spacing(2),
-  }
+  },
+  smallerTitle: {
+    fontSize: "1.8em"
+  },
 }));
 
 const ExamplesLink = React.forwardRef((props, ref) => (
@@ -22,9 +27,10 @@ const ExamplesLink = React.forwardRef((props, ref) => (
 
 const Home = () => {
   const classes = useStyles();
+  const isSmallerTitle = useMediaQuery('(max-width:350px)');
   return (
     <Container className={classes.container}>
-      <h1>Job Shop Collection</h1>
+      <h1 className={clsx({ [classes.smallerTitle]: isSmallerTitle })}>Job Shop Collection</h1>
       <p>
         Welcome to Job Shop Collection where you can find examples of the The Job Shop Scheduling Problem.<br />
         <Fab
@@ -59,7 +65,7 @@ const Home = () => {
         <li><a href='https://material-ui.com/'>Material-ui</a> for layout and styling</li>
         <li><a href='https://azure.microsoft.com/'>Azure</a> for hosting Web App and database</li>
       </ul>
-    </Container>
+    </Container >
   );
 }
 
