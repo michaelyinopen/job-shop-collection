@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMediaQuery } from '@material-ui/core';
+import { useMediaQuery, useTheme } from '@material-ui/core';
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Container from '@material-ui/core/Container';
@@ -27,7 +27,8 @@ const ExamplesLink = React.forwardRef((props, ref) => (
 
 const Home = () => {
   const classes = useStyles();
-  const isSmallerTitle = useMediaQuery('(max-width:350px)');
+  const theme = useTheme();
+  const isSmallerTitle = useMediaQuery(theme.breakpoints.down('xs'));
   return (
     <Container className={classes.container}>
       <h1 className={clsx({ [classes.smallerTitle]: isSmallerTitle })}>Job Shop Collection</h1>

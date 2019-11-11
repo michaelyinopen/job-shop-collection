@@ -12,7 +12,6 @@ const useStyles = makeStyles(theme => ({
     padding: '6px 0 8px',
     minWidth: 80,
     maxWidth: 168,
-    color: theme.palette.text.secondary,
     flex: '1',
     color: 'inherit',
     borderColor: 'currentColor',

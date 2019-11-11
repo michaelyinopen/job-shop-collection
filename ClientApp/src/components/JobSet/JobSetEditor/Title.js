@@ -11,7 +11,8 @@ const useStyles = makeStyles(theme => ({
   field: {
     display: "block",
     marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    maxWidth: "400px"
   }
 }));
 
@@ -30,8 +31,12 @@ const Title = React.memo(({
       error={!value || value.length === 0}
       variant="filled"
       margin="dense"
+      fullWidth
       className={classes.field}
-      inputProps={readOnly ? { readOnly: true } : {}}
+      inputProps={{
+        maxLength: 50,
+        ...(readOnly ? { readOnly: true } : {})
+      }}
     />
   );
 });

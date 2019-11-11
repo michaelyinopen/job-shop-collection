@@ -23,6 +23,8 @@ import {
   TableSortLabel,
   Toolbar,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from '@material-ui/core';
 import {
   green,
@@ -69,11 +71,14 @@ const useStyles = makeStyles(theme => ({
   container: {
     backgroundColor: theme.palette.background.default,
     height: '100%',
-    paddingTop: theme.spacing(1)
+    paddingTop: theme.spacing(1),
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
   },
   root: {
-    width: '100%',
-    overflowX: 'auto',
+    width: '100%'
   },
   toolbar: { // move
     paddingLeft: theme.spacing(2),
@@ -109,7 +114,7 @@ const useStyles = makeStyles(theme => ({
   },
   createJobSetIcon: { marginRight: theme.spacing(0.5) },
   table: {
-    minWidth: 650,
+    tableLayout: "fixed",
   },
   rowWithMenu: {
     backgroundColor:
@@ -117,15 +122,13 @@ const useStyles = makeStyles(theme => ({
         ? 'rgba(0, 0, 0, 0.07)' // grey[200]
         : 'rgba(255, 255, 255, 0.14)',
   },
-  titleCell: {
-    maxWidth: '230px',
-  },
   descriptionCell: {
     maxWidth: '700px',
   },
   actionsFlexbox: {
     display: 'flex',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    maxWidth: '96px'
   },
   buttonSuccess: {
     backgroundColor: green[500],
@@ -143,7 +146,17 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: 20,
     width: 1,
-  }
+  },
+  idColumn: { width: '56px' },
+  actionsColumn: { width: '96px', boxSizing: "border-box" },
+  titleColumn: {
+    width: '200px',
+    boxSizing: "border-box",
+    [theme.breakpoints.down('xs')]: { width: '100%' }
+  },
+  descriptionColumn: {
+    width: '100%',
+  },
 }));
 
 //#region title / toolbar
@@ -271,7 +284,8 @@ const JobSetTitle = ({
   classes,
   isLoading,
   failedMessage,
-  reloadCallback
+  reloadCallback,
+  isSmallNewButton,
 }) => {
   return (
     <React.Fragment>
@@ -296,7 +310,7 @@ const JobSetTitle = ({
         className={classes.createJobSetButton}
       >
         <AddIcon className={classes.createJobSetIcon} />
-        Create New
+        {isSmallNewButton ? "New" : "Create New"}
       </Button>
     </React.Fragment>
   );
@@ -308,6 +322,7 @@ const JobSetToolbarTitle = ({
   selected,
   selectedCount,
   reloadCallback,
+  isSmallNewButton,
 }) => {
   const classes = useStyles();
   return (
@@ -329,6 +344,7 @@ const JobSetToolbarTitle = ({
             isLoading={isLoading}
             failedMessage={failedMessage}
             reloadCallback={reloadCallback}
+            isSmallNewButton={isSmallNewButton}
           />
         )
       }
@@ -339,6 +355,7 @@ const JobSetToolbarTitle = ({
 
 //#region HeadRow
 const JobSetSortableTableHeadCell = ({
+  className,
   padding,
   align,
   property,
@@ -353,6 +370,7 @@ const JobSetSortableTableHeadCell = ({
       padding={padding}
       align={align}
       sortDirection={orderBy === property ? order : false}
+      className={className}
     >
       <TableSortLabel
         active={orderBy === property}
@@ -375,10 +393,12 @@ const JobSetTableHead = ({
   selectedCount,
   rowCount,
   order,
-  orderBy
+  orderBy,
+  showDescription,
 }) => {
   const onSelectAllClick = () => pageDispatch(pageActionCreators.selectAll());
   const onSort = property => () => pageDispatch(pageActionCreators.requestSort(property));
+  const classes = useStyles();
 
   return (
     <TableHead>
@@ -392,6 +412,7 @@ const JobSetTableHead = ({
           />
         </TableCell>
         <JobSetSortableTableHeadCell
+          className={classes.idColumn}
           align="left"
           padding="none"
           property="id"
@@ -402,6 +423,7 @@ const JobSetTableHead = ({
           Id
         </JobSetSortableTableHeadCell>
         <JobSetSortableTableHeadCell
+          className={classes.titleColumn}
           align="left"
           property="title"
           order={order}
@@ -410,16 +432,19 @@ const JobSetTableHead = ({
         >
           Title
         </JobSetSortableTableHeadCell>
-        <JobSetSortableTableHeadCell
-          align="left"
-          property="description"
-          order={order}
-          orderBy={orderBy}
-          onSort={onSort}
-        >
-          Description
+        {showDescription ? (
+          <JobSetSortableTableHeadCell
+            className={classes.descriptionColumn}
+            align="left"
+            property="description"
+            order={order}
+            orderBy={orderBy}
+            onSort={onSort}
+          >
+            Description
         </JobSetSortableTableHeadCell>
-        <TableCell>
+        ) : null}
+        <TableCell className={classes.actionsColumn}>
           Actions
         </TableCell>
       </TableRow>
@@ -576,6 +601,7 @@ const JobSetRow = React.memo(({
   viewJobSetCallback,
   editJobSetCallback,
   openInNewTabCallback,
+  showDescription,
 }) => {
   const { id } = jobSetHeader;
   const classes = useStyles();
@@ -635,24 +661,26 @@ const JobSetRow = React.memo(({
           onContextMenu={preventDefaultPropagation}
         />
       </TableCell>
-      <TableCell component="th" id={labelId} scope="row" padding="none">
+      <TableCell component="th" id={labelId} scope="row" padding="none" className={classes.idColumn}>
         {jobSetHeader.id}
       </TableCell>
-      <TableCell align="left" padding="none">
+      <TableCell align="left" padding="none" className={classes.titleColumn}>
         <div className={classes.titleCell}>
           <Typography noWrap>
             {jobSetHeader.title}
           </Typography>
         </div>
       </TableCell>
-      <TableCell align="left" padding="none">
-        <div className={classes.descriptionCell}>
-          <Typography noWrap>
-            {jobSetHeader.description}
-          </Typography>
-        </div>
-      </TableCell>
-      <TableCell align="left" padding="none">
+      {showDescription ? (
+        <TableCell align="left" padding="none" className={classes.descriptionColumn}>
+          <div className={classes.descriptionCell}>
+            <Typography noWrap>
+              {jobSetHeader.description}
+            </Typography>
+          </div>
+        </TableCell>
+      ) : null}
+      <TableCell align="left" padding="none" className={classes.actionsColumn}>
         <div className={classes.actionsFlexbox}>
           <RowDeleteButtonContainer
             id={id}
@@ -731,7 +759,8 @@ const JobSets = React.memo(({
   emptyRows,
   rowsPerPage,
   pageIndex,
-  rowIsSelectedFunction
+  rowIsSelectedFunction,
+  showDescription,
 }) => {
   const classes = useStyles();
   const dense = rowsPerPage > 10;
@@ -744,13 +773,6 @@ const JobSets = React.memo(({
           aria-labelledby="table-title"
           size={dense ? 'small' : 'medium'}
         >
-          <colgroup>
-            <col />
-            <col style={{ width: '10%' }} />
-            <col style={{ width: '30%' }} />
-            <col style={{ width: '50%' }} />
-            <col style={{ width: '10%' }} />
-          </colgroup>
           {jobSetTableHead}
           <TableBody>
             {jobSetHeadersRows
@@ -764,6 +786,7 @@ const JobSets = React.memo(({
                   rowIsSelectedFunction={rowIsSelectedFunction}
                   reloadCallback={reloadCallback}
                   index={index}
+                  showDescription={showDescription}
                 />
               ))}
             {emptyRows > 0 && (
@@ -831,6 +854,11 @@ const JobSetsContainer = () => {
     [pageDispatch]
   );
 
+  const theme = useTheme();
+  const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  const showDescription = !isExtraSmallScreen;
+  const isSmallNewButton = isExtraSmallScreen;
+
   const jobSetToolbarTitle = useMemo(
     () => {
       return (
@@ -840,10 +868,11 @@ const JobSetsContainer = () => {
           selected={selected}
           selectedCount={selectedCount}
           reloadCallback={jobSetsRequest}
+          isSmallNewButton={isSmallNewButton}
         />
       );
     },
-    [isLoading, failedMessage, selected, selectedCount, jobSetsRequest]
+    [isLoading, failedMessage, selected, selectedCount, jobSetsRequest, isSmallNewButton]
   );
 
   const jobSetTableHead = useMemo(
@@ -855,17 +884,19 @@ const JobSetsContainer = () => {
           rowCount={rowCount}
           order={order}
           orderBy={orderBy}
+          showDescription={showDescription}
         />
       );
     },
-    [pageDispatch, selectedCount, rowCount, order, orderBy]
+    [pageDispatch, selectedCount, rowCount, order, orderBy, showDescription]
   );
 
+  const showRowsPerPage = !isExtraSmallScreen;
   const tablePagination = useMemo(
     () => {
       return (
         <TablePagination
-          rowsPerPageOptions={[2, 3, 5, 10, 15]}
+          rowsPerPageOptions={showRowsPerPage ? [5, 10, 15, 20] : [rowsPerPage]}
           component="div"
           count={rowCount}
           rowsPerPage={rowsPerPage}
@@ -881,7 +912,7 @@ const JobSetsContainer = () => {
         />
       );
     },
-    [rowCount, rowsPerPage, pageIndex, onChangePage, onChangeRowsPerPage]
+    [rowCount, rowsPerPage, pageIndex, onChangePage, onChangeRowsPerPage, showRowsPerPage]
   );
 
   return (
@@ -896,6 +927,7 @@ const JobSetsContainer = () => {
       emptyRows={emptyRows}
       pageIndex={pageIndex}
       rowIsSelectedFunction={rowIsSelectedFunction}
+      showDescription={showDescription}
     />
   );
 };
