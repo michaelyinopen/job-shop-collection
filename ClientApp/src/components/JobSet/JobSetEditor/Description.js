@@ -8,12 +8,12 @@ import { setDescription } from '../store/actionCreators';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
-  field: {
-    display: "block",
+  wrapper: {
+    position: "relative",
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    maxWidth: "600px"
-  }
+    maxWidth: "600px",
+  },
 }));
 
 const Description = React.memo(({
@@ -23,17 +23,19 @@ const Description = React.memo(({
 }) => {
   const classes = useStyles();
   return (
-    <TextField
-      label="Description"
-      value={value ? value : ''}
-      onChange={onChange}
-      variant="filled"
-      margin="dense"
-      multiline
-      fullWidth
-      className={classes.field}
-      inputProps={readOnly ? { readOnly: true } : {}}
-    />
+    <div className={classes.wrapper}>
+      <TextField
+        label="Description"
+        value={value ? value : ''}
+        onChange={onChange}
+        variant="filled"
+        margin="dense"
+        multiline
+        fullWidth
+        className={classes.field}
+        inputProps={readOnly ? { readOnly: true } : {}}
+      />
+    </div>
   );
 });
 

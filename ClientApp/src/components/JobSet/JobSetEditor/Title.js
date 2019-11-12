@@ -8,12 +8,12 @@ import { setTitle } from '../store/actionCreators';
 import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
-  field: {
-    display: "block",
+  wrapper: {
+    position: "relative",
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    maxWidth: "400px"
-  }
+    maxWidth: "400px",
+  },
 }));
 
 const Title = React.memo(({
@@ -23,21 +23,22 @@ const Title = React.memo(({
 }) => {
   const classes = useStyles();
   return (
-    <TextField
-      label="Title"
-      value={value ? value : ''}
-      onChange={onChange}
-      required
-      error={!value || value.length === 0}
-      variant="filled"
-      margin="dense"
-      fullWidth
-      className={classes.field}
-      inputProps={{
-        maxLength: 50,
-        ...(readOnly ? { readOnly: true } : {})
-      }}
-    />
+    <div className={classes.wrapper}>
+      <TextField
+        label="Title"
+        value={value ? value : ''}
+        onChange={onChange}
+        required
+        error={!value || value.length === 0}
+        variant="filled"
+        margin="dense"
+        fullWidth
+        inputProps={{
+          maxLength: 50,
+          ...(readOnly ? { readOnly: true } : {})
+        }}
+      />
+    </div>
   );
 });
 
