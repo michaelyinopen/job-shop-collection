@@ -19,8 +19,11 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
     minHeight: "100%",
-    minWidth: 720,
-    position: "relative"
+    position: "relative",
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
   }
 }));
 
