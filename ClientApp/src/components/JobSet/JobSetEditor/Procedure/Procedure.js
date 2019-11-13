@@ -13,14 +13,19 @@ import useProcedureDragDrop from './useProcedureDragDrop';
 import { procedure as procedureStyle } from '../sharedStyles';
 
 const useStyles = makeStyles(theme => ({
-  procedure: procedureStyle(theme),
+  procedure: {
+    ...procedureStyle(theme),
+    [theme.breakpoints.down('xs')]: {
+      flexWrap: "wrap",
+      marginBottom: "4px",
+    }
+  },
   machineLabel: {
     verticalAlign: "top",
     paddingRight: 0,
-    paddingLeft: theme.spacing(2),
     color: "black",
     backgroundColor: "white",
-    minWidth: 0
+    minWidth: 0, paddingLeft: theme.spacing(1)
   },
   machineLabelTextField: {
     width: theme.spacing(24)
@@ -52,9 +57,9 @@ const useStyles = makeStyles(theme => ({
   },
   sequenceLabel: {
     marginTop: "auto",
-    marginRight: 0,
+    marginRight: theme.spacing(1.5),
     marginBottom: "auto",
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(1.5),
     width: theme.spacing(3),
     height: theme.spacing(3),
     color: "black",
@@ -62,9 +67,30 @@ const useStyles = makeStyles(theme => ({
     borderRadius: theme.spacing(1.5),
     boxSizing: "border-box",
     boxShadow: theme.shadows[1],
-    textAlign: "center"
+    textAlign: "center",
   },
-  separator: { flexGrow: 1 }
+  separator: { flexGrow: 1 },
+  machineAndTime: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    flexShrink: 1,
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: "flex-start",
+    }
+  },
+  sameLine: {
+    display: "flex",
+    alignItems: "center",
+  },
+  sequeneAndActions: {
+    height: "48px",
+    display: "flex",
+    alignItems: "center",
+    flexGrow: 1,
+    flexShrink: 0,
+  }
 }));
 
 const Procedure = React.memo(({
@@ -88,62 +114,68 @@ const Procedure = React.memo(({
       className={classes.procedure}
       style={{ opacity, backgroundColor }}
     >
-      <div className={classes.machineLabel}>
-        <TextField
-          label="Machine"
-          value={machineId}
-          variant="outlined"
-          margin="dense"
-          select
-          onChange={onMachineSelectChangeCallback}
-          required
-          error={!machineId}
-          className={classes.machineLabelTextField}
-          SelectProps={{
-            SelectDisplayProps: {
-              style: { height: "1.1875em" }
-            }
-          }}
-          inputProps={readOnly ? { readOnly: true } : {}}
-        >
-          {machineOptions}
-        </TextField>
-      </div>
-      <div className={classes.machineLabelSeparator} />
-      <div className={classes.timeFieldWrapper}>
-        <TimeField
-          showSeconds
-          value={formattedTime}
-          style={{ width: "12em" }}
-          onChange={onTimeChangeCallback}
-          input={
+      <div className={classes.machineAndTime}>
+        <div className={classes.sameLine}>
+          <div className={classes.machineLabel}>
             <TextField
-              label="Time"
-              margin="dense"
+              label="Machine"
+              value={machineId}
               variant="outlined"
+              margin="dense"
+              select
+              onChange={onMachineSelectChangeCallback}
               required
-              error={!formattedTime || formattedTime === "00:00:00"}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
-                readOnly: readOnly ? true : undefined
+              error={!machineId}
+              className={classes.machineLabelTextField}
+              SelectProps={{
+                SelectDisplayProps: {
+                  style: { height: "1.1875em" }
+                }
               }}
-            />
-          }
-        />
+              inputProps={readOnly ? { readOnly: true } : {}}
+            >
+              {machineOptions}
+            </TextField>
+          </div>
+          <div className={classes.machineLabelSeparator} />
+        </div>
+        <div className={classes.timeFieldWrapper}>
+          <TimeField
+            showSeconds
+            value={formattedTime}
+            style={{ width: "12em" }}
+            onChange={onTimeChangeCallback}
+            input={
+              <TextField
+                label="Time"
+                margin="dense"
+                variant="outlined"
+                required
+                error={!formattedTime || formattedTime === "00:00:00"}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">hh:mm:ss</InputAdornment>,
+                  readOnly: readOnly ? true : undefined
+                }}
+              />
+            }
+          />
+        </div>
       </div>
-      <div className={classes.sequenceLabel}>
-        {sequence}
-      </ div>
-      <div className={classes.separator} />
-      {!readOnly ?
-        <div ref={handleRef}>
-          <Tooltip title="Move" placement="right-end">
-            <IconButton style={{ cursor: 'move' }}>
-              <OpenWith />
-            </IconButton>
-          </Tooltip>
-        </div> : null}
-      {!readOnly ? <DeleteProcedureButton id={id} /> : null}
+      <div className={classes.sequeneAndActions}>
+        <div className={classes.sequenceLabel}>
+          {sequence}
+        </ div>
+        <div className={classes.separator} />
+        {!readOnly ?
+          <div ref={handleRef}>
+            <Tooltip title="Move" placement="right-end">
+              <IconButton style={{ cursor: 'move' }}>
+                <OpenWith />
+              </IconButton>
+            </Tooltip>
+          </div> : null}
+        {!readOnly ? <DeleteProcedureButton id={id} /> : null}
+      </div>
     </div>
   );
 });
