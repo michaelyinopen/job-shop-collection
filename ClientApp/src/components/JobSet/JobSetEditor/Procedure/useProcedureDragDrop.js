@@ -8,12 +8,10 @@ const wait = 200;
 const useProcedureDragDrop = (
   id,
   sequence,
-  ref,
-  handleRef,
   getProcedureSequence,
   moveProcedure
 ) => {
-  const [{ isDragging }, drag, preview] = useDrag({
+  const [{ isDragging }, setDragRef, setPreviewRef] = useDrag({
     item: { type: itemTypes.PROCEDURE, id },
     collect: monitor => ({
       isDragging: monitor.isDragging(),
@@ -22,9 +20,6 @@ const useProcedureDragDrop = (
   const throttledHoverCallback = useCallback(
     throttle(
       item => {
-        if (!ref.current) {
-          return;
-        }
         const { id: dragId } = item;
         const dragSequence = getProcedureSequence(dragId);
         const hoverSequence = sequence;
@@ -37,7 +32,7 @@ const useProcedureDragDrop = (
       wait,
       { leading: true, trailing: true }
     ),
-    [ref, getProcedureSequence, sequence]
+    [getProcedureSequence, sequence]
   );
   useEffect(
     () => {
@@ -47,15 +42,20 @@ const useProcedureDragDrop = (
         }
       }
     },
-    [ref, getProcedureSequence, sequence, throttledHoverCallback]
+    [throttledHoverCallback]
   );
-  const [, drop] = useDrop({
+  const [, setDropRef] = useDrop({
     accept: itemTypes.PROCEDURE,
     hover: throttledHoverCallback
   });
-  preview(drop(ref));
-  drag(handleRef);
-  return [isDragging];
+  const setDropAndPreviewRef = useCallback(
+    ref => {
+      setDropRef(ref);
+      setPreviewRef(ref);
+    },
+    [setDropRef, setPreviewRef]
+  );
+  return [isDragging, setDragRef, setDropAndPreviewRef];
 };
 
 export default useProcedureDragDrop;

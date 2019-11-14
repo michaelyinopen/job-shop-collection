@@ -211,19 +211,15 @@ const ProcedureContainer = ({
     [dispatch, id, procedure]
   );
 
-  const ref = useRef(null);
-  const handleRef = useRef(null);
   const getProcedureSequence = useGetProcedureSequence();
   const moveProcedureCallback = useCallback(
     (id, targetSequence) => dispatch(moveProcedure(id, targetSequence)), // note id is input parameter, not bound
     [dispatch]
   );
 
-  const [isDragging] = useProcedureDragDrop(
+  const [isDragging, setDragRef, setDropAndPreviewRef] = useProcedureDragDrop(
     id,
     procedure.sequence,
-    ref,
-    handleRef,
     getProcedureSequence,
     moveProcedureCallback
   );
@@ -232,8 +228,8 @@ const ProcedureContainer = ({
   const [backgroundColor] = useJobColor(procedure.jobId);
   return (
     <Procedure
-      procedureRef={ref}
-      handleRef={handleRef}
+      procedureRef={setDropAndPreviewRef}
+      handleRef={setDragRef}
       id={id}
       readOnly={readOnly}
       machineId={procedure.machineId}
