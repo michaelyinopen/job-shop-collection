@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import MultiBackend, { Preview } from 'react-dnd-multi-backend';
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 import { Route, Switch } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
@@ -17,7 +18,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         <Layout>
           <JobShopCollection>
             <Switch>
