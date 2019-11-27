@@ -142,7 +142,7 @@ const Home = () => {
           <CardContent className={classes.content}>
             <Typography variant="h5" gutterBottom>Drag & Drop</Typography>
             <Typography paragraph>
-              Users can re-order the procedures within a job. Mouse ad touch are both supported.
+              Users can re-order the procedures within a job. Mouse and touch are both supported.
             </Typography>
           </CardContent>
           <CardMedia
