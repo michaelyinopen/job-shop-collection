@@ -230,3 +230,9 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/Documentation/Thumbs.db
+/Documentation/key-feature-dnd.gif
+/Documentation/key-feature-input-logic.gif
+/Documentation/key-feature-overview.gif
+/Documentation/key-feature-responsive.gif
+/ClientApp/public/Thumbs.db

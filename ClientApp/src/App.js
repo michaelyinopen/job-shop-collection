@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { DndProvider } from 'react-dnd';
-import MultiBackend, { Preview } from 'react-dnd-multi-backend';
+import MultiBackend from 'react-dnd-multi-backend';
 import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 import { Route, Switch } from 'react-router';
 import Layout from './components/Layout';
