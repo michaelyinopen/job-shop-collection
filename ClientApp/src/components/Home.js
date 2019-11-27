@@ -149,7 +149,7 @@ const Home = () => {
             className={classes.media}
             component="video"
             src="key-features/key-feature-dnd.mp4"
-            title="Input Form Logic"
+            title="Drag and drop example"
             controls
             mute
           />
@@ -161,7 +161,7 @@ const Home = () => {
               Jest.js is used for testing. 
             </Typography>
             <Typography paragraph>
-             (left) The test suites that includes unit test\s and application wide tests.
+             (left) The test suites that includes unit tests and application wide tests.
             </Typography>
             <Typography paragraph>
              (right) The tests in one test suite about the redux store changes.
