@@ -21,6 +21,7 @@
     "react-dnd-multi-backend": "^5.0.0-rc03",
     "react-dnd-touch-backend": "^9.4.0",
     "react-dom": "^16.9.0",
+    "react-redux": "^7.2.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.1.1",
@@ -29,6 +30,7 @@
     "reduce-reducers": "^1.0.4",
     "redux": "^4.0.4",
     "redux-undo": "^0.6.1",
+    "reselect": "^4.0.0",
     "rimraf": "^2.6.2",
     "url-template": "^2.0.8",
     "use-force-update": "^1.0.7",
@@ -38,6 +40,8 @@
     "ajv": "^6.9.1",
     "cross-env": "^5.2.0",
     "eslint": "^6.3.0",
+    "react-cosmos": "^5.0.1",
+    "react-dnd-test-backend": "^10.0.2",
     "typescript": "^3.6.2"
   },
   "eslintConfig": {
@@ -48,7 +52,9 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/",
+    "cosmos": "cosmos",
+    "cosmos:export": "cosmos-export"
   },
   "browserslist": {
     "production": [

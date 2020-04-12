@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { DndProvider } from 'react-dnd';
-import MultiBackend from 'react-dnd-multi-backend';
-import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
+import { createStore } from "redux";
+import { Provider } from "react-redux";
 import { Route, Switch } from 'react-router';
+import reducer, { initialState } from './store/reducer';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import * as fromRoutePaths from './routePaths';
@@ -13,12 +13,14 @@ import JobSet from './components/JobSet';
 import PageNotFound from './components/PageNotFound';
 import AppSnackbar from './components/AppSnackbar';
 
+const store = createStore(reducer, initialState);
+
 export default class App extends Component {
   static displayName = App.name;
 
   render() {
     return (
-      <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+      <Provider store={store}>
         <Layout>
           <JobShopCollection>
             <Switch>
@@ -37,7 +39,7 @@ export default class App extends Component {
             <AppSnackbar />
           </JobShopCollection>
         </Layout>
-      </DndProvider>
+      </Provider>
     );
   }
 }

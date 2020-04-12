@@ -99,7 +99,6 @@ const Home = () => {
             src="key-features/key-feature-overview.mp4"
             title="CRUD Application"
             controls
-            mute
           />
         </Card>
         <Card component="li" raised className={classes.card}>
@@ -116,7 +115,6 @@ const Home = () => {
             src="key-features/key-feature-responsive.mp4"
             title="Responsive layout"
             controls
-            mute
           />
         </Card>
         <Card component="li" raised className={classes.card}>
@@ -135,7 +133,6 @@ const Home = () => {
             src="key-features/key-feature-input-logic.mp4"
             title="Logical Input"
             controls
-            mute
           />
         </Card>
         <Card component="li" raised className={classes.card}>
@@ -151,7 +148,6 @@ const Home = () => {
             src="key-features/key-feature-dnd.mp4"
             title="Drag and drop example"
             controls
-            mute
           />
         </Card>
         <Card component="li" raised className={classes.card}>
