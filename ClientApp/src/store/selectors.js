@@ -140,3 +140,8 @@ export const makeJobSetDeletingSelector = () =>
 export const selectCurrentJobSetId = state => state.currentJobSetId;
 
 export const selectJobSetEditor = state => state.jobSetEditor;
+
+// pattern:
+// prop: id
+// const { current: selectJobSetHeader } = useRef(makeJobSetHeaderSelector())
+// const jobSetHeader = useSelector(state => selectJobSetHeader(state, id))
