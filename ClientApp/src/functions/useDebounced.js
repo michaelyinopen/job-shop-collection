@@ -156,7 +156,11 @@ const useDebounced = (func, wait = 16, options = emptyOptions) => {
       }
 
       function flush() {
-        return timerId === undefined ? result : trailingEdge(Date.now())
+        if (timerId !== undefined) {
+          clearTimeout(timerId);
+          return trailingEdge(Date.now());
+        }
+        return result;
       }
 
       function pending() {
