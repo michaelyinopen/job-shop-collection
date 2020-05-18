@@ -1,11 +1,11 @@
 import React, { useCallback, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
-import { useTitle, useReadOnly } from '../store/useSelectors';
+import { selectTitle, selectReadOnly } from '../store/selectors'
 import { setTitle } from '../store/actionCreators';
-import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -16,20 +16,27 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Title = React.memo(({
-  value,
-  readOnly,
-  onChange
-}) => {
+const Title = React.memo(() => {
   const classes = useStyles();
+
+  const title = useSelector(selectTitle);
+  const readOnly = useSelector(selectReadOnly);
+  const dispatch = useDispatch();
+  const setTitleCallback = useCallback(
+    valueArg => {
+      dispatch(setTitle(valueArg));
+    },
+    [dispatch]
+  );
+  const [titleValue, titleChangedCallback] = useDebouncedValue(title, setTitleCallback, typingInputDebounceWait);
   return (
     <div className={classes.wrapper}>
       <TextField
         label="Title"
-        value={value ? value : ''}
-        onChange={onChange}
+        value={titleValue ? titleValue : ''}
+        onChange={titleChangedCallback}
         required
-        error={!value || value.length === 0}
+        error={!titleValue || titleValue.length === 0}
         variant="filled"
         margin="dense"
         fullWidth
@@ -42,24 +49,4 @@ const Title = React.memo(({
   );
 });
 
-const TitleContainer = () => {
-  const title = useTitle();
-  const readOnly = useReadOnly();
-  const dispatch = useContext(JobShopCollectionDispatchContext);
-  const setTitleCallback = useCallback(
-    valueArg => {
-      dispatch(setTitle(valueArg));
-    },
-    [dispatch]
-  );
-  const [titleValue, titleChangedCallback] = useDebouncedValue(title, setTitleCallback, typingInputDebounceWait);
-  return (
-    <Title
-      value={titleValue}
-      readOnly={readOnly}
-      onChange={titleChangedCallback}
-    />
-  );
-};
-
-export default TitleContainer;
+export default Title;

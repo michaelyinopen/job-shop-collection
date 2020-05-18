@@ -8,7 +8,7 @@ const decorate = flowRight(decorateStyle, decorateRouter);
 
 const DecoratedLayout = decorate(Layout);
 
-const fitChild = (
+const fitChild = () => (
   <DecoratedLayout>
     <div
       style={{
@@ -26,7 +26,7 @@ const fitChild = (
   </DecoratedLayout>
 );
 
-const tallChild = (
+const tallChild = ()=> (
   <DecoratedLayout>
     <div
       style={{
