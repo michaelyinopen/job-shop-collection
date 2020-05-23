@@ -2,11 +2,13 @@ import React from 'react';
 import { flowRight } from 'lodash';
 import decorateStyle from '../../../__fixtureDecorators__/decorateStyle';
 import decorateRedux from '../../../__fixtureDecorators__/decorateRedux';
+import decorateInteractiveRedux from '../../../__fixtureDecorators__/decorateInteractiveRedux';
 import Title from './Title';
 import { initialState } from '../../../store/reducer';
 import { jobSetEditorInit } from '../../JobSet';
 
 const decorate = initialState => flowRight(decorateStyle, decorateRedux(initialState));
+const decorateInteractive = initialState => flowRight(decorateStyle, decorateInteractiveRedux(initialState));
 
 const readOnlyTitleInitialState = {
   ...initialState,
@@ -32,9 +34,16 @@ const editableInitializedTitleInitialState = {
 };
 const editableInitializedTitle = decorate(editableInitializedTitleInitialState)(Title);
 
+const reduxTitleInitialState = {
+  ...initialState,
+  jobSetEditor: jobSetEditorInit({ readOnly: false, jobSet: { title: "Initial Value" } })
+};
+const reduxTitle = decorateInteractive(reduxTitleInitialState)(Title);
+
 export default {
   readOnlyTitle,
   editableTitle,
   readOnlyInitializedTitle,
-  editableInitializedTitle
+  editableInitializedTitle,
+  reduxTitle
 };

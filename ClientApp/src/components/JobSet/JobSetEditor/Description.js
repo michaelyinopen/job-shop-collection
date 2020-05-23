@@ -1,11 +1,11 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
-import { useDescription, useReadOnly } from '../store/useSelectors';
+import { selectDescription, selectReadOnly } from '../store/selectors'
 import { setDescription } from '../store/actionCreators';
-import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -16,18 +16,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Description = React.memo(({
-  value,
-  readOnly,
-  onChange,
-}) => {
+const Description = React.memo(() => {
   const classes = useStyles();
+  const description = useSelector(selectDescription);
+  const readOnly = useSelector(selectReadOnly);
+  const dispatch = useDispatch();
+  const setDescriptionCallback = useCallback(
+    valueArg => {
+      dispatch(setDescription(valueArg));
+    },
+    [dispatch]
+  );
+  const [descriptionValue, descriptionChangedCallback] = useDebouncedValue(description, setDescriptionCallback, typingInputDebounceWait);
   return (
     <div className={classes.wrapper}>
       <TextField
         label="Description"
-        value={value ? value : ''}
-        onChange={onChange}
+        value={descriptionValue ? descriptionValue : ''}
+        onChange={descriptionChangedCallback}
         variant="filled"
         margin="dense"
         multiline
@@ -39,24 +45,4 @@ const Description = React.memo(({
   );
 });
 
-const DescriptionContainer = () => {
-  const description = useDescription();
-  const readOnly = useReadOnly();
-  const dispatch = useContext(JobShopCollectionDispatchContext);
-  const setDescriptionCallback = useCallback(
-    valueArg => {
-      dispatch(setDescription(valueArg));
-    },
-    [dispatch]
-  );
-  const [descriptionValue, descriptionChangedCallback] = useDebouncedValue(description, setDescriptionCallback, typingInputDebounceWait);
-  return (
-    <Description
-      value={descriptionValue}
-      readOnly={readOnly}
-      onChange={descriptionChangedCallback}
-    />
-  );
-};
-
-export default DescriptionContainer;
+export default Description;
