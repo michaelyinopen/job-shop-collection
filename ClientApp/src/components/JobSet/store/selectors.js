@@ -97,11 +97,13 @@ export const selectGetProcedureSequence = createSelector(
   }
 );
 
-export const makeProcedureOfMachineSelector = () =>
+export const makeProceduresOfMachineSelector = () =>
   createSelector(
     selectProcedures,
     (_, machineId) => machineId,
-    (procedures, machineId) => Object.values(procedures).filter(p => p.machineId === machineId)
+    (procedures, machineId) => Object.values(procedures)
+      .filter(p => p.machineId === machineId)
+      .sort((a, b) => a.jobId - b.jobId || a.sequence - b.sequence)
   );
 
 export const selectIsAutoTimeOptions = createSelector(

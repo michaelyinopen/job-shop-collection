@@ -1,5 +1,6 @@
 import React from 'react';
 import { flowRight } from 'lodash';
+import { useValue } from 'react-cosmos/fixture';
 import decorateStyle from '../../../__fixtureDecorators__/decorateStyle';
 import decorateRedux from '../../../__fixtureDecorators__/decorateRedux';
 import decorateInteractiveRedux from '../../../__fixtureDecorators__/decorateInteractiveRedux';
@@ -34,16 +35,21 @@ const editableInitializedTitleInitialState = {
 };
 const editableInitializedTitle = decorate(editableInitializedTitleInitialState)(Title);
 
-const reduxTitleInitialState = {
-  ...initialState,
-  jobSetEditor: jobSetEditorInit({ readOnly: false, jobSet: { title: "Initial Value" } })
+const IntereactiveTitleFixture = () => {
+  const [readonly] = useValue('Readonly', { defaultValue: false });
+  const [initialTitle] = useValue('Initial Title', { defaultValue: '' });
+  const interactiveTitleInitialState = {
+    ...initialState,
+    jobSetEditor: jobSetEditorInit({ readOnly: readonly, jobSet: { title: initialTitle } })
+  };
+  const InteractiveTitle = decorateInteractive(interactiveTitleInitialState)(Title);
+  return <InteractiveTitle />;
 };
-const reduxTitle = decorateInteractive(reduxTitleInitialState)(Title);
 
 export default {
   readOnlyTitle,
   editableTitle,
   readOnlyInitializedTitle,
   editableInitializedTitle,
-  reduxTitle
+  interactiveTitle: <IntereactiveTitleFixture />,
 };
