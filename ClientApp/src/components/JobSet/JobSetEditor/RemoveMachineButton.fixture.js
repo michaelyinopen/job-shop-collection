@@ -8,7 +8,7 @@ import RemoveMachineButton from './RemoveMachineButton';
 import { initialState } from '../../../store/reducer';
 import { jobSetEditorInit } from '../../JobSet';
 
-const decorate = initialState => flowRight(decorateStyle, decorateRedux(initialState), decorateErrorBoundary  );
+const decorate = initialState => flowRight(decorateStyle, decorateRedux(initialState), decorateErrorBoundary);
 const decorateInteractive = initialState => flowRight(decorateStyle, decorateInteractiveRedux(initialState), decorateErrorBoundary);
 
 const removeMachineButtonWithoutRelatedProceduresInitialState = {
