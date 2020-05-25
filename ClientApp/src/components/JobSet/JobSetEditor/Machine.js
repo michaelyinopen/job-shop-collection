@@ -1,9 +1,9 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, TextField } from '@material-ui/core';
 import RemoveMachineButton from './RemoveMachineButton';
-import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
-import { useMachine, useReadOnly } from '../store/useSelectors';
+import { makeMachineSelector, selectReadOnly } from '../store/selectors'
 import { updateMachineTitle, updateMachineDescription } from '../store/actionCreators';
 import useDebouncedValue from '../../../functions/useDebouncedValue';
 import { typingInputDebounceWait } from '../../../constants';
@@ -24,14 +24,33 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Machine = React.memo(({
-  id,
-  description,
-  title,
-  readOnly,
-  onDescriptionChangeCallback,
-  onTitleChangeCallback
+  id
 }) => {
   const classes = useStyles();
+  const { current: selectMachine } = useRef(makeMachineSelector());
+  const machine = useSelector(state => selectMachine(state, id));
+  const readOnly = useSelector(selectReadOnly);
+
+  const dispatch = useDispatch();
+  const dispatchUpdateMachineTitle = useCallback(
+    value => dispatch(updateMachineTitle(id, value)),
+    [dispatch, id]
+  );
+  const [title, onTitleChangeCallback] = useDebouncedValue(
+    machine.title,
+    dispatchUpdateMachineTitle,
+    typingInputDebounceWait
+  );
+
+  const dispatchUpdateMachineDescription = useCallback(
+    value => dispatch(updateMachineDescription(id, value)),
+    [dispatch, id]
+  );
+  const [description, onDescriptionChangeCallback] = useDebouncedValue(
+    machine.description,
+    dispatchUpdateMachineDescription,
+    typingInputDebounceWait
+  );
   return (
     <Card className={classes.machine}>
       <TextField
@@ -43,6 +62,7 @@ const Machine = React.memo(({
         variant="filled"
         margin="dense"
         className={classes.title}
+        disabled={(!title || title.length === 0) && readOnly}
         inputProps={readOnly ? { readOnly: true } : {}}
       />
       <TextField
@@ -63,45 +83,4 @@ const Machine = React.memo(({
   );
 });
 
-const MachineContainer = ({
-  id
-}) => {
-  const machine = useMachine(id);
-  const readOnly = useReadOnly();
-
-  const dispatch = useContext(JobShopCollectionDispatchContext);
-  const dispatchUpdateMachineTitle = useCallback(
-    value => dispatch(updateMachineTitle(id, value)),
-    [dispatch, id]
-  );
-
-  const [title, onTitleChangeCallback] = useDebouncedValue(
-    machine.title,
-    dispatchUpdateMachineTitle,
-    typingInputDebounceWait
-  );
-
-  const dispatchUpdateMachineDescription = useCallback(
-    value => dispatch(updateMachineDescription(id, value)),
-    [dispatch, id]
-  );
-
-  const [description, onDescriptionChangeCallback] = useDebouncedValue(
-    machine.description,
-    dispatchUpdateMachineDescription,
-    typingInputDebounceWait
-  );
-
-  return (
-    <Machine
-      id={id}
-      description={description}
-      title={title}
-      readOnly={readOnly}
-      onDescriptionChangeCallback={onDescriptionChangeCallback}
-      onTitleChangeCallback={onTitleChangeCallback}
-    />
-  );
-};
-
-export default MachineContainer;
+export default Machine;

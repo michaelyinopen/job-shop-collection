@@ -34,11 +34,11 @@ const Description = React.memo(() => {
         label="Description"
         value={descriptionValue ? descriptionValue : ''}
         onChange={descriptionChangedCallback}
+        disabled={(!descriptionValue || descriptionValue.length === 0) && readOnly}
         variant="filled"
         margin="dense"
         multiline
         fullWidth
-        className={classes.field}
         inputProps={readOnly ? { readOnly: true } : {}}
       />
     </div>

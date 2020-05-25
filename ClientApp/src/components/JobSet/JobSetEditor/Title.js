@@ -37,6 +37,7 @@ const Title = React.memo(() => {
         onChange={titleChangedCallback}
         required
         error={!titleValue || titleValue.length === 0}
+        disabled={(!titleValue || titleValue.length === 0) && readOnly}
         variant="filled"
         margin="dense"
         fullWidth

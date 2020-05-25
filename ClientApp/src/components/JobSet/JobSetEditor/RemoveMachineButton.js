@@ -103,7 +103,7 @@ const RemoveMachineButton = React.memo(({
     [setOpen]
   );
   return (
-    <div>
+    <div style={{ display: 'inline-flex' }}>
       <Tooltip title={removeTooltip} placement="right-end">
         <IconButton onClick={clickOpenCallback}>
           <Delete />
