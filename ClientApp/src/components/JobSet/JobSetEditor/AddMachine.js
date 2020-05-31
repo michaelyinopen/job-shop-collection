@@ -1,8 +1,8 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, Button } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import JobShopCollectionDispatchContext from '../../JobShopCollectionDispatchContext';
 import { addMachine } from '../store/actionCreators';
 import { machine as machineStyle } from './sharedStyles';
 
@@ -17,10 +17,13 @@ const useStyles = makeStyles(theme => ({
   addIcon: { marginRight: theme.spacing(0.5) },
 }));
 
-const AddMachine = React.memo(({
-  addMachineCallback
-}) => {
+const AddMachine = React.memo(() => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const addMachineCallback = useCallback(
+    () => dispatch(addMachine()),
+    [dispatch]
+  );
   return (
     <Card className={classes.machine}>
       <Button
@@ -36,17 +39,4 @@ const AddMachine = React.memo(({
   );
 });
 
-const AddMachineContainer = () => {
-  const dispatch = useContext(JobShopCollectionDispatchContext);
-  const addMachineCallback = useCallback(
-    () => dispatch(addMachine()),
-    [dispatch]
-  );
-  return (
-    <AddMachine
-      addMachineCallback={addMachineCallback}
-    />
-  );
-};
-
-export default AddMachineContainer;
+export default AddMachine;

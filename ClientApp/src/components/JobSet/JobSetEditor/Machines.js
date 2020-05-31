@@ -1,9 +1,10 @@
 import React from 'react';
+import { useSelector, connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Tooltip, Box } from '@material-ui/core';
-import { useMachineIds, useReadOnly } from '../store/useSelectors';
 import AddMachine from './AddMachine';
 import Machine from './Machine';
+import { selectMachineIds, selectReadOnly } from '../store/selectors';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -19,12 +20,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Machines = React.memo(({
-  machineIds,
-  readOnly,
-  count
-}) => {
+const Machines = React.memo(() => {
   const classes = useStyles();
+  const machineIds = useSelector(selectMachineIds);
+  const readOnly = useSelector(selectReadOnly);
+  const count = machineIds.length;
   const countMessage = count === 0 ? "" : ` (${count})`;
   return (
     <section>
@@ -41,17 +41,4 @@ const Machines = React.memo(({
   );
 });
 
-const MachinesContainer = () => {
-  const machineIds = useMachineIds();
-  const readOnly = useReadOnly();
-  const count = machineIds.length;
-  return (
-    <Machines
-      machineIds={machineIds}
-      readOnly={readOnly}
-      count={count}
-    />
-  );
-};
-
-export default MachinesContainer;
+export default connect()(Machines);
