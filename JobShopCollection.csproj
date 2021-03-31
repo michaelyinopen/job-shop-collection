@@ -11,6 +11,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
+    <UserSecretsId>11b19935-ccb2-492e-bf31-7951ba9c63d9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
