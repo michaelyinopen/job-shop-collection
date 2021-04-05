@@ -21,5 +21,5 @@ jobs:
       run: dotnet restore job-shop-collection.sln
     - name: Build
       run: dotnet build job-shop-collection.sln --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+#    - name: Test
+#      run: dotnet test --no-build --verbosity normal
