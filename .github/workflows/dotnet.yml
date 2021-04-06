@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore job-shop-collection.sln
     - name: Build
-      run: dotnet build job-shop-collection.sln --no-restore
+      run: dotnet build job-shop-collection.sln --no-restore --configuration Release
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
