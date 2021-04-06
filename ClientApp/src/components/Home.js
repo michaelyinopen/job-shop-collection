@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMediaQuery, useTheme, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
@@ -66,6 +66,25 @@ const Home = () => {
   const classes = useStyles();
   const theme = useTheme();
   const isSmallerTitle = useMediaQuery(theme.breakpoints.down('xs'));
+  const [lastDeployedDate, setLastDeployedDate] = useState(null);
+  useEffect(()=>{
+    const fetchLastDeployedDate = async () => {
+      try {
+        const response = await fetch(`https://api.github.com/repos/michaelyinopen/job-shop-collection/actions/workflows/master_JobShopCollection.yml/runs?per_page=1&status=success`);
+        if (!response.ok) {
+          setLastDeployedDate("Failed to get the last deployed date.");
+        }
+        let responseBody;
+        responseBody = await response.json();
+        const lastDeploymentDate = Date.parse(responseBody.workflow_runs[0].updated_at);
+        setLastDeployedDate(lastDeploymentDate.toString());
+      }
+      catch (e) {
+        setLastDeployedDate("Failed to get the last deployed date.");
+      }
+    };
+    fetchLastDeployedDate();
+  });
   return (
     <Container className={classes.container}>
       <h1 className={clsx({ [classes.smallerTitle]: isSmallerTitle })}>Job Shop Collection</h1>
@@ -158,13 +177,13 @@ const Home = () => {
           <CardContent className={classes.content}>
             <Typography variant="h5" gutterBottom>Tests</Typography>
             <Typography paragraph>
-              Jest.js is used for testing. 
+              Jest.js is used for testing.
             </Typography>
             <Typography paragraph>
-             (left) The test suites that includes unit tests and application wide tests.
+              (left) The test suites that includes unit tests and application wide tests.
             </Typography>
             <Typography paragraph>
-             (right) The tests in one test suite about the redux store changes.
+              (right) The tests in one test suite about the redux store changes.
             </Typography>
           </CardContent>
           <CardMedia
@@ -205,6 +224,7 @@ const Home = () => {
         <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for server-side code</li>
         <li><a href='https://material-ui.com/'>Material-ui</a> for layout and styling</li>
         <li><a href='https://azure.microsoft.com/'>Azure</a> for hosting Web App and database</li>
+        <li>Deployed with <a href='https://azure.microsoft.com/'>Github Actions</a>on {lastDeployedDate}</li>
       </ul>
     </Container >
   );
