@@ -77,7 +77,7 @@ const Home = () => {
         }
         let responseBody;
         responseBody = await response.json();
-        const lastDeploymentDate = Date.parse(responseBody.workflow_runs[0].updated_at);
+        const lastDeploymentDate = new Date(Date.parse(responseBody.workflow_runs[0].updated_at));
         setLastDeployedDate(" on " + lastDeploymentDate.toDateString());
       }
       catch (e) {
