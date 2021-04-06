@@ -5,6 +5,7 @@ import { useMediaQuery, useTheme, Card, CardContent, CardMedia, Typography } fro
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Container from '@material-ui/core/Container';
+import { formatISO } from 'date-fns';
 import * as fromRoutePaths from '../routePaths';
 
 const useStyles = makeStyles(theme => ({
@@ -66,21 +67,23 @@ const Home = () => {
   const classes = useStyles();
   const theme = useTheme();
   const isSmallerTitle = useMediaQuery(theme.breakpoints.down('xs'));
-  const [lastDeployedDate, setLastDeployedDate] = useState(null);
-  useEffect(()=>{
+  const [lastDeployedDate, setLastDeployedDate] = useState("");
+  useEffect(() => {
     const fetchLastDeployedDate = async () => {
       try {
         const response = await fetch(`https://api.github.com/repos/michaelyinopen/job-shop-collection/actions/workflows/master_JobShopCollection.yml/runs?per_page=1&status=success`);
-        if (!response.ok) {
-          setLastDeployedDate("Failed to get the last deployed date.");
+        if (response.ok) {
+          console.log("Failed to get the last deployed date");
+          return;
         }
         let responseBody;
         responseBody = await response.json();
         const lastDeploymentDate = Date.parse(responseBody.workflow_runs[0].updated_at);
-        setLastDeployedDate(lastDeploymentDate.toString());
+        setLastDeployedDate(" on " + formatISO(lastDeploymentDate, { representation: 'date' }));
       }
       catch (e) {
-        setLastDeployedDate("Failed to get the last deployed date.");
+        console.log("Failed to get the last deployed date");
+        return;
       }
     };
     fetchLastDeployedDate();
@@ -224,7 +227,7 @@ const Home = () => {
         <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for server-side code</li>
         <li><a href='https://material-ui.com/'>Material-ui</a> for layout and styling</li>
         <li><a href='https://azure.microsoft.com/'>Azure</a> for hosting Web App and database</li>
-        <li>Deployed with <a href='https://azure.microsoft.com/'>Github Actions</a>on {lastDeployedDate}</li>
+        <li>Continuous deployment with <a href='https://github.com/michaelyinopen/job-shop-collection/actions/'>Github Actions</a>{lastDeployedDate}</li>
       </ul>
     </Container >
   );
