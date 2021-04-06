@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
 import {
   Menu,
   IconButton,
 } from '@material-ui/core';
 import { MoreVert as MoreVertIcon } from '@material-ui/icons';
-import jsonIcon from '@iconify/icons-mdi/json';
+// import jsonIcon from '@iconify/icons-mdi/json';
 import DeleteJobSetMenuItem from './DeleteJobSetMenuItem';
 
-const useStyles = makeStyles(theme => ({
-  // titleRow: {
-  //   position: "sticky",
-  //   top: 0,
-  //   zIndex: theme.zIndex.appBar - 1,
-  //   backgroundColor: theme.palette.background.default,
-  //   boxSizing: "border-box",
-  // },
-  // toolbar: { // move
-  //   display: "flex",
-  //   boxSizing: "border-box",
-  //   boxShadow: "0px 6px 4px -6px rgba(0,0,0,0.75)",
-  //   "& > *": {
-  //     margin: "4px"
-  //   },
-  // },
-  // separator: { flexGrow: 1 },
-}));
+// const useStyles = makeStyles(theme => ({
+//   titleRow: {
+//     position: "sticky",
+//     top: 0,
+//     zIndex: theme.zIndex.appBar - 1,
+//     backgroundColor: theme.palette.background.default,
+//     boxSizing: "border-box",
+//   },
+//   toolbar: { // move
+//     display: "flex",
+//     boxSizing: "border-box",
+//     boxShadow: "0px 6px 4px -6px rgba(0,0,0,0.75)",
+//     "& > *": {
+//       margin: "4px"
+//     },
+//   },
+//   separator: { flexGrow: 1 },
+// }));
 
 const MoreOptions = ({
   id,
@@ -37,7 +37,7 @@ const MoreOptions = ({
   open,
   handleClose
 }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   return (
     <div>
       <IconButton onClick={onMoreOptionsButtonClick} >
