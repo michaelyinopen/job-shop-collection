@@ -71,7 +71,7 @@ const Home = () => {
     const fetchLastDeployedDate = async () => {
       try {
         const response = await fetch(`https://api.github.com/repos/michaelyinopen/job-shop-collection/actions/workflows/master_JobShopCollection.yml/runs?per_page=1&status=success`);
-        if (response.ok) {
+        if (!response.ok) {
           console.log("Failed to get the last deployed date");
           return;
         }
