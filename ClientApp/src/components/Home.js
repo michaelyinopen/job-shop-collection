@@ -5,7 +5,6 @@ import { useMediaQuery, useTheme, Card, CardContent, CardMedia, Typography } fro
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Container from '@material-ui/core/Container';
-import { formatISO } from 'date-fns';
 import * as fromRoutePaths from '../routePaths';
 
 const useStyles = makeStyles(theme => ({
@@ -79,7 +78,7 @@ const Home = () => {
         let responseBody;
         responseBody = await response.json();
         const lastDeploymentDate = Date.parse(responseBody.workflow_runs[0].updated_at);
-        setLastDeployedDate(" on " + formatISO(lastDeploymentDate, { representation: 'date' }));
+        setLastDeployedDate(" on " + lastDeploymentDate.toString());
       }
       catch (e) {
         console.log("Failed to get the last deployed date");
