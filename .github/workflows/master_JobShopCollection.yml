@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      GENERATE_SOURCEMAP: false
 
     steps:
     - uses: actions/checkout@v2
